@@ -32,6 +32,10 @@ We can force Software Rendering and bypass OpenGL/GPU entirely to run SpinView:
 
 4. [camera_configuration.py](examples/camera_configuration.py)
 
+    Camera node is introduced: https://www.teledynevisionsolutions.com/support/support-center/application-note/iis/spinnaker-nodes/
+    Basic configuration is introduced in the spinnaker-python-programming guide. 
+
+
     - continuous auto exposure with a maximum exposure time
     - auto gain vs acquisition mode 
     - single shot vs continous shot 

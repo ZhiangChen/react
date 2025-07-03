@@ -25,8 +25,8 @@ def raw_conversion(raw_image_path, converted_image_path, width=5472, height=3648
 if __name__ == "__main__":
     # Example usage
     raw_image_path = "/mnt/ssd/Acquisition-24284605-0.raw"  # Replace with your raw image path
-    converted_image_path = "Acquisition-24284605-0.png"   # Replace with your desired jpg/png/tiff output path
-    
+    converted_image_path = "Acquisition-24284605-0.tiff"   # Replace with your desired jpg/png/tiff output path
+
     raw_conversion(raw_image_path, converted_image_path)
     
 
