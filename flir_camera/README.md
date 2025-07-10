@@ -35,6 +35,14 @@ We can force Software Rendering and bypass OpenGL/GPU entirely to run SpinView:
     Camera node is introduced: https://www.teledynevisionsolutions.com/support/support-center/application-note/iis/spinnaker-nodes/
     Basic configuration is introduced in the spinnaker-python-programming guide. 
 
+    Important parameters:
+      Acquisition Mode
+      Exposure Auto
+      Pixel Format (changing this, you will see the Acquisition Frame Rate is changed accordingly)
+      RGB Transform Light Source
+      ADC Bit Depth
+      Exposure Time Upper Limit (2500 us = 1/400 s)
+      Gain Upper Limit 
 
     - continuous auto exposure with a maximum exposure time
     - auto gain vs acquisition mode 

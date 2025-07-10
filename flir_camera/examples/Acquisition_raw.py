@@ -63,7 +63,7 @@ else:
     print("OS Unknown; Using Stream mode STREAM_MODE_SOCKET")
     CHOSEN_STREAMMODE = StreamMode.STREAM_MODE_SOCKET
 
-NUM_IMAGES = 10  # number of images to grab
+NUM_IMAGES = 50  # number of images to grab
 
 def set_stream_mode(cam):
     """
@@ -246,6 +246,12 @@ def acquire_images(cam, nodemap, nodemap_tldevice):
                     filepath = os.path.join(path, filename)
                     image_result.Save(filepath)
                     print('Image saved at %s' % filepath)
+                    width = image_result.GetWidth()
+                    height = image_result.GetHeight()
+                    width_offset = image_result.GetXOffset()
+                    height_offset = image_result.GetYOffset()
+                    print('Grabbed Image %d, width = %d, height = %d, x_offset = %d, y_offset = %d' %
+                          (i, width, height, width_offset, height_offset))
 
                     #  Release image
                     #

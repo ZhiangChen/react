@@ -1,0 +1,246 @@
+Root:
+  Acquisition Control:
+    Acquisition Mode: Continuous
+    Acquisition Frame Count: 2
+    Acquisition Burst Frame Count: 1
+    Exposure Mode: Timed
+    Exposure Time: 2507.0
+    Exposure Auto: Continuous
+    Acquisition Frame Rate: 9.054792651043359
+    Resulting Frame Rate: 9.054792924671693
+    Acquisition Frame Rate Enable: false
+    Acquisition Line Rate: 82960.01277584204
+    Trigger Selector: FrameStart
+    Trigger Mode: 'Off'
+    Trigger Source: Software
+    Trigger Overlap: 'Off'
+    Trigger Delay: 218.0
+    Sensor Shutter Mode: Rolling
+  Analog Control:
+    Gain Selector: All
+    Gain: 16.015736487316406
+    Gain Auto: Continuous
+    Black Level Selector: All
+    Black Level: 0.0
+    Balance Ratio Selector: Red
+    Balance Ratio: 1.485595703125
+    Balance White Auto: Continuous
+    Gamma: 0.6500244140625
+    Gamma Enable: true
+  Image Format Control:
+    Sensor Width: 5496
+    Sensor Height: 3672
+    Width Max: 5472
+    Height Max: 3648
+    Width: 5472
+    Height: 3648
+    Offset X: 0
+    Offset Y: 0
+    Pixel Format: BayerRG12Packed
+    Pixel Size: Bpp12
+    Pixel Color Filter: BayerRG
+    Pixel Dynamic Range Min: 0
+    Pixel Dynamic Range Max: 4095
+    ISP Enable: false
+    Binning Selector: All
+    Binning Horizontal Mode: Sum
+    Binning Vertical Mode: Sum
+    Binning Horizontal: 1
+    Binning Vertical: 1
+    Decimation Selector: All
+    Decimation Horizontal Mode: Discard
+    Decimation Vertical Mode: Discard
+    Decimation Horizontal: 1
+    Decimation Vertical: 1
+    Reverse X: false
+    Reverse Y: false
+    Test Pattern Generator Selector: Sensor
+    Test Pattern: 'Off'
+    ADC Bit Depth: Bit12
+  Device Control:
+    Device Scan Type: Areascan
+    Device Vendor Name: FLIR
+    Device Model Name: Blackfly S BFS-U3-200S6C
+    Sensor Description: Sony IMX183 (1" Color CMOS)
+    Device Manufacturer Info: May 26 2017 09:11:02
+    Device Version: 1705.0.124.0
+    Device Firmware Version: 1705.0.124.0
+    Device Serial Number: 24284605
+    Device ID: 24284605
+    Device User ID: ''
+    Device TL Type: USB3Vision
+    Device Gen CP Version Major: 1
+    Device Gen CP Version Minor: 0
+    Device Max Throughput: 666325391
+    Device Link Speed: 500000000
+    Device Link Throughput Limit: 380000000
+    Device Link Bandwidth Reserve: 0.0
+    Device Link Current Throughput: 271126505
+    Device Indicator Mode: Active
+    Device Temperature Selector: Sensor
+    Device Temperature: 46.25
+    Timestamp Latch Value: 0
+    Timestamp Increment: 1000
+    Device Power Supply Selector: External
+    Power Supply Voltage: 5.308837890625
+    Power Supply Current: 0.38623046875
+    Device Uptime: 5355
+    Link Uptime: 5352
+    Enumeration Count: 1
+    Max Device Reset Time: 30000
+  Transport Layer Control:
+    Payload Size: 29942784
+    TLParamsLocked: 0
+    USB3 Vision:
+      Max Response Time: 200
+      Message Channel: 0
+      Access Privilege: 0
+      U3V Version Major: 1
+      U3V Version Minor: 0
+      U3V Capability: 0
+      U3V SIRM Available: true
+      U3V EIRM Available: true
+      U3V IIDC2 Available: false
+      Max Command Transfer Length: 1024
+      Max Ack Transfer Length: 1024
+      Number of Stream Channels: 1
+      Current Speed: SuperSpeed
+    Link Error Count: 60
+    Link Recovery Count: 60
+  Sequencer Control:
+    Sequencer Mode: 'Off'
+    Sequencer Configuration Mode: 'Off'
+    Sequencer Configuration Valid: 'No'
+    Sequencer Configuration Reset: Resets the sequencer configuration ...
+    Sequencer Feature Selector: Gain
+    Sequencer Feature Enable: true
+    Sequencer Set Start: 0
+    Sequencer Set Selector: 0
+    Sequencer Set Valid: 'No'
+    Sequencer Set Save: Saves the current device configurat...
+    Sequencer Set Load: Loads currently selected sequencer ...
+    Sequencer Path Selector: 0
+    Sequencer Trigger Source: 'Off'
+  Color Transformation Control:
+    RGB Transform Light Source: General
+  Auto Algorithm Control:
+    ROI Selector: Awb
+    ROI Enable: false
+    White Balance Auto Profile: Indoor
+    White Balance Auto Lower Limit: 0.5
+    White Balance Auto Upper Limit: 4.0
+    White Balance Auto Damping: 0.25
+    Target Grey Value Auto: Continuous
+    Lighting Mode: Normal
+    Metering Mode: Average
+    Exposure Time Lower Limit: 100.0
+    Exposure Time Upper Limit: 2500.0
+    Gain Lower Limit: 0.0
+    Gain Upper Limit: 15.999935352290832
+    Target Grey Value Lower Limit: 3.9100684261974585
+    Target Grey Value Upper Limit: 85.04398826979472
+    EV Compensation: 0.0
+    Auto Exposure Damping: 0.5
+    Auto Exposure Control Priority: Gain
+  Flat Field Correction Control:
+    Flat Field User Table Control: {}
+  Defective Pixel Correction:
+    Defect Correct Static Enable: true
+    Defect Correction Mode: Average
+    Defect Table Pixel Count: 1
+    Defect Table Index: 0
+    Defect X Coordinate: 948
+    Defect Y Coordinate: 447
+    Defect Table Apply: Applies the current defect table, s...
+    Defect Table Factory Restore: Restores the factory default eeprom...
+  User Set Control:
+    User Set Selector: Default
+    User Set Load: Loads the User Set specified by Use...
+    User Set Save: Saves the User Set specified by Use...
+    User Set Default: Default
+    User Set Feature Selector: AasRoiEnableAe
+    User Set Feature Enable: true
+  Chunk Data Control:
+    Chunk Mode Active: false
+    Chunk Selector: FrameID
+    Chunk Enable: false
+    Chunk Gain Selector: All
+    Chunk Black Level Selector: All
+  LUT Control:
+    LUT Selector: LUT1
+    LUT Enable: false
+    LUT Index: 0
+    LUT Value: 0
+  Event Control:
+    Event Selector: Error
+    Event Notification: 'Off'
+    Event Exposure End Data:
+      Event Exposure End: 40003
+    Event Error Data:
+      Event Error: 40000
+    Event Serial Port Receive Data:
+      Event Serial Port Receive: 40005
+    Event Test Data:
+      Event Test: 20479
+  Counter And Timer Control:
+    Counter Selector: Counter0
+    Counter Event Source: MHzTick
+    Counter Duration: 1
+    Counter Value: 1
+    Counter Trigger Source: ExposureStart
+    Counter Trigger Activation: RisingEdge
+    Counter Status: CounterTriggerWait
+    Counter Delay: 0
+  Test Control:
+    Test Pending Ack: 0
+    Test 0001: 0
+    GUI XML Manifest Address: 4026535968
+  Logic Block Control:
+    Logic Block Selector: LogicBlock0
+    Logic Block LUT Selector: Value
+    Logic Block LUT Input Selector: Input0
+    Logic Block LUT Input Source: Zero
+    Logic Block LUT Input Activation: LevelHigh
+    Logic Block LUT Output Value All: 255
+    Logic Block LUT Row Index: 0
+    Logic Block LUT Output Value: true
+  Digital IO Control:
+    Line Selector: Line0
+    Line Mode: Input
+    Line Inverter: false
+    Line Status: false
+    Line Status All: 12
+    Input filter Selector: Deglitch
+    Line Filter Width: 0.0
+    Line Source: 'Off'
+    Line Format: OptoCoupled
+    User Output Selector: UserOutput0
+    User Output Value: false
+    User Output Value All: 0
+  Serial Port Control:
+    Serial Port Selector: SerialPort0
+    Serial Port Source: 'Off'
+    Serial Port Baud Rate: Baud57600
+    Serial Port Data Bits: 8
+    Serial Port Stop Bits: Bits1
+    Serial Port Parity: None
+    Transmit Queue Max Character Count: 4096
+    Transmit Queue Current Character Count: 0
+    Receive Queue Max Character Count: 4096
+    Receive Queue Current Character Count: 0
+    Receive Framing Error Count: 0
+    Receive Parity Error Count: 0
+  File Access:
+    File Selector: UserSetDefault
+    File Operation Selector: Open
+    File Open Mode: Read
+    File Access Offset: 0
+    File Access Length: 1
+    File Operation Status: Success
+    File Operation Result: 0
+    File Size: 1360
+  Transfer Control:
+    Transfer Control Mode: Basic
+    Transfer Queue Max Block Count: 2
+    Transfer Queue Current Block Count: 0
+    Transfer Queue Overflow Count: 576
