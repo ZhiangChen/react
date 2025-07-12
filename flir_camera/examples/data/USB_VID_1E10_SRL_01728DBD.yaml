@@ -4,11 +4,11 @@ Root:
     Acquisition Frame Count: 2
     Acquisition Burst Frame Count: 1
     Exposure Mode: Timed
-    Exposure Time: 2507.0
+    Exposure Time: 2483.0
     Exposure Auto: Continuous
-    Acquisition Frame Rate: 9.054792651043359
-    Resulting Frame Rate: 9.054792924671693
-    Acquisition Frame Rate Enable: false
+    Acquisition Frame Rate: 8.000001024000131
+    Resulting Frame Rate: 8.000001232000198
+    Acquisition Frame Rate Enable: true
     Acquisition Line Rate: 82960.01277584204
     Trigger Selector: FrameStart
     Trigger Mode: 'Off'
@@ -23,7 +23,7 @@ Root:
     Black Level Selector: All
     Black Level: 0.0
     Balance Ratio Selector: Red
-    Balance Ratio: 1.485595703125
+    Balance Ratio: 1.4658203125
     Balance White Auto: Continuous
     Gamma: 0.6500244140625
     Gamma Enable: true
@@ -75,17 +75,17 @@ Root:
     Device Link Speed: 500000000
     Device Link Throughput Limit: 380000000
     Device Link Bandwidth Reserve: 0.0
-    Device Link Current Throughput: 271126505
+    Device Link Current Throughput: 239543012
     Device Indicator Mode: Active
     Device Temperature Selector: Sensor
-    Device Temperature: 46.25
+    Device Temperature: 45.75
     Timestamp Latch Value: 0
     Timestamp Increment: 1000
     Device Power Supply Selector: External
     Power Supply Voltage: 5.308837890625
-    Power Supply Current: 0.38623046875
-    Device Uptime: 5355
-    Link Uptime: 5352
+    Power Supply Current: 0.38525390625
+    Device Uptime: 187
+    Link Uptime: 184
     Enumeration Count: 1
     Max Device Reset Time: 30000
   Transport Layer Control:
@@ -105,8 +105,8 @@ Root:
       Max Ack Transfer Length: 1024
       Number of Stream Channels: 1
       Current Speed: SuperSpeed
-    Link Error Count: 60
-    Link Recovery Count: 60
+    Link Error Count: 6
+    Link Recovery Count: 6
   Sequencer Control:
     Sequencer Mode: 'Off'
     Sequencer Configuration Mode: 'Off'
@@ -243,4 +243,4 @@ Root:
     Transfer Control Mode: Basic
     Transfer Queue Max Block Count: 2
     Transfer Queue Current Block Count: 0
-    Transfer Queue Overflow Count: 576
+    Transfer Queue Overflow Count: 0

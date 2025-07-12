@@ -53,6 +53,23 @@ def configure_custom_image_settings(cam):
                     print('Unsupported Exposure Auto: %s' % exposure_auto)
                 print('Exposure Auto set to %s...' % cam.ExposureAuto.GetCurrentEntry().GetSymbolic())
 
+        # Set Acquisition Frame Rate Enable
+        # check if acquisition frame rate enable is in config dictionary
+        if 'Acquisition Frame Rate Enable' in config['Root']['Acquisition Control']:
+            acquisition_frame_rate_enable = config['Root']['Acquisition Control']['Acquisition Frame Rate Enable']
+            if cam.AcquisitionFrameRateEnable.GetAccessMode() == PySpin.RW:
+                cam.AcquisitionFrameRateEnable.SetValue(acquisition_frame_rate_enable)
+                print('Acquisition Frame Rate Enable set to %s...' % cam.AcquisitionFrameRateEnable.GetValue())
+
+        # Set Acquisition Frame Rate
+        # check if acquisition frame rate is in config dictionary
+        if 'Acquisition Frame Rate' in config['Root']['Acquisition Control']:
+            acquisition_frame_rate = config['Root']['Acquisition Control']['Acquisition Frame Rate']
+            if cam.AcquisitionFrameRate.GetAccessMode() == PySpin.RW:
+                cam.AcquisitionFrameRate.SetValue(acquisition_frame_rate)
+                print('Acquisition Frame Rate set to %f...' % cam.AcquisitionFrameRate.GetValue())
+    
+            
         # Apply gamma enable
         # check if gamma enable is in config dictionary
         if 'Gamma Enable' in config['Root']['Analog Control']:

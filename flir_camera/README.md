@@ -30,27 +30,19 @@ We can force Software Rendering and bypass OpenGL/GPU entirely to run SpinView:
 
 3. [raw_conversion.py](examples/raw_conversion.py) converts raw image files to jpg/png/tif image formats. 
 
-4. [camera_configuration.py](examples/camera_configuration.py)
 
-    Camera node is introduced: https://www.teledynevisionsolutions.com/support/support-center/application-note/iis/spinnaker-nodes/
-    Basic configuration is introduced in the spinnaker-python-programming guide. 
+4. [Download_NodeMapInfo.py](examples/Download_NodeMapInfo.py) downloads camera node information to a yaml file.
 
-    Important parameters:
-      Acquisition Mode
-      Exposure Auto
-      Pixel Format (changing this, you will see the Acquisition Frame Rate is changed accordingly)
-      RGB Transform Light Source
-      ADC Bit Depth
-      Exposure Time Upper Limit (2500 us = 1/400 s)
-      Gain Upper Limit 
+    - Camera node is introduced: https://www.teledynevisionsolutions.com/support/support-center/application-note/iis/spinnaker-nodes/
+    - Basic configuration is introduced in the spinnaker-python-programming guide. 
+    - This script may not include all configuration parameters. All the node information can be found in spinview GUI. 
+  
+5. [Upload_NodeMapInfo.py](examples/Upload_NodeMapInfo.py) uploads camera configuration from a yaml file to the camera. The yaml file is specified in the script. `field_mapping_camera_configuration.yaml` includes all the configuration parameters supported in the upload method. `configuration_lookup.md` includes the parameter options for some variables. 
+   - When the camera is replugged, its configuration resets to factory defaults. You can use `Download_NodeMapInfo.py` to inspect the default settings.
+   - If `Acquisition Frame Rate Enable` is set to true, the `Acquisition Frame Rate` will be automatically adjusted up to the maximum supported by the camera. This frame rate is influenced by several parameters, including `Pixel Format`, `Height`, `Width`, and whether `ISP Enable` is active.
+   - If `Exposure Auto` is set to off, the `Exposure Time` will be applied according to the manually specified value.
 
-    - continuous auto exposure with a maximum exposure time
-    - auto gain vs acquisition mode 
-    - single shot vs continous shot 
-  basically, you need to understand all the features 
-
-    **What is a camera node?**
-
+todo example: mavlink trigger: rc -> pixhawk -> raspi -> synchronize GPS and start acquisition
 
 ## Utils
 [writing_test.py](writing_test.py) estimates the average writing speed in micro sd card and ssd. 

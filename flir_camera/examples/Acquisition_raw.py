@@ -275,9 +275,9 @@ def acquire_images(cam, nodemap, nodemap_tldevice):
 
         end_time = time.time()  # End time for performance measurement
         elapsed_time = end_time - start_time
-        print('Acquired %d images in %.2f seconds.' % (NUM_IMAGES, elapsed_time))
+        print('Acquired %d images in %.4f seconds.' % (NUM_IMAGES, elapsed_time))
         # print average time per image
-        print('Average time per image: %.2f seconds.' % (elapsed_time / NUM_IMAGES))
+        print('Average time per image: %.4f seconds.' % (elapsed_time / NUM_IMAGES))
 
     except PySpin.SpinnakerException as ex:
         print('Error: %s' % ex)
