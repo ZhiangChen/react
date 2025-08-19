@@ -1,4 +1,4 @@
 # react
-REACT: Rapid Earthquake Assessment with Coordinated-UAV Technology
+REACT: Rapid Environment Assessment with Coordinated-UAV Technology
 
 

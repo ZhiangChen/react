@@ -1,7 +1,23 @@
 *tmp
 
-# .DS_Store files
+# macOS system files
 *.DS_Store
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+.fseventsd
+
+# Windows system files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Office temporary files
+~$*
+*.tmp
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
