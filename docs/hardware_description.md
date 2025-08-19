@@ -21,13 +21,20 @@ AUX PWM -> Seagull Channel 1 -> Sony a6000 Multi
 wiring diagram: https://drive.google.com/file/d/1E1OPYGeqIj-z81CuZiIEpoTUAfXG3kQr/view?usp=drive_link
 
 ## Imaging Module
+Sony A6000 and Seagull REC: https://github.com/ZhiangChen/learning_field_robotics/blob/main/docs/sensors/cameras/Sony_camera.md
+
 
 ## GPS Module
+Rover: Holybro H-RTK F9P Ultralight  
+Base: Emlid RS3  
 
 
 ## Communication Module
-
+Telem1: Holybro P900, multi-to-point telemetry, two-way communication   
+Telem2: Sik Radio V3, point-to-point telemetry, one-way communication 
+RC: Spektrum iX20  
+RC receiver: DSMX Remote Receivers   
 
 ## Ground Control Station
-
+ASUS Vivobook S14 (model number Q423S)
 
