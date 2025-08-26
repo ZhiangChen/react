@@ -1,7 +1,8 @@
 # Communication network
 
 ⬜ Telem1 on GCS1 (Mission Planner)  
-⬜ Telem2 on GCS2 (REACT)  
+✅ Telem2 broadcasting on GCS2 (REACT)  
+⬜ Tel3m1 & Telem2 connection status  
 ✅ RC to multiple DSMX Remote Receivers  
 ⬜ Emlid RS3 to GCS1 and GCS2  
 ✅ Telemetry forwarding  
@@ -16,10 +17,55 @@ Emlid RS3 as a base station provides RTK corrections. Holybro H-RTK F9P Ultralig
 GCS1 enables operators to control individual UAVs with the full functionality of Mission Planner. Operators can switch between different UAVs by accessing the `SysID` selection through the hidden menu shortcut `Ctrl+X`. GCS2 operates as a custom module built on MAVProxy and provides a GUI specifically designed for coordinated multi-UAV operations and emergency.
 
 
-## GPS injection
+## Telem2 Broadcasting
+Telem2 serves as the backup emergency telemetry channel for the REACT, using Holybro SiK Radio v3 modules. GCS2 connects to a master radio. Each UAV is equipped with a receiver radio. To ensure unidirectional communication from the ground station to the UAVs, the receiver radios must be configured with a `Duty Cycle` of 0, which disables transmission. Before setting duty cycle, bidirectional communication should be tested to ensure that the radio is functioning and the flight controller is set up correctly. 
+
+To configure the duty cycle, PuTTY is required since Mission Planner cannot set the duty cycle to zero (though it can configure other values). In PuTTY, configure the serial port and baud rate, then click open. Enter `+++` to access AT command mode; a successful connection will display `OK`. Complete AT command documentation is available at: https://ardupilot.org/copter/docs/common-3dr-radio-advanced-configuration-and-technical-information.html   
+E.g., show radio version:
+```
+ATI
+```
+show all user settable EEPROM parameters:
+```
+ATI5
+```
+display radio parameter number ‘n’:
+```
+ATSn?
+```
+set radio parameter number ‘n’ to ‘X’:
+```
+ATSn=X 
+```
+write current parameters to EEPROM:
+```
+AT&W
+```
+reboot the radio:
+```
+ATZ
+```
+reset all parameters to factory default:
+```
+AT&F
+```
+exit AT command mode:
+```
+ATO
+```
+
+Other important parameters include `Net ID` and `# of Channels`. All radios (the master and all receivers) must share the same Net ID. Individual commands are distinguished by the `SYSID_THISMAV` mavlink parameter. The `# of Channels` setting determines the number of channels used for frequency hopping between the minimum and maximum frequencies. Since this system uses broadcasting architecture, channel interference is not a concern. One single channel is enough. Additionally, frequency hopping is undesirable as it would require the master to repeat commands multiple times to ensure receivers don't miss signals during channel transitions. Therefore, `# of Channels` should be set to 1. 
+
+The master radio uses default settings and must be configured with the same `Net ID` and `# of Channels` values as the receivers. 
+
+
+A simple example of broadcasting commands for flight mode changes is available at: [react/utils/telem2_broadcast_example.py](../react/utils/telem2_broadcast_example.py). In this example, master radio connected to laptop via USB cable. A flight controller equipped with receiver radio is also connected to laptop via USB. The flight controller is monitored through Mission Planner for status verification. The Script demonstrates alternating flight modes between STABILIZE and LOITER 
+
 
 ## RC Binding
 https://ardupilot.org/copter/docs/common-spektrum-rc.html#common-spektrum-rc 
+
+## GPS Injection
 
 ## Telemetry Forwarding
 
@@ -52,4 +98,4 @@ pause
 
 This configuration enables simultaneous telemetry access for both Mission Planner and the REACT system.
 
-Here is an example of listening and publishing mavlink messages in python: [react/utils/react_telem_example.py](../react/utils/react_telem_example.py)
+Here is an example of listening and publishing mavlink messages in python: [react/utils/telem_routing_example.py](../react/utils/telem_routing_example.py)
