@@ -2,7 +2,7 @@
 
 ⬜ Telem1 on GCS1 (Mission Planner)  
 ✅ Telem2 broadcasting on GCS2 (REACT)  
-⬜ Tel3m1 & Telem2 connection status  
+✅ Telem2 connection status  
 ✅ RC to multiple DSMX Remote Receivers  
 ⬜ Emlid RS3 to GCS1 and GCS2  
 ✅ Telemetry forwarding  
@@ -60,6 +60,10 @@ The master radio uses default settings and must be configured with the same `Net
 
 
 A simple example of broadcasting commands for flight mode changes is available at: [react/utils/telem2_broadcast_example.py](../react/utils/telem2_broadcast_example.py). In this example, master radio connected to laptop via USB cable. A flight controller equipped with receiver radio is also connected to laptop via USB. The flight controller is monitored through Mission Planner for status verification. The Script demonstrates alternating flight modes between STABILIZE and LOITER 
+
+## Telem2 Connection Monitoring
+Although telem2 operates as unidirectional communication, REACT monitors its connection status via telem1. GCS2 periodically transmits parameter updates to modify the MAVLink parameter `SCR_USER1` on each UAV at a predefined frequency via telem2. Each UAV runs a Lua script that continuously monitors changes to the `SCR_USER1` parameter. If no parameter updates are detected within a specified timeout period, the script generates a "connection lost" alert message that is transmitted back to the ground station via telem1. We have examples of the lua script ([react/utils/telem2_connection_check.lua](../react/utils/telem2_connection_check.lua)) and the python script of requesting parameter modification ([react/utils/telem2_connection_check.py](../react/utils/telem2_connection_check.py)). 
+
 
 
 ## RC Binding
