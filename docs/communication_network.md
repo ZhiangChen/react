@@ -1,13 +1,10 @@
-
-
-
 # Communication network
 
 ✅ Telem1 Point-to-Multipoint on GCS1 (REACT) and GCS2 (Mission Planner)  
 ✅ Telem2 broadcasting on GCS1 
 ✅ Telem2 connection status check 
 ✅ RC to multiple DSMX Remote Receivers  
-⬜ Emlid RS3 to GCS1 and GCS2  
+✅ Emlid RS3 to GCS1 and GCS2  
 ✅ Telemetry forwarding  
 
 ## Architecture
@@ -99,6 +96,46 @@ Although telem2 operates as unidirectional communication, REACT monitors its con
 https://ardupilot.org/copter/docs/common-spektrum-rc.html#common-spektrum-rc 
 
 ## GPS Injection
+
+To enable RTK corrections, first configure the **base output** as Local NTRIP. Access the base settings panel using the Emlid app or the configuration web interface (default IP: http://192.168.42.1/). Wait for the base to reach a converged state; if only a single solution is available but float status is desired, relocate the GPS to an open area for improved satellite reception. The base will begin streaming GPS correction signals only after convergence is achieved. "Convergence" refers to the base averaging its position over time after achieving a fix or float, depending on the availability of NTRIP corrections.
+
+
+In the Wifi setting, activate hotspot. 
+
+**Mission Planner**: 
+Connect the GCS with the Emlid Hotspot. 
+
+In MP SETUP->Optional Hardware->RTK/GPS Inject, connect MP via NTRIP:
+```
+http://reach:emlidreach@192.168.42.1:2101/REACH
+```
+This is an example of the url. The NTRIP information can be found on the Emlid base output page. 
+
+After connecting NTRIP, the RTK GPS status should change to "Fixed". If the status remains "Float", relocate the UAV to an open area with better satellite reception. 
+
+For telemetry configuration, setting the MAVLink type to raw data is not needed. 
+
+**MAVProxy**: Connect the GCS with the Emlid hotspot. 
+
+In the MAVProxy terminal, configure NTRIP:
+```
+module load ntrip
+ntrip set caster 192.168.42.1
+ntrip set port 2101
+ntrip set mountpoint REACH
+ntrip set username reach
+ntrip set password emlidreach
+ntrip start
+```
+Check the NTRIP status:
+```
+ntrip status
+```
+Check the GPS status:
+```
+status
+```
+The `fix_type` in `GPS_RAW_INT` should change from 4 to 6, where 4 indicates standard GPS and 6 indicates RTK Fix. This information can be verified via MAVLink Inspector in Mission Planner. 
 
 ## Telemetry Forwarding
 
