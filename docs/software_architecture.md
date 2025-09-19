@@ -8,19 +8,19 @@ This document outlines the GUI design for REACT, a cross-platform GCS applicatio
 - Built using QtQuick, QtLocation, QtPositioning, and QtQuick.Controls.
 - Key components include:
   - **MapView**: Displays UAVs, paths, and waypoints using Map, MapQuickItem, and MapPolyline. Supports background maps via OpenStreetMap or MapTiler satellite tiles.
-  - **MissionEditor**: Enables interactive mission definition with editable waypoint fields (latitude, longitude, altitude, hold time). Integrated with the backend MissionManager.
+  - **MissionEditor**: Enables interactive mission definition with editable waypoint fields (latitude, longitude, altitude, hold time). Integrated with the backend MissionManager and MissionPlanner.
   - **UAVList**: Lists connected UAVs with telemetry data (e.g., battery, GPS, mode) and provides actions like arm/disarm, takeoff/land.
   - **SettingsDialog**: Allows entry of API keys, telemetry ports, tile server preferences, and device-specific options.
 
 ### Backend (Python/PySide6)
 - Core logic includes:
-  - **UAVController**: Manages UAV state, commands, and high-level behaviors such as arming, mode switching, and takeoff/landing.
-  - **MissionManager**: Handles mission planning, editing, serialization (e.g., JSON, .plan, .mission), and validation.
+  - **UAVController**: Manages UAV state, commands, and high-level behaviors such as arming, mode switching, takeoff/landing, emergency operations, and basic flight control.
+  - **MissionPlanner**: Handles mission design and creation, including waypoint missions, automated survey patterns, search patterns, delivery missions, and route optimization. Provides mission validation, time estimation, and file I/O operations.
+  - **MissionManager**: Handles mission execution control, real-time mission monitoring, waypoint management, and mission progress tracking. Coordinates with UAVController for mission execution.
   - **TelemetryManager**: Listens for real-time MAVLink telemetry, parses incoming data, and dispatches Qt signals to update the GUI.
   - **UAVState**: A per-drone model class that stores live telemetry data, including latitude, longitude, altitude, mode, and battery status. 
   - **SafetyMonitor**: Monitors mission safety by handling scenarios such as battery failover, geofence breaches, and communication loss.
 - Interfaces with pymavlink and optionally MAVProxy for multi-vehicle routing and protocol bridging.
-
 
 ### Frontend and Backend Communication
 - Utilizes Qt’s signal/slot system to connect Python and QML.
@@ -45,6 +45,7 @@ react/
 │   ├── app.py
 │   ├── uav_controller.py
 │   ├── mission_manager.py
+│   ├── mission_planner.py
 │   ├── telemetry_manager.py
 │   ├── uav_state.py
 │   ├── safety_monitor.py

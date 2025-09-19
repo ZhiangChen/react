@@ -38,5 +38,25 @@ device_options:
   log_file_path: "data/logs/mission_log.txt"
 
 safety:
-  battery_threshold: 20  # Percent - trigger low battery warning
-  comm_timeout: 2       # Seconds - communication loss threshold
+  # Battery monitoring thresholds (percentage)
+  battery_warning: 30      # Show warning at 30% battery
+  battery_critical: 20     # Show critical alert at 20% battery
+  battery_emergency: 10    # Trigger emergency landing at 10% battery
+  
+  # Communication monitoring
+  comm_timeout: 10         # Seconds - communication loss threshold
+  gps_timeout: 5           # Seconds - GPS status check interval
+  
+  # Altitude limits (meters AGL - Above Ground Level)
+  max_altitude: 120        # Maximum allowed altitude
+  min_altitude: 5          # Minimum safe altitude when armed
+  
+  # Speed and attitude limits
+  max_speed: 15            # Maximum ground speed (m/s)
+  max_roll_pitch: 45       # Maximum roll/pitch angle (degrees)
+  
+  # Mission safety
+  mission_timeout: 1800    # Maximum mission duration (seconds = 30 minutes)
+  
+  # Alert management
+  alert_cooldown: 30       # Seconds between repeated alerts of same type
