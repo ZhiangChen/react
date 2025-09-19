@@ -1,0 +1,42 @@
+# Configuration settings for the REACT application
+
+api_keys:
+  google_maps: "YOUR_GOOGLE_MAPS_API_KEY"
+  openstreetmap: "YOUR_OPENSTREETMAP_API_KEY"
+
+telemetry1:
+  input:
+    protocol: "serial"
+    port: "/dev/ttyUSB0"
+    baud_rate: 57600
+  routed_to:
+    protocol: "udp"
+    udp_address: "127.0.0.1"
+    udp_port: 14550
+
+telemetry2:
+  protocol: "serial"
+  port: "/dev/ttyUSB1"
+  baud_rate: 57600
+  connection_check: true  # Enable Telem2 connection monitoring
+
+ntrip:
+  enabled: true
+  caster: "192.168.42.1"
+  port: 2101
+  username: "reach"
+  password: "emlidreach"
+  mountpoint: "REACH"
+
+tile_server:
+  type: "MapTiler"
+  url: "https://api.maptiler.com/maps/{id}/tile/{z}/{x}/{y}.png?key={key}"
+
+device_options:
+  max_uavs: 10
+  enable_logging: true
+  log_file_path: "data/logs/mission_log.txt"
+
+safety:
+  battery_threshold: 20  # Percent - trigger low battery warning
+  comm_timeout: 2       # Seconds - communication loss threshold

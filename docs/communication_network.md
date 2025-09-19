@@ -1,8 +1,8 @@
 # Communication network
 
 ✅ Telem1 Point-to-Multipoint on GCS1 (REACT) and GCS2 (Mission Planner)  
-✅ Telem2 broadcasting on GCS1 
-✅ Telem2 connection status check 
+✅ Telem2 broadcasting on GCS1  
+✅ Telem2 connection status check  
 ✅ RC to multiple DSMX Remote Receivers  
 ✅ Emlid RS3 to GCS1 and GCS2  
 ✅ Telemetry forwarding  
