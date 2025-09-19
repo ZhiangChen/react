@@ -1,0 +1,3 @@
+pymavlink>=2.4.37
+PySide6>=6.4.0
+PyYAML>=6.0

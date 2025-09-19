@@ -13,6 +13,7 @@ class MissionManager(QObject):
     mission_aborted = Signal(str, str)        # uav_id, reason
     waypoint_reached = Signal(str, int)       # uav_id, waypoint_number
     mission_progress = Signal(str, float)     # uav_id, progress_percent
+    mission_upload_requested = Signal(str, str)  # uav_id, waypoint_file_path
     
     def __init__(self, uav_states: dict, config: dict):
         super().__init__()
@@ -42,33 +43,91 @@ class MissionManager(QObject):
         self.monitor_timer.stop()
         self.logger.info("Mission monitoring stopped")
 
-    def load_mission_to_uav(self, uav_id, mission_data):
-        """Load mission waypoints to specific UAV."""
+    def load_mission_to_uav(self, uav_id, waypoint_file_path):
+        """Load mission waypoints from file to specific UAV.
+        
+        Args:
+            uav_id (str): Target UAV identifier
+            waypoint_file_path (str): Path to waypoint file (.waypoints or .mission format)
+            
+        Returns:
+            bool: True if mission request was processed, False otherwise
+        """
         if uav_id not in self.uav_states:
             self.logger.warning(f"Cannot load mission to unknown UAV: {uav_id}")
             return False
             
-        try:
-            mission_id = mission_data.get('mission_id', f'mission_{int(time.time())}')
+        import os
+        if not os.path.exists(waypoint_file_path):
+            self.logger.error(f"Waypoint file not found: {waypoint_file_path}")
+            return False
             
-            # Initialize mission tracking
-            self.active_missions[uav_id] = mission_data
+        try:
+            # Generate mission ID from file
+            mission_id = f'mission_{os.path.basename(waypoint_file_path)}_{int(time.time())}'
+            
+            # Initialize mission tracking (will be updated when upload completes)
             self.mission_status[uav_id] = {
                 'mission_id': mission_id,
-                'status': 'loaded',
+                'mission_file': waypoint_file_path,
+                'status': 'loading',  # Status: loading -> uploaded -> active -> completed/failed/aborted
                 'start_time': None,
                 'current_waypoint': 0,
-                'total_waypoints': len(mission_data.get('waypoints', [])),
+                'total_waypoints': 0,  # Will be updated after parsing
                 'progress_percent': 0.0
             }
-            self.waypoint_progress[uav_id] = 0
             
-            self.logger.info(f"Mission {mission_id} loaded to UAV {uav_id}")
+            # Emit signal to request mission upload (TelemetryManager should handle this)
+            self.mission_upload_requested.emit(uav_id, waypoint_file_path)
+            
+            self.logger.info(f"Mission upload requested for UAV {uav_id}: {waypoint_file_path}")
             return True
             
         except Exception as e:
-            self.logger.error(f"Failed to load mission to {uav_id}: {e}")
+            self.logger.error(f"Failed to request mission load for {uav_id}: {e}")
             return False
+
+    def mission_upload_completed(self, uav_id, success, total_waypoints=0):
+        """Called when mission upload is completed.
+        
+        Args:
+            uav_id (str): Target UAV identifier
+            success (bool): Whether upload was successful
+            total_waypoints (int): Total number of waypoints uploaded
+        """
+        if uav_id not in self.mission_status:
+            self.logger.warning(f"No mission loading status found for UAV {uav_id}")
+            return
+            
+        if success:
+            self.mission_status[uav_id]['status'] = 'uploaded'
+            self.mission_status[uav_id]['total_waypoints'] = total_waypoints
+            self.waypoint_progress[uav_id] = 0
+            
+            # Store mission data for tracking
+            self.active_missions[uav_id] = {
+                'mission_id': self.mission_status[uav_id]['mission_id'],
+                'mission_file': self.mission_status[uav_id]['mission_file'],
+                'total_waypoints': total_waypoints
+            }
+            
+            mission_id = self.mission_status[uav_id]['mission_id']
+            self.logger.info(f"Mission {mission_id} successfully uploaded to UAV {uav_id} ({total_waypoints} waypoints)")
+        else:
+            # Upload failed, clean up
+            mission_id = self.mission_status[uav_id]['mission_id']
+            del self.mission_status[uav_id]
+            self.logger.error(f"Mission upload failed for UAV {uav_id}: {mission_id}")
+
+    def mission_upload_failed(self, uav_id, error_message):
+        """Called when mission upload fails.
+        
+        Args:
+            uav_id (str): Target UAV identifier  
+            error_message (str): Error description
+        """
+        self.mission_upload_completed(uav_id, False)
+        self.logger.error(f"Mission upload failed for UAV {uav_id}: {error_message}")
 
     def start_mission(self, uav_id):
         """Start AUTO mission on UAV."""

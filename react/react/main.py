@@ -3,7 +3,8 @@ import os
 import yaml
 import logging
 from PySide6.QtWidgets import QApplication
-from PySide6.QtCore import QTimer
+from PySide6.QtQuick import QQuickView
+from PySide6.QtCore import QUrl
 from core.app import App
 
 def setup_global_logging(config):
@@ -49,6 +50,7 @@ def load_config(path=None):
         return {}
 
 def main():
+    # Initialize Qt Application
     app = QApplication(sys.argv)
 
     # Load configuration
@@ -59,26 +61,48 @@ def main():
     
     # Get logger for main
     logger = logging.getLogger("REACT.Main")
+    logger.info("Starting REACT Ground Control Station...")
 
-    # Initialize backend core
-    logger.info("Initializing REACT application...")
-    core_app = App(config)
+    # Initialize Backend
+    logger.info("Initializing backend...")
+    backend = App(config)
+    backend.start()
     
-    # Start the application
-    core_app.start()
+    # Initialize QML Frontend
+    logger.info("Initializing QML frontend...")
+    view = QQuickView()
     
-    # Set up a timer to keep the application running and processing events
-    timer = QTimer()
-    timer.timeout.connect(lambda: None)  # Keep the event loop active
-    timer.start(100)  # Process events every 100ms
+    # Expose backend to QML
+    view.rootContext().setContextProperty("backend", backend)
+    
+    # Load main QML file
+    qml_dir = os.path.join(os.path.dirname(__file__), "qml")
+    qml_file = os.path.join(qml_dir, "MainWindow.qml")
+    
+    if not os.path.exists(qml_file):
+        logger.error(f"QML file not found: {qml_file}")
+        backend.stop()
+        return
+    
+    view.setSource(QUrl.fromLocalFile(qml_file))
+    view.show()
+    
+    logger.info("Frontend started successfully")
     
     try:
         # Run the Qt event loop
-        logger.info("Starting Qt event loop...")
-        sys.exit(app.exec())
+        logger.info("Starting application event loop...")
+        exit_code = app.exec()
+        
+        # Cleanup
+        logger.info("Shutting down...")
+        backend.stop()
+        sys.exit(exit_code)
+        
     except KeyboardInterrupt:
         logger.info("Keyboard interrupt received, shutting down...")
-        core_app.stop()
+        backend.stop()
+        app.quit()
 
 if __name__ == "__main__":
     main()
