@@ -33,37 +33,6 @@ Rectangle {
             width: parent.width
             spacing: 12  // Consistent spacing between major sections
             
-            // Header
-            Text {
-                text: "UAV Status Panel"
-                font.bold: true
-                font.pointSize: 14
-                color: "#333"
-            }
-            
-            // Connection Status
-            Rectangle {
-                width: parent.width
-                height: 60
-                color: getConnectionStatus() ? "#d4edda" : "#f8d7da"
-                border.color: getConnectionStatus() ? "#c3e6cb" : "#f5c6cb"
-                radius: 5
-                
-                Column {
-                    anchors.centerIn: parent
-                    Text {
-                        text: "Connection: " + (getConnectionStatus() ? "Connected" : "Disconnected")
-                        font.bold: true
-                        anchors.horizontalCenter: parent.horizontalCenter
-                    }
-                    Text {
-                        text: "Status: Ready"
-                        font.pointSize: 10
-                        anchors.horizontalCenter: parent.horizontalCenter
-                    }
-                }
-            }
-            
             // Current UAV Telemetry
             Rectangle {
                 width: parent.width

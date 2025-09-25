@@ -8,7 +8,7 @@ ApplicationWindow {
     id: mainWindow
     visible: true
     width: 1200
-    height: 800
+    height: 700
     title: "REACT - Ground Control Station"
     
     Material.theme: Material.Light
@@ -17,95 +17,132 @@ ApplicationWindow {
     
     property bool connected: backend ? backend.get_uav_status("UAV_1") !== null : false
 
-    MenuBar {
+    menuBar: MenuBar {
+        Material.background: "#000000"
+        Material.foreground: "#ffffff"
+        Material.theme: Material.Dark
+        
+        background: Rectangle {
+            color: "#000000"
+            border.color: "#333333"
+            border.width: 1
+            
+            Rectangle {
+                anchors.bottom: parent.bottom
+                width: parent.width
+                height: 1
+                color: "#404040"
+            }
+        }
+        
         Menu {
             title: "File"
+            
             Action {
                 text: "Load Mission..."
+                icon.name: "document-open"
                 onTriggered: missionFileDialog.open()
             }
             MenuSeparator {}
             Action {
                 text: "Exit"
+                icon.name: "application-exit"
                 onTriggered: Qt.quit()
             }
         }
         
         Menu {
             title: "UAV"
+            
             Action {
                 text: "Connect"
                 enabled: !connected
+                icon.name: "network-connect"
                 onTriggered: connectUAV()
             }
             Action {
                 text: "Disconnect" 
                 enabled: connected
+                icon.name: "network-disconnect"
                 onTriggered: disconnectUAV()
             }
             MenuSeparator {}
             Action {
                 text: "Arm"
                 enabled: connected
+                icon.name: "media-playback-start"
                 onTriggered: armUAV()
             }
             Action {
                 text: "Disarm"
                 enabled: connected
+                icon.name: "media-playback-stop"
                 onTriggered: disarmUAV()
             }
             MenuSeparator {}
             Action {
                 text: "Emergency RTL"
                 enabled: connected
+                icon.name: "go-home"
                 onTriggered: emergencyRTL()
             }
             Action {
                 text: "Emergency Stop All"
+                icon.name: "process-stop"
                 onTriggered: emergencyStopAll()
             }
         }
         
         Menu {
             title: "Mission"
+            
             Action {
                 text: "Start Mission"
                 enabled: connected
+                icon.name: "media-playback-start"
                 onTriggered: startMission()
             }
             Action {
                 text: "Pause Mission"
                 enabled: connected
+                icon.name: "media-playback-pause"
                 onTriggered: pauseMission()
             }
             Action {
                 text: "Abort Mission"
                 enabled: connected
+                icon.name: "process-stop"
                 onTriggered: abortMission()
             }
         }
         
         Menu {
             title: "View"
+            
             Action {
                 text: "Center Map on UAV"
                 enabled: connected
+                icon.name: "zoom-fit-best"
                 onTriggered: console.log("Center UAV - functionality to be added to web map")
             }
             Action {
                 text: "Next Map Type"
+                icon.name: "view-refresh"
                 onTriggered: console.log("Toggle map layer - functionality to be added to web map")
             }
             Action {
                 text: "Show Satellite Info"
+                icon.name: "dialog-information"
                 onTriggered: console.log("Show satellite info - functionality to be added to web map")
             }
         }
         
         Menu {
             title: "Help"
+            
             Action {
                 text: "About REACT"
+                icon.name: "help-about"
                 onTriggered: aboutDialog.open()
             }
         }
@@ -144,47 +181,6 @@ ApplicationWindow {
             SplitView.minimumWidth: 250
             // Removed SplitView.maximumWidth to allow unlimited expansion
             implicitWidth: 600
-        }
-    }
-
-    // Use footer property instead of StatusBar for modern Qt compatibility
-    footer: ToolBar {
-        RowLayout {
-            anchors.fill: parent
-            anchors.margins: 4
-            
-            Text {
-                text: connected ? "Connected" : "Disconnected"
-                color: connected ? "green" : "red"
-                font.bold: true
-            }
-            
-            Text {
-                text: " | "
-                color: "#666"
-            }
-            
-            Text {
-                text: "UAVs: " + getConnectedUAVCount()
-                color: "#333"
-            }
-            
-            Text {
-                text: " | "
-                color: "#666"
-            }
-            
-            Text {
-                text: getCurrentTime()
-                color: "#333"
-            }
-            
-            Item { Layout.fillWidth: true }
-            
-            Text {
-                text: getMissionStatus()
-                color: "#333"
-            }
         }
     }
     

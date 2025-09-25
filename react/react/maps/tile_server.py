@@ -143,14 +143,25 @@ class TileCache:
         """Get tile from cache or download if not available - Simplified stable version"""
         tile_path = self.get_tile_path(source, z, x, y)
         
-        # Check if tile exists in cache
-        if tile_path.exists():
+        # Check if tile exists in cache and has content
+        if tile_path.exists() and tile_path.stat().st_size > 0:
             try:
                 logger.info(f"Serving cached tile: {source}/{z}/{x}/{y}")
                 async with aiofiles.open(tile_path, 'rb') as f:
-                    return await f.read()
+                    tile_data = await f.read()
+                    if len(tile_data) > 0:
+                        return tile_data
+                    else:
+                        logger.warning(f"Cached tile is empty, will re-download: {source}/{z}/{x}/{y}")
+                        # Remove empty file
+                        tile_path.unlink()
             except Exception as e:
                 logger.error(f"Error reading cached tile: {e}")
+                # Remove corrupted file
+                try:
+                    tile_path.unlink()
+                except:
+                    pass
         
         # Download tile if not in cache
         try:
