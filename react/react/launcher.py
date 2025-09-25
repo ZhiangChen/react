@@ -11,6 +11,7 @@ import threading
 import signal
 import os
 from pathlib import Path
+import urllib.request
 
 class REACTLauncher:
     def __init__(self):
@@ -28,12 +29,9 @@ class REACTLauncher:
             
             # Use py -3.12 to ensure correct Python version
             self.tile_server_process = subprocess.Popen([
-                sys.executable, str(tile_server_path)
+                "py", "-3.12", str(tile_server_path)
             ], 
-            cwd=str(script_dir),  # Set working directory to project root
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0
+            cwd=str(script_dir)  # Set working directory to project root
             )
             print("Tile server started (PID:", self.tile_server_process.pid, ")")
             return True
@@ -41,19 +39,37 @@ class REACTLauncher:
             print(f"Failed to start tile server: {e}")
             return False
     
+    def wait_for_tile_server(self, timeout=30):
+        """Wait for tile server to be ready"""
+        print("Waiting for tile server to be ready...")
+        start_time = time.time()
+        while time.time() - start_time < timeout:
+            try:
+                with urllib.request.urlopen("http://127.0.0.1:8081/api/info", timeout=2) as response:
+                    if response.status == 200:
+                        print("Tile server is ready!")
+                        return True
+            except:
+                pass
+            time.sleep(1)
+        print("Timeout waiting for tile server")
+        return False
+    
     def start_main_app(self):
         """Start the main REACT application"""
         try:
             print("Starting REACT application...")
-            # Wait a moment for tile server to initialize
-            time.sleep(2)
+            # Wait for tile server to be ready
+            if not self.wait_for_tile_server():
+                print("Tile server failed to start properly")
+                return False
             
             # Get the directory where launcher.py is located
             script_dir = Path(__file__).parent
             main_app_path = script_dir / "main.py"
             
             self.main_app_process = subprocess.Popen([
-                sys.executable, str(main_app_path)
+                "py", "-3.12", str(main_app_path)
             ], 
             cwd=str(script_dir)  # Set working directory to project root
             )
@@ -113,9 +129,21 @@ class REACTLauncher:
         # Set up signal handler
         signal.signal(signal.SIGINT, self.signal_handler)
         
+        # Install dependencies first
+        print("Installing dependencies...")
+        if not install_dependencies():
+            print("Failed to install dependencies, exiting...")
+            return 1
+        
         # Start tile server
         if not self.start_tile_server():
             print("Failed to start tile server, exiting...")
+            return 1
+        
+        # Wait for tile server to be ready
+        if not self.wait_for_tile_server():
+            print("Tile server failed to become ready, exiting...")
+            self.stop_processes()
             return 1
         
         # Start main application
@@ -146,7 +174,7 @@ def install_dependencies():
     print("Installing tile server dependencies...")
     try:
         subprocess.check_call([
-            sys.executable, "-m", "pip", "install", 
+            "py", "-3.12", "-m", "pip", "install", 
             "fastapi", "uvicorn", "aiohttp", "aiofiles"
         ])
         print("Dependencies installed successfully")
@@ -174,7 +202,7 @@ def preload_tiles():
         script_dir = Path(__file__).parent
         tile_server_path = script_dir / "maps" / "tile_server.py"
         result = subprocess.run([
-            sys.executable, str(tile_server_path), "preload", "satellite",
+            "py", "-3.12", str(tile_server_path), "preload", "satellite",
             str(lat_min), str(lat_max), str(lon_min), str(lon_max)
         ] + [str(z) for z in zoom_levels], cwd=str(script_dir))
         return result.returncode
@@ -193,7 +221,7 @@ if __name__ == "__main__":
             try:
                 script_dir = Path(__file__).parent
                 tile_server_path = script_dir / "maps" / "tile_server.py"
-                subprocess.run([sys.executable, str(tile_server_path)], cwd=str(script_dir))
+                subprocess.run(["py", "-3.12", str(tile_server_path)], cwd=str(script_dir))
             except KeyboardInterrupt:
                 pass
             sys.exit(0)
