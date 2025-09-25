@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import QtQuick.Controls.Material 2.15
 
 Rectangle {
     id: uavPanel
@@ -30,7 +31,7 @@ Rectangle {
         
         Column {
             width: parent.width
-            spacing: 15
+            spacing: 12  // Consistent spacing between major sections
             
             // Header
             Text {
@@ -66,15 +67,15 @@ Rectangle {
             // Current UAV Telemetry
             Rectangle {
                 width: parent.width
-                height: 250
+                height: 220  // Reduced height for more compact layout
                 color: "white"
                 border.color: "#ddd"
                 radius: 5
                 
                 Column {
                     anchors.fill: parent
-                    anchors.margins: 15
-                    spacing: 8
+                    anchors.margins: 12  // Reduced margins
+                    spacing: 6           // Reduced spacing
                     
                     Text {
                         text: "UAV: " + currentUAV
@@ -130,15 +131,15 @@ Rectangle {
             // Control Buttons
             Rectangle {
                 width: parent.width
-                height: 180
+                height: 160  // Reduced height
                 color: "white"
                 border.color: "#ddd"
                 radius: 5
                 
                 Column {
                     anchors.fill: parent
-                    anchors.margins: 15
-                    spacing: 10
+                    anchors.margins: 12  // Reduced margins
+                    spacing: 8           // Reduced spacing
                     
                     Text {
                         text: "Quick Controls"
@@ -180,10 +181,8 @@ Rectangle {
                         
                         Button {
                             text: "EMERGENCY STOP"
-                            background: Rectangle {
-                                color: parent.pressed ? "#c82333" : "#dc3545"
-                                radius: 4
-                            }
+                            Material.background: Material.Red
+                            Material.foreground: "white"
                             onClicked: emergencyStop()
                         }
                     }

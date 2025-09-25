@@ -2,6 +2,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Dialogs
+import QtQuick.Controls.Material 2.15
 
 ApplicationWindow {
     id: mainWindow
@@ -9,6 +10,10 @@ ApplicationWindow {
     width: 1200
     height: 800
     title: "REACT - Ground Control Station"
+    
+    Material.theme: Material.Light
+    Material.primary: Material.Blue
+    Material.accent: Material.Orange
     
     property bool connected: backend ? backend.get_uav_status("UAV_1") !== null : false
 
@@ -85,11 +90,15 @@ ApplicationWindow {
             Action {
                 text: "Center Map on UAV"
                 enabled: connected
-                onTriggered: mapView.centerOnUAV()
+                onTriggered: console.log("Center UAV - functionality to be added to web map")
             }
             Action {
-                text: "Clear Flight Path"
-                onTriggered: mapView.clearFlightPath()
+                text: "Next Map Type"
+                onTriggered: console.log("Toggle map layer - functionality to be added to web map")
+            }
+            Action {
+                text: "Show Satellite Info"
+                onTriggered: console.log("Show satellite info - functionality to be added to web map")
             }
         }
         
@@ -102,26 +111,47 @@ ApplicationWindow {
         }
     }
 
-    RowLayout {
+    SplitView {
         anchors.fill: parent
-        spacing: 0
+        orientation: Qt.Horizontal
 
-        MapView {
+        MapContainer {
             id: mapView
-            Layout.fillWidth: true
-            Layout.fillHeight: true
+            SplitView.fillWidth: true
+            SplitView.minimumWidth: 1
+            SplitView.preferredWidth: 600  // 50% of typical 1200px window
+            implicitWidth: 600
+            
+            onUavSelected: function(uavId) {
+                console.log("UAV selected from web map:", uavId)
+                // Update UAV selection in the list
+                uavList.currentUAV = uavId
+            }
+            
+            onMapClicked: function(latitude, longitude) {
+                console.log("Map clicked from web map:", latitude, longitude)
+                // Handle waypoint addition or other map interactions
+            }
+            
+            onWebMapReady: function() {
+                console.log("Web-based satellite map is ready in MainWindow")
+            }
         }
 
         UAVList {
             id: uavList
-            Layout.preferredWidth: 320
-            Layout.fillHeight: true
+            SplitView.preferredWidth: 600   // 50% of typical 1200px window
+            SplitView.minimumWidth: 250
+            // Removed SplitView.maximumWidth to allow unlimited expansion
+            implicitWidth: 600
         }
     }
 
-    StatusBar {
+    // Use footer property instead of StatusBar for modern Qt compatibility
+    footer: ToolBar {
         RowLayout {
             anchors.fill: parent
+            anchors.margins: 4
             
             Text {
                 text: connected ? "Connected" : "Disconnected"

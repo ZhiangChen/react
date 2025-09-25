@@ -1,5 +1,5 @@
 # core/app.py
-from PySide6.QtCore import QObject
+from PySide6.QtCore import QObject, Slot
 from core.telemetry_manager import TelemetryManager
 from core.uav_controller import UAVController
 from core.mission_manager import MissionManager
@@ -228,6 +228,116 @@ class App(QObject):
         """Emergency stop all UAVs."""
         self.logger.critical("Emergency stop all UAVs triggered")
         self.safety_monitor.emergency_abort_all()
+
+    @Slot(str, result='QVariant')
+    def get_uav_status(self, uav_id):
+        """Get UAV status information for QML frontend."""
+        if uav_id in self.uav_states:
+            uav_state = self.uav_states[uav_id]
+            return {
+                'uav_id': uav_state.uav_id,
+                'latitude': uav_state.latitude,
+                'longitude': uav_state.longitude,
+                'altitude': uav_state.altitude,
+                'height': uav_state.height,
+                'mode': uav_state.mode,
+                'heading': uav_state.heading,
+                'ground_speed': uav_state.ground_speed,
+                'vertical_speed': uav_state.vertical_speed,
+                'armed': uav_state.armed,
+                'battery_status': uav_state.battery_status,
+                'gps_fix_type': uav_state.gps_fix_type,
+                'satellites_visible': uav_state.satellites_visible,
+                'telem1_status': uav_state.telem1_status,
+                'telem2_status': uav_state.telem2_status,
+                'last_update': uav_state.last_update
+            }
+        return None
+
+    @Slot(result='QVariant')
+    def getAllUAVs(self):
+        """Get all UAV information for QML frontend."""
+        uav_list = []
+        for uav_id, uav_state in self.uav_states.items():
+            uav_info = {
+                'uav_id': uav_state.uav_id,
+                'latitude': uav_state.latitude,
+                'longitude': uav_state.longitude,
+                'altitude': uav_state.altitude,
+                'height': uav_state.height,
+                'mode': uav_state.mode,
+                'heading': uav_state.heading,
+                'ground_speed': uav_state.ground_speed,
+                'vertical_speed': uav_state.vertical_speed,
+                'armed': uav_state.armed,
+                'battery_status': uav_state.battery_status,
+                'gps_fix_type': uav_state.gps_fix_type,
+                'satellites_visible': uav_state.satellites_visible,
+                'telem1_status': uav_state.telem1_status,
+                'telem2_status': uav_state.telem2_status,
+                'last_update': uav_state.last_update
+            }
+            uav_list.append(uav_info)
+        return uav_list
+
+    @Slot(str, result='QVariant')
+    def getHomePosition(self, uav_id):
+        """Get home position for a specific UAV."""
+        if uav_id in self.uav_states:
+            uav_state = self.uav_states[uav_id]
+            return {
+                'latitude': uav_state.home_lat,
+                'longitude': uav_state.home_lng,
+                'altitude': uav_state.home_alt,
+                'isValid': uav_state.home_lat != 0.0 or uav_state.home_lng != 0.0
+            }
+        return {'latitude': 0.0, 'longitude': 0.0, 'altitude': 0.0, 'isValid': False}
+
+    @Slot(str, result='QVariant')
+    def getWaypoints(self, uav_id):
+        """Get mission waypoints for a specific UAV."""
+        # Return empty array for now - can be implemented when mission planning is added
+        return []
+
+    @Slot(result='QVariant')
+    def getGeofences(self):
+        """Get all geofences."""
+        # Return empty array for now - can be implemented when geofencing is added
+        return []
+
+    @Slot(str, result='QVariant')
+    def getUAVPosition(self, uav_id):
+        """Get UAV position for QML."""
+        if uav_id in self.uav_states:
+            uav_state = self.uav_states[uav_id]
+            return {
+                'latitude': uav_state.latitude,
+                'longitude': uav_state.longitude,
+                'altitude': uav_state.altitude,
+                'isValid': uav_state.gps_fix_type >= 2
+            }
+        return {'latitude': 0.0, 'longitude': 0.0, 'altitude': 0.0, 'isValid': False}
+
+    @Slot(str, result=float)
+    def getUAVHeading(self, uav_id):
+        """Get UAV heading for QML."""
+        if uav_id in self.uav_states:
+            return self.uav_states[uav_id].heading
+        return 0.0
+
+    @Slot(str, result=str)
+    def getUAVMode(self, uav_id):
+        """Get UAV mode for QML."""
+        if uav_id in self.uav_states:
+            return self.uav_states[uav_id].mode
+        return "UNKNOWN"
+
+    @Slot(str, result=str)
+    def getArmedState(self, uav_id):
+        """Get UAV armed state for QML."""
+        if uav_id in self.uav_states:
+            return "ARMED" if self.uav_states[uav_id].armed else "DISARMED"
+        return "DISARMED"
 
 
 

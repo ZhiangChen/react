@@ -30,6 +30,11 @@ class SafetyMonitor(QObject):
     emergency_action = Signal(str, str)   # uav_id, action_type
     safety_status_changed = Signal(str, str)  # uav_id, safety_level
     
+    # Specific emergency signals expected by App
+    emergency_rtl_triggered = Signal(str, str)    # uav_id, reason
+    emergency_land_triggered = Signal(str, str)   # uav_id, reason
+    emergency_disarm_triggered = Signal(str, str) # uav_id, reason
+    
     def __init__(self, uav_states: dict, config: dict):
         super().__init__()
         self.uav_states = uav_states
@@ -124,6 +129,7 @@ class SafetyMonitor(QObject):
                 self._send_alert(uav_id, AlertType.CRITICAL_BATTERY, 
                                f"CRITICAL battery: {battery_percent}%", SafetyLevel.EMERGENCY, current_time)
                 self.emergency_action.emit(uav_id, "EMERGENCY_LAND")
+                self.emergency_land_triggered.emit(uav_id, f"Critical battery level: {battery_percent}%")
                 
         elif battery_percent <= self.battery_critical_threshold:
             if self._should_send_alert(uav_id, AlertType.CRITICAL_BATTERY, current_time):
@@ -145,6 +151,10 @@ class SafetyMonitor(QObject):
                     self._send_alert(uav_id, AlertType.COMM_LOSS, 
                                    f"Communication lost for {time_since_update:.1f}s", 
                                    SafetyLevel.CRITICAL, current_time)
+                    # Trigger emergency RTL after prolonged communication loss
+                    if time_since_update > self.communication_timeout * 2:  # Double timeout
+                        self.emergency_rtl_triggered.emit(uav_id, f"Communication lost for {time_since_update:.1f}s")
+                        self.emergency_action.emit(uav_id, "EMERGENCY_RTL")
 
     def _monitor_gps(self, uav_id, uav_state, current_time):
         """Monitor GPS status."""
@@ -194,6 +204,10 @@ class SafetyMonitor(QObject):
                 self._send_alert(uav_id, AlertType.ATTITUDE_EXTREME, 
                                f"Extreme attitude: roll={roll_deg:.1f}°, pitch={pitch_deg:.1f}°", 
                                SafetyLevel.CRITICAL, current_time)
+                # Trigger emergency RTL for extreme attitude
+                if roll_deg > self.max_roll_pitch * 1.5 or pitch_deg > self.max_roll_pitch * 1.5:
+                    self.emergency_rtl_triggered.emit(uav_id, f"Extreme attitude: roll={roll_deg:.1f}°, pitch={pitch_deg:.1f}°")
+                    self.emergency_action.emit(uav_id, "EMERGENCY_RTL")
 
     def _monitor_mission_timeout(self, uav_id, uav_state, current_time):
         """Monitor mission timeout."""
@@ -279,6 +293,29 @@ class SafetyMonitor(QObject):
         """Handle emergency situations manually triggered."""
         self.logger.critical(f"Manual emergency triggered for UAV {uav_id}: {emergency_type}")
         self.emergency_action.emit(uav_id, emergency_type)
+        
+        # Emit specific emergency signals based on type
+        if emergency_type in ["EMERGENCY_RTL", "RTL"]:
+            self.emergency_rtl_triggered.emit(uav_id, f"Manual emergency RTL: {emergency_type}")
+        elif emergency_type in ["EMERGENCY_LAND", "LAND"]:
+            self.emergency_land_triggered.emit(uav_id, f"Manual emergency land: {emergency_type}")
+        elif emergency_type in ["EMERGENCY_DISARM", "DISARM"]:
+            self.emergency_disarm_triggered.emit(uav_id, f"Manual emergency disarm: {emergency_type}")
+    
+    def trigger_emergency_rtl(self, uav_id, reason):
+        """Trigger emergency RTL for a specific UAV."""
+        self.emergency_rtl_triggered.emit(uav_id, reason)
+        self.emergency_action.emit(uav_id, "EMERGENCY_RTL")
+        
+    def trigger_emergency_land(self, uav_id, reason):
+        """Trigger emergency land for a specific UAV."""
+        self.emergency_land_triggered.emit(uav_id, reason)
+        self.emergency_action.emit(uav_id, "EMERGENCY_LAND")
+        
+    def trigger_emergency_disarm(self, uav_id, reason):
+        """Trigger emergency disarm for a specific UAV."""
+        self.emergency_disarm_triggered.emit(uav_id, reason)
+        self.emergency_action.emit(uav_id, "EMERGENCY_DISARM")
 
     def get_safety_status(self, uav_id):
         """Get current safety status for a UAV."""

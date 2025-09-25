@@ -1,3 +1,10 @@
 pymavlink>=2.4.37
-PySide6>=6.4.0
+PySide6>=6.8.3,<7.0.0
 PyYAML>=6.0
+pyserial>=3.5
+
+# Tile server dependencies
+fastapi>=0.104.0
+uvicorn>=0.24.0
+aiohttp>=3.9.0
+aiofiles>=23.2.0

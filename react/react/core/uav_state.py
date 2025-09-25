@@ -15,6 +15,11 @@ class UAVState:
         self.gps_fix_type = 0
         self.satellites_visible = 0
         self.armed = False
+        
+        # Home position (set when UAV is armed or first GPS fix)
+        self.home_lat = 0.0
+        self.home_lng = 0.0
+        self.home_alt = 0.0
 
         # Telemetry Connection Status
         self.telem1_status = False  # True if Telem1 is connected (primary connection)
@@ -70,6 +75,9 @@ class UAVState:
             self.telem1_status = telem1_status
         if telem2_status is not None:
             self.telem2_status = telem2_status
+            
+        # Update home position if needed (when UAV gets first good GPS fix)
+        self.update_home_position_if_needed()
 
     def update_remaining_battery_time(self):
         """Estimate the remaining battery time based on the current battery status and power consumption."""
@@ -83,6 +91,21 @@ class UAVState:
     def set_connected(self, connected):
         """Set the Telem1 connection status of the UAV (primary connection)."""
         self.telem1_status = connected
+        
+    def set_home_position(self, latitude=None, longitude=None, altitude=None):
+        """Set the home position of the UAV."""
+        if latitude is not None:
+            self.home_lat = latitude
+        if longitude is not None:
+            self.home_lng = longitude
+        if altitude is not None:
+            self.home_alt = altitude
+            
+    def update_home_position_if_needed(self):
+        """Update home position if not set and UAV has valid GPS."""
+        if (self.home_lat == 0.0 and self.home_lng == 0.0 and 
+            self.gps_fix_type >= 3 and self.latitude != 0.0 and self.longitude != 0.0):
+            self.set_home_position(self.latitude, self.longitude, self.altitude)
 
     def is_connected(self):
         """Check if the UAV is currently connected via Telem1 (primary connection)."""

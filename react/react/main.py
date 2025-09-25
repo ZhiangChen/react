@@ -3,8 +3,10 @@ import os
 import yaml
 import logging
 from PySide6.QtWidgets import QApplication
-from PySide6.QtQuick import QQuickView
+from PySide6.QtQml import QQmlApplicationEngine
 from PySide6.QtCore import QUrl
+from PySide6.QtWebEngineQuick import QtWebEngineQuick
+from PySide6.QtWebEngineCore import QWebEngineProfile
 from core.app import App
 
 def setup_global_logging(config):
@@ -52,6 +54,25 @@ def load_config(path=None):
 def main():
     # Initialize Qt Application
     app = QApplication(sys.argv)
+    
+    # Initialize WebEngine with permissive settings
+    QtWebEngineQuick.initialize()
+    
+    # Configure WebEngine profile for local network access
+    profile = QWebEngineProfile.defaultProfile()
+    
+    # Enable local content access
+    profile.setHttpUserAgent("REACT Ground Control Station")
+    
+    # Allow all content
+    settings = profile.settings()
+    try:
+        # These might not all be available in all versions
+        if hasattr(settings, 'setAttribute'):
+            # Enable various features that might help
+            pass
+    except Exception as e:
+        print(f"Some WebEngine settings not available: {e}")
 
     # Load configuration
     config = load_config()
@@ -70,10 +91,10 @@ def main():
     
     # Initialize QML Frontend
     logger.info("Initializing QML frontend...")
-    view = QQuickView()
+    engine = QQmlApplicationEngine()
     
     # Expose backend to QML
-    view.rootContext().setContextProperty("backend", backend)
+    engine.rootContext().setContextProperty("backend", backend)
     
     # Load main QML file
     qml_dir = os.path.join(os.path.dirname(__file__), "qml")
@@ -84,8 +105,13 @@ def main():
         backend.stop()
         return
     
-    view.setSource(QUrl.fromLocalFile(qml_file))
-    view.show()
+    engine.load(QUrl.fromLocalFile(qml_file))
+    
+    # Check if the QML loaded successfully
+    if not engine.rootObjects():
+        logger.error("Failed to load QML file")
+        backend.stop()
+        return
     
     logger.info("Frontend started successfully")
     

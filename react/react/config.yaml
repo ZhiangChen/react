@@ -32,6 +32,17 @@ tile_server:
   type: "MapTiler"
   url: "https://api.maptiler.com/maps/{id}/tile/{z}/{x}/{y}.png?key={key}"
 
+# Local map server configuration
+map_server:
+  host: "127.0.0.1"
+  port: 8081
+
+# Default home position for map view
+default_home_position:
+  latitude: 40.7128    # New York City latitude (example)
+  longitude: -76.0060  # New York City longitude (example)
+  zoom: 12             # Default zoom level
+
 device_options:
   max_uavs: 10
   enable_logging: true

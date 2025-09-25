@@ -1,30 +1,221 @@
 import QtQuick 2.15
+import QtQuick.Controls 2.15
 import QtLocation 5.15
 import QtPositioning 5.15
 
 Map {
     id: mapView
-    anchors.fill: parent
     
+    // Try different plugins to see what works
     plugin: Plugin {
-        name: "osm" // OpenStreetMap plugin
+        name: "osm"
+        PluginParameter { 
+            name: "osm.useragent"
+            value: "REACT Ground Control Station" 
+        }
+        PluginParameter {
+            name: "osm.mapping.providersrepository.disabled"
+            value: "true"
+        }
+        PluginParameter {
+            name: "osm.mapping.custom.host"
+            value: "http://127.0.0.1:8081/tiles/satellite/"
+        }
+    }
+    
+    // Map style options - including real satellite
+    property var mapStyleNames: ["Street", "Satellite", "Cycle", "Transit", "Night", "Terrain", "Hiking"]
+    property int currentMapStyle: 0
+    property string tileServerUrl: "http://127.0.0.1:8081"
+    property bool tileServerRunning: false
+    
+    // Custom map type for local satellite tiles
+    property var satelliteMapType: null
+    
+    // Check tile server status
+    Timer {
+        id: serverCheckTimer
+        interval: 3000
+        running: true
+        repeat: true
+        onTriggered: checkTileServer()
+    }
+    
+    function checkTileServer() {
+        var xhr = new XMLHttpRequest()
+        xhr.open("GET", tileServerUrl + "/", true)
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                tileServerRunning = (xhr.status === 200)
+            }
+        }
+        xhr.onerror = function() { tileServerRunning = false }
+        try { xhr.send() } catch (e) { }
+    }
+    
+    Component.onCompleted: {
+        console.log("Available OSM map types:", supportedMapTypes.length)
+        for (var i = 0; i < supportedMapTypes.length; i++) {
+            console.log("Map type", i + ":", supportedMapTypes[i].name)
+        }
+        if (supportedMapTypes.length > 0) {
+            activeMapType = supportedMapTypes[0]
+            console.log("Started with:", supportedMapTypes[0].name)
+        }
+        checkTileServer()
+    }
+    
+    function changeMapStyle(styleIndex) {
+        if (styleIndex >= 0 && styleIndex < mapStyleNames.length) {
+            currentMapStyle = styleIndex
+            
+            if (styleIndex === 1) {
+                // Show satellite info instead of broken satellite tiles
+                console.log("Satellite info mode activated")
+                if (supportedMapTypes.length > 0) {
+                    activeMapType = supportedMapTypes[0] // Keep using street map as base
+                }
+            } else {
+                var osmIndex = styleIndex > 1 ? styleIndex - 1 : styleIndex // Adjust for satellite info
+                if (styleIndex === 0) osmIndex = 0      // Street Map
+                else if (styleIndex === 2) osmIndex = 2 // Cycle Map  
+                else if (styleIndex === 3) osmIndex = 3 // Transit Map
+                else if (styleIndex === 4) osmIndex = 4 // Night Transit Map
+                else if (styleIndex === 5) osmIndex = 5 // Terrain Map
+                else if (styleIndex === 6) osmIndex = 6 // Hiking Map
+                
+                if (osmIndex < supportedMapTypes.length) {
+                    activeMapType = supportedMapTypes[osmIndex]
+                    console.log("Changed to style:", mapStyleNames[styleIndex], "using OSM type:", supportedMapTypes[osmIndex].name)
+                }
+            }
+        }
     }
 
-    // Default center - will be updated when UAV connects
+    // Default center
     center: QtPositioning.coordinate(37.7749, -122.4194)
     zoomLevel: 15
+    minimumZoomLevel: 1
+    maximumZoomLevel: 20
     
     property var currentUAV: "UAV_1"
     property var uavPosition: QtPositioning.coordinate(0, 0)
     
-    // Timer to update map data
     Timer {
         id: mapUpdateTimer
-        interval: 1000  // Update every second
+        interval: 1000
         running: true
         repeat: true
-        onTriggered: {
-            updateUAVPosition()
+        onTriggered: updateUAVPosition()
+    }
+    
+    // Satellite Information Overlay
+    Rectangle {
+        id: satelliteInfoOverlay
+        anchors.fill: parent
+        color: Qt.rgba(0, 0, 0, 0.3)
+        visible: currentMapStyle === 1
+        
+        Rectangle {
+            width: 400
+            height: 300
+            anchors.centerIn: parent
+            color: "white"
+            radius: 10
+            border.color: "#ccc"
+            border.width: 2
+            
+            Column {
+                anchors.fill: parent
+                anchors.margins: 20
+                spacing: 15
+                
+                Text {
+                    text: "🛰️ Satellite Imagery Information"
+                    font.pointSize: 14
+                    font.bold: true
+                    anchors.horizontalCenter: parent.horizontalCenter
+                }
+                
+                Text {
+                    text: "Tile Server Status: " + (tileServerRunning ? "✅ Online" : "❌ Offline")
+                    font.pointSize: 12
+                    color: tileServerRunning ? "green" : "red"
+                    anchors.horizontalCenter: parent.horizontalCenter
+                }
+                
+                Rectangle {
+                    width: parent.width - 20
+                    height: 1
+                    color: "#ccc"
+                    anchors.horizontalCenter: parent.horizontalCenter
+                }
+                
+                Text {
+                    text: "Current Status:"
+                    font.pointSize: 11
+                    font.bold: true
+                }
+                
+                Text {
+                    text: tileServerRunning ? 
+                          "• Local tile server is running\n• Satellite tiles are being cached\n• " + getCachedTileCount() + " tiles in cache" :
+                          "• Tile server is offline\n• No satellite imagery available\n• Start tile server for satellite support"
+                    font.pointSize: 10
+                    width: parent.width - 40
+                    wrapMode: Text.WordWrap
+                }
+                
+                Text {
+                    text: "Access satellite imagery:"
+                    font.pointSize: 11
+                    font.bold: true
+                }
+                
+                Row {
+                    spacing: 10
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    
+                    Button {
+                        text: "Open Tile Server"
+                        enabled: tileServerRunning
+                        onClicked: Qt.openUrlExternally(tileServerUrl)
+                    }
+                    
+                    Button {
+                        text: "View Sample Tile"
+                        enabled: tileServerRunning
+                        onClicked: {
+                            var lat = mapView.center.latitude
+                            var lon = mapView.center.longitude
+                            var z = Math.floor(mapView.zoomLevel)
+                            var x = Math.floor((lon + 180) / 360 * Math.pow(2, z))
+                            var y = Math.floor((1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2 * Math.pow(2, z))
+                            Qt.openUrlExternally(tileServerUrl + "/tiles/satellite/" + z + "/" + x + "/" + y + ".png")
+                        }
+                    }
+                }
+                
+                Text {
+                    text: "Note: Qt's mapping framework has limited support for custom tile servers. The tile server provides satellite imagery that can be accessed via web browser or external mapping applications."
+                    font.pointSize: 9
+                    color: "gray"
+                    width: parent.width - 40
+                    wrapMode: Text.WordWrap
+                    anchors.horizontalCenter: parent.horizontalCenter
+                }
+            }
+            
+            // Close button
+            Button {
+                text: "×"
+                width: 30
+                height: 30
+                anchors.top: parent.top
+                anchors.right: parent.right
+                anchors.margins: 5
+                onClicked: changeMapStyle(0) // Switch back to street map
+            }
         }
     }
     
@@ -42,7 +233,6 @@ Map {
             border.color: "white"
             border.width: 2
             
-            // UAV heading indicator
             Rectangle {
                 width: 3
                 height: 12
@@ -52,7 +242,6 @@ Map {
                 rotation: getUAVHeading()
             }
             
-            // Status indicator
             Rectangle {
                 width: 8
                 height: 8
@@ -66,16 +255,13 @@ Map {
             }
         }
         
-        // Click handler for UAV marker
         MouseArea {
             anchors.fill: parent
-            onClicked: {
-                showUAVInfo()
-            }
+            onClicked: showUAVInfo()
         }
     }
     
-    // Home/Launch position marker
+    // Home position marker
     MapQuickItem {
         id: homeMarker
         coordinate: getHomePosition()
@@ -98,265 +284,207 @@ Map {
         }
     }
     
-    // Mission waypoints
-    Repeater {
-        model: getMissionWaypoints()
+    // Mouse interaction
+    MouseArea {
+        id: mouseArea
+        anchors.fill: parent
+        enabled: currentMapStyle !== 1 // Disable when satellite info is shown
         
-        MapQuickItem {
-            coordinate: QtPositioning.coordinate(modelData.lat, modelData.lon)
-            
-            sourceItem: Rectangle {
-                width: 12
-                height: 12
-                radius: 6
-                color: "blue"
-                border.color: "white"
-                border.width: 1
-                
-                Text {
-                    text: (index + 1).toString()
-                    color: "white"
-                    font.pointSize: 6
-                    anchors.centerIn: parent
+        property var exclusionAreas: [
+            {"x": 10, "y": 10, "width": 150, "height": 40}
+        ]
+        
+        function isInExclusionArea(x, y) {
+            for (var i = 0; i < exclusionAreas.length; i++) {
+                var area = exclusionAreas[i]
+                if (x >= area.x && x <= area.x + area.width &&
+                    y >= area.y && y <= area.y + area.height) {
+                    return true
                 }
+            }
+            return false
+        }
+        
+        onPressed: {
+            if (!isInExclusionArea(mouse.x, mouse.y)) {
+                mouse.accepted = true
+            } else {
+                mouse.accepted = false
+            }
+        }
+        
+        onWheel: {
+            if (!isInExclusionArea(wheel.x, wheel.y)) {
+                var zoomChange = wheel.angleDelta.y > 0 ? 1 : -1
+                mapView.zoomLevel = Math.max(mapView.minimumZoomLevel, 
+                                           Math.min(mapView.maximumZoomLevel, 
+                                                   mapView.zoomLevel + zoomChange))
+                wheel.accepted = true
+            } else {
+                wheel.accepted = false
             }
         }
     }
     
-    // Mission path
-    MapPolyline {
-        path: getMissionPath()
-        strokeColor: "blue"
-        strokeWidth: 2
-        strokeStyle: "DashLine"
-    }
-    
-    // UAV flight path (breadcrumb trail)
-    MapPolyline {
-        path: getFlightPath()
-        strokeColor: getUAVPathColor()
-        strokeWidth: 3
-    }
-    
-    // Map controls
-    Column {
-        anchors.right: parent.right
+    // Map style dropdown
+    ComboBox {
+        id: mapStyleCombo
         anchors.top: parent.top
+        anchors.left: parent.left
         anchors.margins: 10
-        spacing: 5
+        width: 150
         
-        Button {
-            text: "Center on UAV"
-            width: 100
-            enabled: uavPosition.isValid
-            onClicked: centerOnUAV()
+        model: mapStyleNames
+        
+        onCurrentIndexChanged: {
+            changeMapStyle(currentIndex)
         }
         
-        Button {
-            text: "Zoom In"
-            width: 100
-            onClicked: mapView.zoomLevel += 1
+        background: Rectangle {
+            color: "white"
+            border.color: "#cccccc"
+            border.width: 1
+            radius: 4
+            opacity: 0.9
         }
         
-        Button {
-            text: "Zoom Out"
-            width: 100
-            onClicked: mapView.zoomLevel -= 1
+        contentItem: Text {
+            text: mapStyleCombo.displayText
+            color: "black"
+            verticalAlignment: Text.AlignVCenter
+            leftPadding: 8
+            rightPadding: 8
+        }
+    }
+    
+    // Status indicator
+    Rectangle {
+        anchors.top: mapStyleCombo.bottom
+        anchors.left: parent.left
+        anchors.margins: 10
+        width: 150
+        height: 50
+        color: tileServerRunning ? "lightgreen" : "lightcoral"
+        border.color: tileServerRunning ? "green" : "red"
+        border.width: 1
+        radius: 3
+        opacity: 0.8
+        
+        Column {
+            anchors.centerIn: parent
+            Text {
+                text: tileServerRunning ? "Tile Server: Online" : "Tile Server: Offline"
+                color: "black"
+                font.pointSize: 8
+                font.bold: true
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+            Text {
+                text: tileServerRunning ? getCachedTileCount() + " tiles cached" : "No satellite tiles"
+                color: "black"
+                font.pointSize: 7
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+            Text {
+                text: "Click for info"
+                color: "gray"
+                font.pointSize: 6
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
         }
         
-        Button {
-            text: "Clear Path"
-            width: 100
-            onClicked: clearFlightPath()
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                if (currentMapStyle !== 1) {
+                    changeMapStyle(1) // Show satellite info
+                }
+            }
         }
     }
     
     // Map info overlay
     Rectangle {
-        anchors.left: parent.left
         anchors.bottom: parent.bottom
+        anchors.left: parent.left
         anchors.margins: 10
         width: 200
-        height: 80
-        color: "white"
-        opacity: 0.9
-        border.color: "#ccc"
+        height: 60
+        color: "black"
+        opacity: 0.7
         radius: 5
+        visible: currentMapStyle !== 1
         
         Column {
             anchors.fill: parent
-            anchors.margins: 8
-            spacing: 3
+            anchors.margins: 5
+            spacing: 2
             
             Text {
-                text: "Map Information"
+                text: "Map: " + mapStyleNames[currentMapStyle]
+                color: "white"
+                font.pointSize: 9
                 font.bold: true
-                font.pointSize: 10
             }
             
             Text {
                 text: "Zoom: " + mapView.zoomLevel.toFixed(1)
-                font.pointSize: 9
+                color: "white"
+                font.pointSize: 8
             }
             
             Text {
-                text: "UAV Alt: " + getUAVAltitude().toFixed(1) + "m"
-                font.pointSize: 9
-            }
-            
-            Text {
-                text: "Speed: " + getUAVSpeed().toFixed(1) + " m/s"
-                font.pointSize: 9
+                text: "Lat: " + mapView.center.latitude.toFixed(4) + ", Lon: " + mapView.center.longitude.toFixed(4)
+                color: "white"
+                font.pointSize: 8
             }
         }
     }
     
-    // Functions to interact with backend
+    // Helper functions
+    function getCachedTileCount() {
+        return tileServerRunning ? "Some" : "0" // Simplified for now
+    }
+    
     function updateUAVPosition() {
-        if (backend) {
-            try {
-                var status = backend.get_uav_status(currentUAV)
-                if (status && status.position) {
-                    var newPos = QtPositioning.coordinate(
-                        status.position.latitude || 0,
-                        status.position.longitude || 0
-                    )
-                    if (newPos.isValid && newPos.latitude !== 0) {
-                        uavPosition = newPos
-                        
-                        // Auto-center on first valid position
-                        if (mapView.center.latitude === 37.7749) {
-                            mapView.center = newPos
-                        }
-                    }
+        // Mock implementation
+        if (typeof backend !== 'undefined') {
+            var pos = backend.getUAVPosition(currentUAV)
+            if (pos && pos.isValid) {
+                uavPosition = pos
+                if (center.latitude === 37.7749 && center.longitude === -122.4194) {
+                    center = uavPosition
                 }
-            } catch(e) {
-                console.log("Error updating UAV position:", e)
             }
         }
     }
     
     function getUAVMarkerColor() {
-        if (!backend) return "gray"
-        try {
-            var status = backend.get_uav_status(currentUAV)
-            if (!status) return "gray"
-            
-            var mode = status.flight_status ? status.flight_status.flight_mode : "UNKNOWN"
-            var armed = status.flight_status ? status.flight_status.armed : false
-            
-            if (armed) {
-                if (mode === "AUTO") return "blue"
-                if (mode === "GUIDED") return "purple"
-                if (mode === "RTL") return "orange"
-                return "red"  // Armed but other mode
-            }
-            return "green"  // Disarmed
-        } catch(e) {
-            return "gray"
+        if (typeof backend === 'undefined') return "gray"
+        var mode = backend.getUAVMode(currentUAV)
+        switch(mode) {
+            case "MANUAL": return "blue"
+            case "STABILIZE": return "green"
+            case "AUTO": return "purple"
+            case "GUIDED": return "orange"
+            case "RTL": return "yellow"
+            default: return "gray"
         }
-    }
-    
-    function getUAVPathColor() {
-        var armed = getArmedState() === "ARMED"
-        return armed ? "red" : "green"
     }
     
     function getUAVHeading() {
-        if (!backend) return 0
-        try {
-            var status = backend.get_uav_status(currentUAV)
-            return status && status.attitude ? status.attitude.yaw * 180 / Math.PI : 0
-        } catch(e) {
-            return 0
-        }
+        return typeof backend !== 'undefined' ? (backend.getUAVHeading(currentUAV) || 0) : 0
     }
     
     function getArmedState() {
-        if (!backend) return "DISARMED"
-        try {
-            var status = backend.get_uav_status(currentUAV)
-            return status && status.flight_status && status.flight_status.armed ? "ARMED" : "DISARMED"
-        } catch(e) {
-            return "DISARMED"
-        }
+        return typeof backend !== 'undefined' ? (backend.getArmedState(currentUAV) || "DISARMED") : "DISARMED"
     }
     
     function getHomePosition() {
-        if (!backend) return QtPositioning.coordinate(0, 0)
-        try {
-            var status = backend.get_uav_status(currentUAV)
-            if (status && status.home_position) {
-                return QtPositioning.coordinate(
-                    status.home_position.latitude || 0,
-                    status.home_position.longitude || 0
-                )
-            }
-            return QtPositioning.coordinate(0, 0)
-        } catch(e) {
-            return QtPositioning.coordinate(0, 0)
-        }
-    }
-    
-    function getUAVAltitude() {
-        if (!backend) return 0
-        try {
-            var status = backend.get_uav_status(currentUAV)
-            return status && status.position ? status.position.altitude_msl || 0 : 0
-        } catch(e) {
-            return 0
-        }
-    }
-    
-    function getUAVSpeed() {
-        if (!backend) return 0
-        try {
-            var status = backend.get_uav_status(currentUAV)
-            return status && status.position ? status.position.ground_speed || 0 : 0
-        } catch(e) {
-            return 0
-        }
-    }
-    
-    function getMissionWaypoints() {
-        // Return array of waypoint objects with lat/lon
-        if (!backend) return []
-        try {
-            var missionStatus = backend.get_mission_status(currentUAV)
-            return missionStatus && missionStatus.waypoints ? missionStatus.waypoints : []
-        } catch(e) {
-            return []
-        }
-    }
-    
-    function getMissionPath() {
-        var waypoints = getMissionWaypoints()
-        var path = []
-        for (var i = 0; i < waypoints.length; i++) {
-            path.push(QtPositioning.coordinate(waypoints[i].lat, waypoints[i].lon))
-        }
-        return path
-    }
-    
-    function getFlightPath() {
-        // This would need to be implemented to track UAV breadcrumb trail
-        // For now, return empty path
-        return []
-    }
-    
-    function centerOnUAV() {
-        if (uavPosition.isValid) {
-            mapView.center = uavPosition
-        }
+        return typeof backend !== 'undefined' ? (backend.getHomePosition(currentUAV) || QtPositioning.coordinate()) : QtPositioning.coordinate()
     }
     
     function showUAVInfo() {
-        console.log("UAV marker clicked - showing info for:", currentUAV)
-        // Could open a popup with detailed UAV information
-    }
-    
-    function clearFlightPath() {
-        console.log("Clear flight path requested")
-        // Implementation would clear the breadcrumb trail
+        console.log("UAV Info for", currentUAV)
     }
 }

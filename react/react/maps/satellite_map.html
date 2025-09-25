@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REACT Ground Control Station - Satellite Map</title>
+    
+    <!-- Leaflet CSS from CDN -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""/>
+    
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+        }
+        
+        #map {
+            height: 100vh;
+            width: 100%;
+            pointer-events: auto; /* Ensure map can receive mouse events */
+            touch-action: none; /* For better touch handling in QtWebEngine */
+        }
+        
+        .map-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px; /* Position at top right */
+            z-index: 1000;
+            display: flex;
+            flex-direction: column; /* Vertical layout */
+            align-items: flex-start;
+            gap: 5px; /* Small gap between elements */
+        }
+        
+        .map-controls select, .map-controls button {
+            margin: 0;
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: white;
+            font-size: 13px;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.2);
+            cursor: pointer;
+            min-width: 120px; /* Consistent width */
+        }
+        
+        .map-controls button:hover {
+            background: #f0f0f0;
+        }
+        
+        .map-controls select:hover {
+            background: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="map-controls">
+        <button onclick="fitAllUAVs()">Fit All UAVs</button>
+        <select id="mapTypeSelect">
+            <option value="osm" selected>Street Map</option>
+            <option value="satellite">Satellite</option>
+        </select>
+    </div>
+    
+    <div id="map"></div>
+
+    <!-- Qt WebChannel Script (conditionally loaded) -->
+    <script>
+        // Try to load Qt WebChannel if available
+        try {
+            const script = document.createElement('script');
+            script.src = 'qrc:///qtwebchannel/qwebchannel.js';
+            script.onerror = () => console.log('Qt WebChannel not available');
+            document.head.appendChild(script);
+        } catch (e) {
+            console.log('Qt WebChannel not available');
+        }
+    </script>
+    
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+    
+    <script>
+        console.log('REACT satellite_map.html JavaScript loaded');
+        console.log('Starting REACT satellite map...');
+        
+        let map;
+        let uavMarkers = {};
+        let qtChannel = null;
+        let qtBridge = null;
+        
+        // Map layer definitions - now using same origin!
+        let mapLayers = {};
+        
+        function initMapLayers() {
+            if (typeof L === 'undefined') {
+                console.error('Leaflet not available');
+                return false;
+            }
+            
+            // Same-origin satellite tiles - should work in QtWebEngine!
+            const currentOrigin = window.location.origin;
+            
+            mapLayers = {
+                osm: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '© OpenStreetMap contributors'
+                }),
+                
+                satellite: L.tileLayer(currentOrigin + '/tiles/satellite/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: 'Google Satellite via Local Cache',
+                    updateWhenIdle: false,
+                    updateWhenZooming: true,
+                    keepBuffer: 2,
+                    // Debug: log every tile request
+                    getTileUrl: function(coords) {
+                        const url = currentOrigin + `/tiles/satellite/${coords.z}/${coords.x}/${coords.y}.png`;
+                        console.log('Requesting satellite tile:', url);
+                        return url;
+                    }
+                }),
+            };
+            
+            return true;
+        }
+        
+        function initMap() {
+            if (typeof L === 'undefined') {
+                console.error('Error: Leaflet not loaded');
+                return;
+            }
+            
+            console.log('Initializing map...');
+            
+            if (!initMapLayers()) {
+                console.error('Error: Could not initialize layers');
+                return;
+            }
+            
+            // Fetch default home position from server
+            const currentOrigin = window.location.origin;
+            const apiUrl = currentOrigin + '/api/info?t=' + Date.now(); // Cache-busting
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('API info received:', data);
+                    console.log('Default home from API:', data.default_home_position);
+                    const homePos = data.default_home_position || {
+                        latitude: 37.7749,
+                        longitude: -122.4194,
+                        zoom: 10
+                    };
+                    console.log('Using home position:', homePos);
+                    
+                    initMapWithPosition(homePos);
+                })
+                .catch(error => {
+                    console.error('Failed to get default home position:', error);
+                    // Fallback to San Francisco
+                    const fallbackPos = {
+                        latitude: 37.7749,
+                        longitude: -122.4194,
+                        zoom: 10
+                    };
+                    initMapWithPosition(fallbackPos);
+                });
+        }
+        
+        function initMapWithPosition(homePos) {
+            try {
+                // Create map centered on configured home position with explicit interaction options
+                map = L.map('map', {
+                    center: [homePos.latitude, homePos.longitude],
+                    zoom: homePos.zoom,
+                    dragging: true,
+                    touchZoom: true,
+                    doubleClickZoom: true,
+                    scrollWheelZoom: true,
+                    boxZoom: true,
+                    keyboard: true,
+                    zoomControl: true,
+                    attributionControl: true
+                });
+                
+                // Start with OpenStreetMap layer (more reliable than satellite)
+                mapLayers.osm.addTo(map);
+                
+                console.log(`Map initialized at ${homePos.latitude}, ${homePos.longitude} with zoom ${homePos.zoom}`);
+                
+                // Try to add satellite layer as backup, but don't fail if it doesn't work
+                // mapLayers.satellite.addTo(map);
+                
+                // Add a test UAV marker at home position
+                const uavIcon = L.divIcon({
+                    html: '🚁',
+                    className: 'uav-icon',
+                    iconSize: [20, 20],
+                    iconAnchor: [10, 10]
+                });
+                
+                const testUAV = L.marker([homePos.latitude, homePos.longitude], {icon: uavIcon})
+                    .addTo(map)
+                    .bindPopup('TEST UAV<br/>Status: Active');
+                    
+                uavMarkers['TEST_UAV'] = testUAV;
+                
+                // Set up map type selector
+                const mapTypeSelect = document.getElementById('mapTypeSelect');
+                mapTypeSelect.addEventListener('change', function() {
+                    changeMapType(this.value);
+                });
+                
+                // Test tile loading
+                testTileServer();
+                
+                // Add debug logging for map events
+                map.on('movestart', function(e) {
+                    console.log('Map move started');
+                });
+                
+                map.on('move', function(e) {
+                    console.log('Map is moving, center:', map.getCenter());
+                });
+                
+                map.on('moveend', function(e) {
+                    console.log('Map move ended, center:', map.getCenter(), 'zoom:', map.getZoom());
+                });
+                
+                map.on('drag', function(e) {
+                    console.log('Map drag event');
+                });
+                
+                map.on('zoomstart', function(e) {
+                    console.log('Zoom started');
+                });
+                
+                map.on('zoomend', function(e) {
+                    console.log('Zoom ended, level:', map.getZoom());
+                });
+
+                // Add tile loading debug
+                map.on('tileloadstart', function(e) {
+                    console.log('Tile load start:', e.coords);
+                });
+                
+                map.on('tileload', function(e) {
+                    console.log('Tile loaded:', e.coords);
+                });
+                
+                map.on('tileerror', function(e) {
+                    console.error('Tile error:', e.coords, e.error);
+                });
+
+            } catch (error) {
+                console.error('Map initialization error:', error);
+            }
+        }
+        
+        let currentLayer = null;
+        
+        function changeMapType(mapType) {
+            console.log('Changing map type to:', mapType);
+            if (mapLayers[mapType]) {
+                if (currentLayer) {
+                    map.removeLayer(currentLayer);
+                }
+                currentLayer = mapLayers[mapType];
+                map.addLayer(currentLayer);
+                console.log('Map layer changed to:', mapType);
+            } else {
+                console.error('Map type not found:', mapType);
+            }
+        }
+        
+        function testTileServer() {
+            const currentOrigin = window.location.origin;
+            
+            // Test API endpoint
+            fetch(currentOrigin + '/api/info')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('API connected successfully');
+                    console.log('API info:', data);
+                })
+                .catch(error => {
+                    console.error('API connection failed: ' + error.message);
+                });
+                
+            // Test tile endpoint
+            fetch(currentOrigin + '/tiles/satellite/0/0/0.png')
+                .then(response => {
+                    if (response.ok) {
+                        console.log('Satellite tiles: Available');
+                    } else {
+                        console.error('Satellite tiles: HTTP ' + response.status);
+                    }
+                })
+                .catch(error => {
+                    console.error('Satellite tiles: ' + error.message);
+                });
+        }
+        
+        function fitAllUAVs() {
+            const group = new L.featureGroup(Object.values(uavMarkers));
+            if (group.getLayers().length > 0) {
+                map.fitBounds(group.getBounds(), {padding: [20, 20]});
+            }
+        }
+        
+        // Wait for Leaflet to load, then initialize
+        function waitForLeaflet() {
+            if (typeof L !== 'undefined') {
+                console.log('Leaflet loaded, initializing map...');
+                initMap();
+            } else {
+                console.log('Waiting for Leaflet to load...');
+                setTimeout(waitForLeaflet, 100);
+            }
+        }
+        
+        // Start when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, waiting for Leaflet...');
+            console.log('Loading Leaflet...');
+            waitForLeaflet();
+        });
+        
+        // Qt WebChannel integration (if available)
+        setTimeout(() => {
+            if (typeof QWebChannel !== 'undefined') {
+                console.log('QWebChannel available, setting up Qt bridge...');
+                // Initialize Qt communication here if needed
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
