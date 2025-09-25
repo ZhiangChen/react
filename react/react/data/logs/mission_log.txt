@@ -5922,3 +5922,24 @@
 2025-09-25 15:45:51,465 - REACT.SafetyMonitor - INFO - Safety monitoring stopped
 2025-09-25 15:45:51,465 - REACT.MissionManager - INFO - Mission monitoring stopped
 2025-09-25 15:45:51,474 - REACT.App - INFO - All services stopped.
+2025-09-25 15:46:01,015 - REACT.Main - INFO - REACT Application logging initialized
+2025-09-25 15:46:01,015 - REACT.Main - INFO - Log file: data/logs/mission_log.txt
+2025-09-25 15:46:01,015 - REACT.Main - INFO - Starting REACT Ground Control Station...
+2025-09-25 15:46:01,015 - REACT.Main - INFO - Initializing backend...
+2025-09-25 15:46:01,015 - REACT.App - INFO - REACT Application starting...
+2025-09-25 15:46:01,015 - REACT.UAVController - INFO - UAV Controller initialized
+2025-09-25 15:46:01,015 - REACT.MissionManager - INFO - Mission Manager initialized
+2025-09-25 15:46:01,015 - REACT.SafetyMonitor - INFO - Safety Monitor initialized
+2025-09-25 15:46:01,015 - REACT.App - INFO - Setting up component connections...
+2025-09-25 15:46:01,015 - REACT.App - INFO - Component connections established
+2025-09-25 15:46:01,015 - REACT.App - INFO - All managers initialized successfully
+2025-09-25 15:46:01,015 - REACT.App - INFO - Starting REACT application...
+2025-09-25 15:46:01,015 - REACT.TelemetryManager - INFO - Telem1 connected to: udp:127.0.0.1:14550
+2025-09-25 15:46:01,015 - REACT.TelemetryManager - INFO - Telem1 UAV discovery will happen continuously as messages arrive
+2025-09-25 15:46:01,025 - REACT.TelemetryManager - ERROR - Telem2 failed to connect: could not open port '/dev/ttyUSB1': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3)
+2025-09-25 15:46:01,025 - REACT.MissionManager - INFO - Mission monitoring started
+2025-09-25 15:46:01,025 - REACT.SafetyMonitor - INFO - Safety monitoring started
+2025-09-25 15:46:01,025 - REACT.App - INFO - All services started successfully!
+2025-09-25 15:46:01,025 - REACT.Main - INFO - Initializing QML frontend...
+2025-09-25 15:46:01,279 - REACT.Main - INFO - Frontend started successfully
+2025-09-25 15:46:01,279 - REACT.Main - INFO - Starting application event loop...
