@@ -37,6 +37,11 @@ map_server:
   host: "127.0.0.1"
   port: 8081
 
+# Map configuration
+map:
+  default_layer: street  # Options: satellite, street, hybrid
+  street_transparency: 0.5  # Opacity for street layer in hybrid mode (0.0 to 1.0)
+
 # Default home position for map view
 default_home_position:
   latitude: 40.7128    # New York City latitude (example)

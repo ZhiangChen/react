@@ -243,6 +243,18 @@ async def get_api_sources():
     """Get available tile sources"""
     return TILE_SOURCES
 
+@app.get("/api/config")
+async def get_config():
+    """Serve config.yaml as JSON"""
+    try:
+        config_path = Path(__file__).parent.parent / "config.yaml"
+        with open(config_path, "r") as f:
+            config = yaml.safe_load(f)
+        return config
+    except Exception as e:
+        logger.error(f"Error loading config: {e}")
+        raise HTTPException(status_code=500, detail=f"Error loading config: {str(e)}")
+
 @app.get("/tiles/{source}/{z}/{x}/{y}.png")
 async def get_tile_endpoint(source: str, z: int, x: int, y: int):
     """Serve tile image"""

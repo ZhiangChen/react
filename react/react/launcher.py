@@ -175,7 +175,7 @@ def install_dependencies():
     try:
         subprocess.check_call([
             "py", "-3.12", "-m", "pip", "install", 
-            "fastapi", "uvicorn", "aiohttp", "aiofiles"
+            "fastapi", "uvicorn", "aiohttp", "aiofiles", "pyyaml"
         ])
         print("Dependencies installed successfully")
         return True

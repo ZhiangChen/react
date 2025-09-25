@@ -63,6 +63,7 @@
         <select id="mapTypeSelect">
             <option value="osm" selected>Street Map</option>
             <option value="satellite">Satellite</option>
+            <option value="hybrid">Hybrid</option>
         </select>
     </div>
     
@@ -104,34 +105,88 @@
                 return false;
             }
             
-            // Same-origin satellite tiles - should work in QtWebEngine!
+            // Load config from backend
             const currentOrigin = window.location.origin;
-            
-            mapLayers = {
-                osm: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    maxZoom: 19,
-                    attribution: '© OpenStreetMap contributors'
-                }),
-                
-                satellite: L.tileLayer(currentOrigin + '/tiles/satellite/{z}/{x}/{y}.png', {
-                    maxZoom: 19,
-                    attribution: 'Google Satellite via Local Cache',
-                    updateWhenIdle: false,
-                    updateWhenZooming: true,
-                    keepBuffer: 2,
-                    // Debug: log every tile request
-                    getTileUrl: function(coords) {
-                        const url = currentOrigin + `/tiles/satellite/${coords.z}/${coords.x}/${coords.y}.png`;
-                        console.log('Requesting satellite tile:', url);
-                        return url;
-                    }
-                }),
-            };
-            
-            return true;
+            return fetch(currentOrigin + '/api/config')
+                .then(response => response.json())
+                .then(config => {
+                    const streetTransparency = config.map?.street_transparency || 0.5;
+                    
+                    // Same-origin tiles
+                    mapLayers = {
+                        osm: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            maxZoom: 19,
+                            attribution: '© OpenStreetMap contributors'
+                        }),
+                        
+                        satellite: L.tileLayer(currentOrigin + '/tiles/satellite/{z}/{x}/{y}.png', {
+                            maxZoom: 19,
+                            attribution: 'Google Satellite via Local Cache',
+                            updateWhenIdle: false,
+                            updateWhenZooming: true,
+                            keepBuffer: 2,
+                            getTileUrl: function(coords) {
+                                const url = currentOrigin + `/tiles/satellite/${coords.z}/${coords.x}/${coords.y}.png`;
+                                console.log('Requesting satellite tile:', url);
+                                return url;
+                            }
+                        }),
+                        
+                        hybrid: L.layerGroup([
+                            L.tileLayer(currentOrigin + '/tiles/satellite/{z}/{x}/{y}.png', {
+                                maxZoom: 19,
+                                attribution: 'Google Satellite via Local Cache'
+                            }),
+                            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                maxZoom: 19,
+                                attribution: '© OpenStreetMap contributors',
+                                opacity: streetTransparency
+                            })
+                        ])
+                    };
+                    
+                    return true;
+                })
+                .catch(error => {
+                    console.error('Error loading config:', error);
+                    // Fallback without config
+                    const currentOrigin = window.location.origin;
+                    mapLayers = {
+                        osm: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            maxZoom: 19,
+                            attribution: '© OpenStreetMap contributors'
+                        }),
+                        
+                        satellite: L.tileLayer(currentOrigin + '/tiles/satellite/{z}/{x}/{y}.png', {
+                            maxZoom: 19,
+                            attribution: 'Google Satellite via Local Cache',
+                            updateWhenIdle: false,
+                            updateWhenZooming: true,
+                            keepBuffer: 2,
+                            getTileUrl: function(coords) {
+                                const url = currentOrigin + `/tiles/satellite/${coords.z}/${coords.x}/${coords.y}.png`;
+                                console.log('Requesting satellite tile:', url);
+                                return url;
+                            }
+                        }),
+                        
+                        hybrid: L.layerGroup([
+                            L.tileLayer(currentOrigin + '/tiles/satellite/{z}/{x}/{y}.png', {
+                                maxZoom: 19,
+                                attribution: 'Google Satellite via Local Cache'
+                            }),
+                            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                maxZoom: 19,
+                                attribution: '© OpenStreetMap contributors',
+                                opacity: 0.5
+                            })
+                        ])
+                    };
+                    return true;
+                });
         }
         
-        function initMap() {
+        async function initMap() {
             if (typeof L === 'undefined') {
                 console.error('Error: Leaflet not loaded');
                 return;
@@ -139,8 +194,14 @@
             
             console.log('Initializing map...');
             
-            if (!initMapLayers()) {
-                console.error('Error: Could not initialize layers');
+            try {
+                const layersReady = await initMapLayers();
+                if (!layersReady) {
+                    console.error('Error: Could not initialize layers');
+                    return;
+                }
+            } catch (error) {
+                console.error('Error initializing layers:', error);
                 return;
             }
             
@@ -189,13 +250,30 @@
                     attributionControl: true
                 });
                 
-                // Start with OpenStreetMap layer (more reliable than satellite)
-                mapLayers.osm.addTo(map);
+                // Load config to get default layer
+                const currentOrigin = window.location.origin;
+                fetch(currentOrigin + '/api/config')
+                    .then(response => response.json())
+                    .then(config => {
+                        const defaultLayer = config.map?.default_layer || 'osm';
+                        if (mapLayers[defaultLayer]) {
+                            mapLayers[defaultLayer].addTo(map);
+                            currentLayer = mapLayers[defaultLayer];
+                            console.log('Started with default layer:', defaultLayer);
+                        } else {
+                            mapLayers.osm.addTo(map);
+                            currentLayer = mapLayers.osm;
+                            console.log('Fallback to OSM layer');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error loading config for default layer:', error);
+                        // Fallback to OSM
+                        mapLayers.osm.addTo(map);
+                        currentLayer = mapLayers.osm;
+                    });
                 
                 console.log(`Map initialized at ${homePos.latitude}, ${homePos.longitude} with zoom ${homePos.zoom}`);
-                
-                // Try to add satellite layer as backup, but don't fail if it doesn't work
-                // mapLayers.satellite.addTo(map);
                 
                 // Add a test UAV marker at home position
                 const uavIcon = L.divIcon({
