@@ -16,6 +16,14 @@ ApplicationWindow {
     Material.accent: Material.Orange
     
     property bool connected: backend ? backend.get_uav_status("UAV_1") !== null : false
+    property string currentTime: getCurrentTime()
+    property string missionTimer: getMissionTimer()
+
+    // Button highlight properties for keyboard shortcuts
+    property bool pauseButtonHighlighted: false
+    property bool rtlButtonHighlighted: false
+    property bool landButtonHighlighted: false
+    property bool stopButtonHighlighted: false
 
     menuBar: MenuBar {
         Material.background: "#000000"
@@ -141,6 +149,12 @@ ApplicationWindow {
             title: "Help"
             
             Action {
+                text: "Hotkeys"
+                icon.name: "help-hint"
+                onTriggered: hotkeysDialog.open()
+            }
+            MenuSeparator {}
+            Action {
                 text: "About REACT"
                 icon.name: "help-about"
                 onTriggered: aboutDialog.open()
@@ -152,39 +166,427 @@ ApplicationWindow {
         anchors.fill: parent
         orientation: Qt.Horizontal
 
+        // Map Container (left - half width by default)
         MapContainer {
             id: mapView
-            SplitView.fillWidth: true
-            SplitView.minimumWidth: 1
-            SplitView.preferredWidth: 600  // 50% of typical 1200px window
-            implicitWidth: 600
-            
+            SplitView.minimumWidth: 50
+            SplitView.preferredWidth: parent.width * 0.5  // Half width by default
+
             onUavSelected: function(uavId) {
                 console.log("UAV selected from web map:", uavId)
                 // Update UAV selection in the list
                 uavList.currentUAV = uavId
             }
-            
+
             onMapClicked: function(latitude, longitude) {
                 console.log("Map clicked from web map:", latitude, longitude)
                 // Handle waypoint addition or other map interactions
             }
-            
+
             onWebMapReady: function() {
                 console.log("Web-based satellite map is ready in MainWindow")
             }
         }
 
-        UAVList {
-            id: uavList
-            SplitView.preferredWidth: 600   // 50% of typical 1200px window
-            SplitView.minimumWidth: 250
-            // Removed SplitView.maximumWidth to allow unlimited expansion
-            implicitWidth: 600
+        // Right side: UAV Status (top) and Controls (bottom)
+        SplitView {
+            orientation: Qt.Vertical
+            SplitView.minimumWidth: 50
+            SplitView.preferredWidth: parent.width * 0.5  // Half width by default
+
+            // UAV Status Panel (top right)
+            UAVList {
+                id: uavList
+                SplitView.fillHeight: true
+                SplitView.minimumHeight: 300
+            }
+
+            // Control Panel (bottom right)
+            Rectangle {
+                id: controlPanel
+                SplitView.minimumHeight: 170
+                SplitView.preferredHeight: 200
+                color: "#f5f5f5"
+                border.color: "#ddd"
+                border.width: 1
+
+                Row {
+                    anchors.fill: parent
+                    anchors.margins: 4
+                    spacing: 10
+
+                    // Left side: Control buttons
+                    Column {
+                        width: parent.width * 0.7  // 70% width for controls
+                        spacing: -2
+
+                        Row {
+                            spacing: -1
+                            Button {
+                                width: 70
+                                height: 35
+                                text: "Selected"
+                                font.pointSize: 8
+                                background: Rectangle {
+                                    color: uavList.controlAllUAVs ? "#ffffff" : (parent.hovered ? "#c8e6c9" : "#e8f5e8")
+                                    border.color: "#999999"
+                                    border.width: 1
+                                    radius: 0
+                                }
+                                contentItem: Text {
+                                    text: parent.text
+                                    font: parent.font
+                                    color: "#333333"
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+                                onClicked: uavList.controlAllUAVs = false
+                            }
+
+                            Button {
+                                width: 70
+                                height: 35
+                                text: "All UAVs"
+                                font.pointSize: 8
+                                background: Rectangle {
+                                    color: uavList.controlAllUAVs ? (parent.hovered ? "#c8e6c9" : "#e8f5e8") : "#ffffff"
+                                    border.color: "#999999"
+                                    border.width: 1
+                                    radius: 0
+                                }
+                                contentItem: Text {
+                                    text: parent.text
+                                    font: parent.font
+                                    color: "#333333"
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+                                onClicked: uavList.controlAllUAVs = true
+                            }
+                        }
+
+                        Row {
+                            spacing: 2
+
+                            Button {
+                                width: 90
+                                height: 50
+                                font.pointSize: 8
+                                text: "Arm"
+                                background: Rectangle {
+                                    color: parent.hovered ? "#f0f0f0" : "#f8f8f8"
+                                    border.color: "#cccccc"
+                                    border.width: 1
+                                    radius: 2
+                                }
+                                contentItem: Text {
+                                    text: parent.text
+                                    font: parent.font
+                                    color: "#333333"
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                    width: parent.width
+                                    height: parent.height
+                                }
+                                onClicked: {
+                                    if (uavList.controlAllUAVs) {
+                                        uavList.armAllUAVs()
+                                    } else {
+                                        // Arm all selected UAVs
+                                        for (var i = 0; i < uavList.selectedUAVs.length; i++) {
+                                            uavList.armUAV(uavList.selectedUAVs[i])
+                                        }
+                                    }
+                                }
+                            }
+
+                            Button {
+                                width: 90
+                                height: 50
+                                font.pointSize: 8
+                                text: "Upload Mission"
+                                background: Rectangle {
+                                    color: parent.hovered ? "#f0f0f0" : "#f8f8f8"
+                                    border.color: "#cccccc"
+                                    border.width: 1
+                                    radius: 2
+                                }
+                                contentItem: Text {
+                                    text: parent.text
+                                    font: parent.font
+                                    color: "#333333"
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                    width: parent.width
+                                    height: parent.height
+                                }
+                                onClicked: {
+                                    missionFileDialog.open()
+                                }
+                            }
+
+                            Button {
+                                width: 90
+                                height: 50
+                                font.pointSize: 8
+                                text: "Start Mission"
+                                background: Rectangle {
+                                    color: parent.hovered ? "#f0f0f0" : "#f8f8f8"
+                                    border.color: "#cccccc"
+                                    border.width: 1
+                                    radius: 2
+                                }
+                                contentItem: Text {
+                                    text: parent.text
+                                    font: parent.font
+                                    color: "#333333"
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                    width: parent.width
+                                    height: parent.height
+                                }
+                                onClicked: {
+                                    if (backend) {
+                                        if (uavList.controlAllUAVs) {
+                                            console.log("Start mission for all UAVs")
+                                        } else {
+                                            // Start mission for all selected UAVs
+                                            for (var i = 0; i < uavList.selectedUAVs.length; i++) {
+                                                console.log("Start mission for UAV", uavList.selectedUAVs[i])
+                                                backend.start_mission(uavList.selectedUAVs[i])
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        Row {
+                            spacing: 2
+
+                            Button {
+                                width: 90
+                                height: 50
+                                font.pointSize: 8
+                                text: "&Pause"
+                                background: Rectangle {
+                                    color: pauseButtonHighlighted ? "#ffff99" : (parent.hovered ? "#f0f0f0" : "#f8f8f8")
+                                    border.color: pauseButtonHighlighted ? "#ffcc00" : "#cccccc"
+                                    border.width: pauseButtonHighlighted ? 2 : 1
+                                    radius: 2
+                                }
+                                contentItem: Text {
+                                    text: "<b>P</b>ause"
+                                    font: parent.font
+                                    color: "#333333"
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                    width: parent.width
+                                    height: parent.height
+                                }
+                                enabled: true
+                                onClicked: {
+                                    if (uavList.controlAllUAVs) {
+                                        console.log("Pause all UAVs")
+                                    } else {
+                                        // Pause all selected UAVs
+                                        for (var i = 0; i < uavList.selectedUAVs.length; i++) {
+                                            console.log("Pause UAV", uavList.selectedUAVs[i])
+                                        }
+                                    }
+                                }
+                            }
+
+                            Button {
+                                width: 90
+                                height: 50
+                                font.pointSize: 8
+                                text: "Resume"
+                                background: Rectangle {
+                                    color: parent.hovered ? "#f0f0f0" : "#f8f8f8"
+                                    border.color: "#cccccc"
+                                    border.width: 1
+                                    radius: 2
+                                }
+                                contentItem: Text {
+                                    text: parent.text
+                                    font: parent.font
+                                    color: "#333333"
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                    width: parent.width
+                                    height: parent.height
+                                }
+                                enabled: true
+                                onClicked: {
+                                    if (uavList.controlAllUAVs) {
+                                        console.log("Resume all UAVs")
+                                    } else {
+                                        // Resume all selected UAVs
+                                        for (var i = 0; i < uavList.selectedUAVs.length; i++) {
+                                            console.log("Resume UAV", uavList.selectedUAVs[i])
+                                        }
+                                    }
+                                }
+                            }
+
+                            Button {
+                                width: 90
+                                height: 50
+                                font.pointSize: 8
+                                text: "+Resume"
+                                background: Rectangle {
+                                    color: parent.hovered ? "#f0f0f0" : "#f8f8f8"
+                                    border.color: "#cccccc"
+                                    border.width: 1
+                                    radius: 2
+                                }
+                                contentItem: Text {
+                                    text: parent.text
+                                    font: parent.font
+                                    color: "#333333"
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                    width: parent.width
+                                    height: parent.height
+                                }
+                                enabled: true
+                                onClicked: {
+                                    if (uavList.controlAllUAVs) {
+                                        console.log("Prev Resume all UAVs")
+                                    } else {
+                                        // Prev Resume all selected UAVs
+                                        for (var i = 0; i < uavList.selectedUAVs.length; i++) {
+                                            console.log("Prev Resume UAV", uavList.selectedUAVs[i])
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        Row {
+                            spacing: 2
+
+                            Button {
+                                width: 90
+                                height: 50
+                                font.pointSize: 8
+                                text: "&RTL"
+                                background: Rectangle {
+                                    color: rtlButtonHighlighted ? "#ffff99" : (parent.hovered ? "#f0f0f0" : "#f8f8f8")
+                                    border.color: rtlButtonHighlighted ? "#ffcc00" : "#cccccc"
+                                    border.width: rtlButtonHighlighted ? 2 : 1
+                                    radius: 2
+                                }
+                                contentItem: Text {
+                                    text: "<b>R</b>TL"
+                                    font: parent.font
+                                    color: "#333333"
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                    width: parent.width
+                                    height: parent.height
+                                }
+                                enabled: true
+                                onClicked: {
+                                    if (uavList.controlAllUAVs) {
+                                        uavList.returnToLaunchAll()
+                                    } else {
+                                        // RTL all selected UAVs
+                                        for (var i = 0; i < uavList.selectedUAVs.length; i++) {
+                                            uavList.returnToLaunch(uavList.selectedUAVs[i])
+                                        }
+                                    }
+                                }
+                            }
+
+                            Button {
+                                width: 90
+                                height: 50
+                                font.pointSize: 8
+                                text: "&Land"
+                                background: Rectangle {
+                                    color: landButtonHighlighted ? "#ffff99" : (parent.hovered ? "#f0f0f0" : "#f8f8f8")
+                                    border.color: landButtonHighlighted ? "#ffcc00" : "#cccccc"
+                                    border.width: landButtonHighlighted ? 2 : 1
+                                    radius: 2
+                                }
+                                contentItem: Text {
+                                    text: "<b>L</b>and"
+                                    font: parent.font
+                                    color: "#333333"
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                    width: parent.width
+                                    height: parent.height
+                                }
+                                enabled: true
+                                onClicked: {
+                                    if (uavList.controlAllUAVs) {
+                                        uavList.landAllUAVs()
+                                    } else {
+                                        // Land all selected UAVs
+                                        for (var i = 0; i < uavList.selectedUAVs.length; i++) {
+                                            uavList.landUAV(uavList.selectedUAVs[i])
+                                        }
+                                    }
+                                }
+                            }
+
+                            Button {
+                                width: 90
+                                height: 50
+                                font.pointSize: 8
+                                text: "&STOP"
+                                background: Rectangle {
+                                    color: stopButtonHighlighted ? "#ffff99" : (parent.hovered ? "#f0f0f0" : "#f8f8f8")
+                                    border.color: stopButtonHighlighted ? "#ffcc00" : "#cccccc"
+                                    border.width: stopButtonHighlighted ? 2 : 1
+                                    radius: 2
+                                }
+                                contentItem: Text {
+                                    text: "<b>S</b>TOP"
+                                    color: "#333333"
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                    width: parent.width
+                                    height: parent.height
+                                }
+                                onClicked: {
+                                    uavList.emergencyStop()
+                                }
+                            }
+                        }
+                    }
+
+                    // Right side: Time displays
+                    Column {
+                        width: parent.width * 0.3  // 30% width for times
+                        spacing: 8
+
+                        Text {
+                            width: parent.width
+                            text: currentTime
+                            font.pointSize: 16
+                            font.bold: true
+                            color: "#2E7D32"
+                            horizontalAlignment: Text.AlignHCenter
+                        }
+
+                        Text {
+                            width: parent.width
+                            text: "Mission: " + missionTimer
+                            font.pointSize: 12
+                            font.bold: true
+                            color: "#1976D2"
+                            horizontalAlignment: Text.AlignHCenter
+                        }
+                    }
+                }
+            }
         }
     }
-    
-    // File dialogs
+
     FileDialog {
         id: missionFileDialog
         title: "Select Mission File"
@@ -267,6 +669,108 @@ ApplicationWindow {
         }
     }
     
+    // Hotkeys dialog
+    Dialog {
+        id: hotkeysDialog
+        title: "Keyboard Shortcuts"
+        width: 450
+        height: 350
+        modal: true
+        anchors.centerIn: parent
+        
+        Column {
+            anchors.fill: parent
+            anchors.margins: 20
+            spacing: 15
+            
+            Text {
+                text: "Keyboard Shortcuts"
+                font.bold: true
+                font.pointSize: 16
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+            
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: "#ccc"
+            }
+            
+            Text {
+                text: "Control Panel Shortcuts:"
+                font.bold: true
+                font.pointSize: 12
+            }
+            
+            Column {
+                spacing: 8
+                width: parent.width
+                
+                Row {
+                    spacing: 20
+                    Text { 
+                        text: "<b>Ctrl+P</b>"
+                        width: 60
+                        font.family: "Courier New"
+                    }
+                    Text { text: "Pause mission" }
+                }
+                
+                Row {
+                    spacing: 20
+                    Text { 
+                        text: "<b>Ctrl+R</b>"
+                        width: 60
+                        font.family: "Courier New"
+                    }
+                    Text { text: "Return to Launch (RTL)" }
+                }
+                
+                Row {
+                    spacing: 20
+                    Text { 
+                        text: "<b>Ctrl+L</b>"
+                        width: 60
+                        font.family: "Courier New"
+                    }
+                    Text { text: "Land UAV" }
+                }
+                
+                Row {
+                    spacing: 20
+                    Text { 
+                        text: "<b>Ctrl+S</b>"
+                        width: 60
+                        font.family: "Courier New"
+                    }
+                    Text { text: "Emergency STOP" }
+                }
+            }
+            
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: "#ccc"
+            }
+            
+            Text {
+                text: "Note: Bold letters in button text indicate available shortcuts."
+                font.pointSize: 10
+                color: "#666"
+                wrapMode: Text.WordWrap
+                width: parent.width
+            }
+        }
+        
+        Button {
+            text: "Close"
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            anchors.margins: 10
+            onClicked: hotkeysDialog.close()
+        }
+    }
+    
     // Timer for status updates
     Timer {
         interval: 1000
@@ -275,7 +779,39 @@ ApplicationWindow {
         onTriggered: {
             // This will trigger property updates
             connected = backend ? backend.get_uav_status("UAV_1") !== null : false
+            // Update live time displays
+            currentTime = getCurrentTime()
+            missionTimer = getMissionTimer()
         }
+    }
+
+    // Button highlight reset timers
+    Timer {
+        id: pauseHighlightTimer
+        interval: 500
+        repeat: false
+        onTriggered: pauseButtonHighlighted = false
+    }
+
+    Timer {
+        id: rtlHighlightTimer
+        interval: 500
+        repeat: false
+        onTriggered: rtlButtonHighlighted = false
+    }
+
+    Timer {
+        id: landHighlightTimer
+        interval: 500
+        repeat: false
+        onTriggered: landButtonHighlighted = false
+    }
+
+    Timer {
+        id: stopHighlightTimer
+        interval: 500
+        repeat: false
+        onTriggered: stopButtonHighlighted = false
     }
     
     // JavaScript functions
@@ -378,6 +914,25 @@ ApplicationWindow {
         return new Date().toLocaleTimeString()
     }
     
+    function getMissionTimer() {
+        if (!backend) return "00:00:00"
+        try {
+            var status = backend.get_mission_status("UAV_1")
+            if (status && status.active && status.start_time) {
+                var elapsed = Math.floor((new Date() - new Date(status.start_time * 1000)) / 1000)
+                var hours = Math.floor(elapsed / 3600)
+                var minutes = Math.floor((elapsed % 3600) / 60)
+                var seconds = elapsed % 60
+                return String(hours).padStart(2, '0') + ":" + 
+                       String(minutes).padStart(2, '0') + ":" + 
+                       String(seconds).padStart(2, '0')
+            }
+            return "00:00:00"
+        } catch(e) {
+            return "00:00:00"
+        }
+    }
+    
     function getMissionStatus() {
         if (!backend) return "No mission"
         try {
@@ -388,6 +943,76 @@ ApplicationWindow {
             return "No active mission"
         } catch(e) {
             return "No mission"
+        }
+    }
+
+    // Keyboard shortcuts
+    Shortcut {
+        sequence: "Ctrl+P"
+        onActivated: {
+            // Highlight button and trigger action
+            pauseButtonHighlighted = true
+            pauseHighlightTimer.start()
+            
+            // Trigger Pause button
+            if (uavList.controlAllUAVs) {
+                console.log("Pause all UAVs (shortcut)")
+            } else {
+                // Pause all selected UAVs
+                for (var i = 0; i < uavList.selectedUAVs.length; i++) {
+                    console.log("Pause UAV", uavList.selectedUAVs[i], "(shortcut)")
+                }
+            }
+        }
+    }
+
+    Shortcut {
+        sequence: "Ctrl+R"
+        onActivated: {
+            // Highlight button and trigger action
+            rtlButtonHighlighted = true
+            rtlHighlightTimer.start()
+            
+            // Trigger RTL button
+            if (uavList.controlAllUAVs) {
+                uavList.returnToLaunchAll()
+            } else {
+                // RTL all selected UAVs
+                for (var i = 0; i < uavList.selectedUAVs.length; i++) {
+                    uavList.returnToLaunch(uavList.selectedUAVs[i])
+                }
+            }
+        }
+    }
+
+    Shortcut {
+        sequence: "Ctrl+L"
+        onActivated: {
+            // Highlight button and trigger action
+            landButtonHighlighted = true
+            landHighlightTimer.start()
+            
+            // Trigger Land button
+            if (uavList.controlAllUAVs) {
+                uavList.landAllUAVs()
+            } else {
+                // Land all selected UAVs
+                for (var i = 0; i < uavList.selectedUAVs.length; i++) {
+                    uavList.landUAV(uavList.selectedUAVs[i])
+                }
+            }
+        }
+    }
+
+    Shortcut {
+        sequence: "Ctrl+S"
+        onActivated: {
+            // Highlight button and trigger action
+            stopButtonHighlighted = true
+            stopHighlightTimer.start()
+            
+            // Trigger STOP button
+            uavList.emergencyStop()
         }
     }
 }

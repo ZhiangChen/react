@@ -212,10 +212,12 @@ class App(QObject):
         """Get mission status for a UAV."""
         return self.mission_manager.get_mission_status(uav_id)
 
+    @Slot(str, str, result=bool)
     def load_mission(self, uav_id, waypoint_file_path):
         """Load a mission to a UAV."""
         return self.mission_manager.load_mission_to_uav(uav_id, waypoint_file_path)
 
+    @Slot(str)
     def start_mission(self, uav_id):
         """Start mission execution for a UAV."""
         return self.mission_manager.start_mission(uav_id)
@@ -339,7 +341,17 @@ class App(QObject):
             return "ARMED" if self.uav_states[uav_id].armed else "DISARMED"
         return "DISARMED"
 
-
-
+    @Slot(result=int)
+    def getMaxUAVs(self):
+        """Get maximum number of UAVs from config, reloading config each time for dynamic updates."""
+        import yaml
+        try:
+            with open("config.yaml", "r") as f:
+                current_config = yaml.safe_load(f)
+            return current_config.get("device_options", {}).get("max_uavs", 1)
+        except Exception as e:
+            self.logger.warning(f"Failed to reload config for max_uavs: {e}")
+            # Fall back to cached config
+            return self.config.get("device_options", {}).get("max_uavs", 1)
 
 
