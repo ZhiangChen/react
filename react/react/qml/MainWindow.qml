@@ -217,7 +217,7 @@ ApplicationWindow {
 
                     // Left side: Control buttons
                     Column {
-                        width: parent.width * 0.7  // 70% width for controls
+                        width: parent.width - Math.max(parent.width * 0.3, 120) - parent.spacing  // Remaining space after time displays
                         spacing: -2
 
                         Row {
@@ -561,7 +561,7 @@ ApplicationWindow {
 
                     // Right side: Time displays
                     Column {
-                        width: parent.width * 0.3  // 30% width for times
+                        width: Math.max(parent.width * 0.3, 120)  // 30% width for times, minimum 120px
                         spacing: 8
 
                         Text {
@@ -580,6 +580,36 @@ ApplicationWindow {
                             font.bold: true
                             color: "#1976D2"
                             horizontalAlignment: Text.AlignHCenter
+                        }
+
+                        Button {
+                            anchors.horizontalCenter: parent.horizontalCenter  // Center the button horizontally
+                            width: parent.width * 0.8  // 80% width to make it narrower
+                            height: 40
+                            text: "Mission Planner"
+                            font.pointSize: 10
+                            font.bold: true
+                            background: Rectangle {
+                                color: parent.hovered ? "#e3f2fd" : "#f5f5f5"
+                                border.color: "#2196F3"
+                                border.width: 1
+                                radius: 3
+                            }
+                            contentItem: Text {
+                                text: parent.text
+                                font: parent.font
+                                color: "#1976D2"
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
+                            }
+                            onClicked: {
+                                if (!missionPlannerWindowLoader.active) {
+                                    missionPlannerWindowLoader.active = true
+                                }
+                                missionPlannerWindowLoader.item.show()
+                                missionPlannerWindowLoader.item.raise()
+                                missionPlannerWindowLoader.item.requestActivate()
+                            }
                         }
                     }
                 }
@@ -1014,5 +1044,12 @@ ApplicationWindow {
             // Trigger STOP button
             uavList.emergencyStop()
         }
+    }
+
+    // Mission Planner Floating Window Instance
+    Loader {
+        id: missionPlannerWindowLoader
+        source: "MissionPlanner.qml"
+        active: false
     }
 }

@@ -52,8 +52,15 @@ def load_config(path=None):
         return {}
 
 def main():
+    # Set Qt style before creating QApplication
+    import os
+    os.environ['QT_QUICK_CONTROLS_STYLE'] = 'Fusion'
+    
     # Initialize Qt Application
     app = QApplication(sys.argv)
+    
+    # Set style to Fusion to allow Slider customization
+    app.setStyle("Fusion")
     
     # Initialize WebEngine with permissive settings
     QtWebEngineQuick.initialize()
