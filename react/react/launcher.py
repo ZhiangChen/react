@@ -29,9 +29,9 @@ class REACTLauncher:
             script_dir = Path(__file__).parent
             tile_server_path = script_dir / "maps" / "tile_server.py"
             
-            # Use py -3.12 to ensure correct Python version
+            # Use the same Python interpreter that's running this script
             self.tile_server_process = subprocess.Popen([
-                "py", "-3.12", str(tile_server_path)
+                sys.executable, str(tile_server_path)
             ], 
             cwd=str(script_dir)  # Set working directory to project root
             )
@@ -71,7 +71,7 @@ class REACTLauncher:
             main_app_path = script_dir / "main.py"
             
             self.main_app_process = subprocess.Popen([
-                "py", "-3.12", str(main_app_path)
+                sys.executable, str(main_app_path)
             ], 
             cwd=str(script_dir)  # Set working directory to project root
             )
@@ -160,7 +160,7 @@ class REACTLauncher:
             
             # Run preload command
             subprocess.run([
-                "py", "-3.12", str(tile_server_path), "preload", "satellite",
+                sys.executable, str(tile_server_path), "preload", "satellite",
                 str(lat-lat_offset), str(lat+lat_offset), 
                 str(lon-lon_offset), str(lon+lon_offset),
                 *[str(z) for z in range(min_zoom, max_zoom + 1)]
@@ -227,7 +227,7 @@ def install_dependencies():
     print("Installing tile server dependencies...")
     try:
         subprocess.check_call([
-            "py", "-3.12", "-m", "pip", "install", 
+            sys.executable, "-m", "pip", "install", 
             "fastapi", "uvicorn", "aiohttp", "aiofiles", "pyyaml"
         ])
         print("Dependencies installed successfully")
@@ -247,7 +247,7 @@ if __name__ == "__main__":
             try:
                 script_dir = Path(__file__).parent
                 tile_server_path = script_dir / "maps" / "tile_server.py"
-                subprocess.run(["py", "-3.12", str(tile_server_path)], cwd=str(script_dir))
+                subprocess.run([sys.executable, str(tile_server_path)], cwd=str(script_dir))
             except KeyboardInterrupt:
                 pass
             sys.exit(0)
