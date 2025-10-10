@@ -5,10 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>REACT Ground Control Station - Satellite Map</title>
     
-    <!-- Leaflet CSS from CDN -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-        crossorigin=""/>
+    <!-- Leaflet CSS (local) -->
+    <link rel="stylesheet" href="/static/leaflet/leaflet.css" />
     
     <style>
         body, html {
@@ -82,10 +80,8 @@
         }
     </script>
     
-    <!-- Leaflet JavaScript -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-        crossorigin=""></script>
+    <!-- Leaflet JavaScript (local) -->
+    <script src="/static/leaflet/leaflet.js"></script>
     
     <script>
         console.log('REACT satellite_map.html JavaScript loaded');
@@ -112,11 +108,12 @@
                 .then(config => {
                     const streetTransparency = config.map?.street_transparency || 0.5;
                     
-                    // Same-origin tiles
+                    // Same-origin tiles (cache-first for offline)
                     mapLayers = {
-                        osm: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        osm: L.tileLayer(currentOrigin + '/tiles/openstreetmap/{z}/{x}/{y}.png', {
                             maxZoom: 19,
-                            attribution: '© OpenStreetMap contributors'
+                            attribution: '© OpenStreetMap contributors',
+                            errorTileUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=='
                         }),
                         
                         satellite: L.tileLayer(currentOrigin + '/tiles/satellite/{z}/{x}/{y}.png', {
@@ -125,6 +122,7 @@
                             updateWhenIdle: false,
                             updateWhenZooming: true,
                             keepBuffer: 2,
+                            errorTileUrl: currentOrigin + '/blank_tile.png',
                             getTileUrl: function(coords) {
                                 const url = currentOrigin + `/tiles/satellite/${coords.z}/${coords.x}/${coords.y}.png`;
                                 console.log('Requesting satellite tile:', url);
@@ -135,12 +133,14 @@
                         hybrid: L.layerGroup([
                             L.tileLayer(currentOrigin + '/tiles/satellite/{z}/{x}/{y}.png', {
                                 maxZoom: 19,
-                                attribution: 'Google Satellite via Local Cache'
+                                attribution: 'Google Satellite via Local Cache',
+                                errorTileUrl: currentOrigin + '/blank_tile.png'
                             }),
-                            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            L.tileLayer(currentOrigin + '/tiles/openstreetmap/{z}/{x}/{y}.png', {
                                 maxZoom: 19,
                                 attribution: '© OpenStreetMap contributors',
-                                opacity: streetTransparency
+                                opacity: streetTransparency,
+                                errorTileUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=='
                             })
                         ])
                     };
@@ -149,12 +149,13 @@
                 })
                 .catch(error => {
                     console.error('Error loading config:', error);
-                    // Fallback without config
+                    // Fallback without config (offline mode)
                     const currentOrigin = window.location.origin;
                     mapLayers = {
-                        osm: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        osm: L.tileLayer(currentOrigin + '/tiles/openstreetmap/{z}/{x}/{y}.png', {
                             maxZoom: 19,
-                            attribution: '© OpenStreetMap contributors'
+                            attribution: '© OpenStreetMap contributors',
+                            errorTileUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=='
                         }),
                         
                         satellite: L.tileLayer(currentOrigin + '/tiles/satellite/{z}/{x}/{y}.png', {
@@ -163,6 +164,7 @@
                             updateWhenIdle: false,
                             updateWhenZooming: true,
                             keepBuffer: 2,
+                            errorTileUrl: currentOrigin + '/blank_tile.png',
                             getTileUrl: function(coords) {
                                 const url = currentOrigin + `/tiles/satellite/${coords.z}/${coords.x}/${coords.y}.png`;
                                 console.log('Requesting satellite tile:', url);
@@ -173,12 +175,14 @@
                         hybrid: L.layerGroup([
                             L.tileLayer(currentOrigin + '/tiles/satellite/{z}/{x}/{y}.png', {
                                 maxZoom: 19,
-                                attribution: 'Google Satellite via Local Cache'
+                                attribution: 'Google Satellite via Local Cache',
+                                errorTileUrl: currentOrigin + '/blank_tile.png'
                             }),
-                            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            L.tileLayer(currentOrigin + '/tiles/openstreetmap/{z}/{x}/{y}.png', {
                                 maxZoom: 19,
                                 attribution: '© OpenStreetMap contributors',
-                                opacity: 0.5
+                                opacity: 0.5,
+                                errorTileUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=='
                             })
                         ])
                     };
@@ -205,7 +209,7 @@
                 return;
             }
             
-            // Fetch default home position from server
+            // Fetch default home position from server (with offline fallback)
             const currentOrigin = window.location.origin;
             const apiUrl = currentOrigin + '/api/info?t=' + Date.now(); // Cache-busting
             fetch(apiUrl)
@@ -214,22 +218,23 @@
                     console.log('API info received:', data);
                     console.log('Default home from API:', data.default_home_position);
                     const homePos = data.default_home_position || {
-                        latitude: 37.7749,
-                        longitude: -122.4194,
-                        zoom: 10
+                        latitude: 40.7128,
+                        longitude: -76.006,
+                        zoom: 12
                     };
                     console.log('Using home position:', homePos);
                     
                     initMapWithPosition(homePos);
                 })
                 .catch(error => {
-                    console.error('Failed to get default home position:', error);
-                    // Fallback to San Francisco
+                    console.warn('Failed to get default home position (offline mode?):', error);
+                    // Offline fallback to configured position
                     const fallbackPos = {
-                        latitude: 37.7749,
-                        longitude: -122.4194,
-                        zoom: 10
+                        latitude: 40.7128,
+                        longitude: -76.006,
+                        zoom: 12
                     };
+                    console.log('Using offline fallback position:', fallbackPos);
                     initMapWithPosition(fallbackPos);
                 });
         }
@@ -250,27 +255,29 @@
                     attributionControl: true
                 });
                 
-                // Load config to get default layer
+                // Load config to get default layer (with offline fallback)
                 const currentOrigin = window.location.origin;
                 fetch(currentOrigin + '/api/config')
                     .then(response => response.json())
                     .then(config => {
-                        const defaultLayer = config.map?.default_layer || 'osm';
+                        const defaultLayer = config.map?.default_layer || 'satellite';
+                        console.log('Config loaded, default layer:', defaultLayer);
                         if (mapLayers[defaultLayer]) {
                             mapLayers[defaultLayer].addTo(map);
                             currentLayer = mapLayers[defaultLayer];
                             console.log('Started with default layer:', defaultLayer);
                         } else {
-                            mapLayers.osm.addTo(map);
-                            currentLayer = mapLayers.osm;
-                            console.log('Fallback to OSM layer');
+                            mapLayers.satellite.addTo(map);
+                            currentLayer = mapLayers.satellite;
+                            console.log('Fallback to satellite layer');
                         }
                     })
                     .catch(error => {
-                        console.error('Error loading config for default layer:', error);
-                        // Fallback to OSM
-                        mapLayers.osm.addTo(map);
-                        currentLayer = mapLayers.osm;
+                        console.warn('Could not load config (offline mode?), using satellite layer:', error);
+                        // Offline fallback to satellite
+                        mapLayers.satellite.addTo(map);
+                        currentLayer = mapLayers.satellite;
+                        console.log('Offline mode - using satellite layer');
                     });
                 
                 console.log(`Map initialized at ${homePos.latitude}, ${homePos.longitude} with zoom ${homePos.zoom}`);

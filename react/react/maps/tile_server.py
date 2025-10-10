@@ -34,8 +34,18 @@ def load_config():
         with open(config_path, 'r') as f:
             config = yaml.safe_load(f)
             logger.info(f"Config loaded successfully. Keys: {list(config.keys())}")
-            default_home = config.get("default_home_position")
-            logger.info(f"Default home position in config: {default_home}")
+            
+            # Get default position
+            default_home = config.get("default_home_position", {})
+            if not default_home:
+                logger.warning("No default_home_position found in config")
+                default_home = {
+                    "latitude": 37.7749,    # Default to San Francisco
+                    "longitude": -122.4194,
+                    "zoom": 12
+                }
+            
+            logger.info(f"Default home position: {default_home}")
             return config
     except Exception as e:
         logger.warning(f"Could not load config from {config_path}: {e}")
@@ -140,67 +150,70 @@ class TileCache:
         return source_config["url"].format(x=x, y=y, z=z)
     
     async def get_tile(self, source: str, z: int, x: int, y: int) -> Optional[bytes]:
-        """Get tile from cache or download if not available - Simplified stable version"""
+        """Get tile from cache only - no downloads in this method"""
         tile_path = self.get_tile_path(source, z, x, y)
         
-        # Check if tile exists in cache and has content
+        # Only check cache
         if tile_path.exists() and tile_path.stat().st_size > 0:
             try:
-                logger.info(f"Serving cached tile: {source}/{z}/{x}/{y}")
+                logger.info(f"Found tile in cache: {source}/{z}/{x}/{y}")
                 async with aiofiles.open(tile_path, 'rb') as f:
                     tile_data = await f.read()
                     if len(tile_data) > 0:
                         return tile_data
-                    else:
-                        logger.warning(f"Cached tile is empty, will re-download: {source}/{z}/{x}/{y}")
-                        # Remove empty file
-                        tile_path.unlink()
+                    logger.warning(f"Cached tile is empty: {source}/{z}/{x}/{y}")
             except Exception as e:
                 logger.error(f"Error reading cached tile: {e}")
-                # Remove corrupted file
-                try:
-                    tile_path.unlink()
-                except:
-                    pass
-        
-        # Download tile if not in cache
-        try:
-            session = await self.get_session()
-            url = self.get_tile_url(source, z, x, y)
-            headers = TILE_SOURCES[source]["headers"]
             
-            logger.info(f"Downloading tile: {source}/{z}/{x}/{y}")
-            
-            async with session.get(url, headers=headers, timeout=10) as response:
-                if response.status == 200:
-                    tile_data = await response.read()
-                    
-                    # Cache the tile
-                    tile_path.parent.mkdir(parents=True, exist_ok=True)
-                    try:
-                        async with aiofiles.open(tile_path, 'wb') as f:
-                            await f.write(tile_data)
-                        logger.info(f"✓ Downloaded and cached tile: {source}/{z}/{x}/{y} ({len(tile_data)} bytes)")
-                    except Exception as e:
-                        logger.error(f"Error caching tile: {e}")
-                    
-                    return tile_data
-                else:
-                    logger.warning(f"Failed to download tile {source}/{z}/{x}/{y}: {response.status}")
-                    return None
-                    
-        except asyncio.TimeoutError:
-            logger.warning(f"Timeout downloading tile: {source}/{z}/{x}/{y}")
-            return None
-        except Exception as e:
-            logger.error(f"Error downloading tile {source}/{z}/{x}/{y}: {e}")
-            return None
+        # Return None if not in cache
+        logger.info(f"Tile not in cache: {source}/{z}/{x}/{y}")
+        return None
 
 # Global tile cache instance
 tile_cache = TileCache()
 
 # Mount static files for web content
-app.mount("/static", StaticFiles(directory=WEB_DIR), name="static")
+app.mount("/static", StaticFiles(directory=WEB_DIR / "static"), name="static")
+
+# Create a simple blank tile for fallback (256x256 transparent PNG)
+BLANK_TILE = bytes([
+    0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,  # PNG signature
+    0x00, 0x00, 0x00, 0x0D,  # IHDR chunk length
+    0x49, 0x48, 0x44, 0x52,  # IHDR
+    0x00, 0x00, 0x01, 0x00,  # width: 256
+    0x00, 0x00, 0x01, 0x00,  # height: 256
+    0x08, 0x06, 0x00, 0x00, 0x00,  # bit depth: 8, color type: RGBA, compression: 0, filter: 0, interlace: 0
+    0x5C, 0x72, 0xAE, 0x57,  # CRC for IHDR
+    0x00, 0x00, 0x00, 0x0C,  # IDAT chunk length
+    0x49, 0x44, 0x41, 0x54,  # IDAT
+    0x78, 0x9C, 0x62, 0x00, 0x01, 0x00, 0x00, 0x05, 0x00, 0x01, 0x0D, 0x0A,  # compressed transparent pixel data
+    0x2D, 0xB4, 0x03, 0x4F,  # CRC for IDAT
+    0x00, 0x00, 0x00, 0x00,  # IEND chunk length
+    0x49, 0x45, 0x4E, 0x44,  # IEND
+    0xAE, 0x42, 0x60, 0x82   # CRC for IEND
+])
+
+@app.get("/favicon.ico")
+async def favicon():
+    """Serve empty favicon to prevent 404 errors"""
+    return Response(content=b"", media_type="image/x-icon")
+
+@app.get("/blank_tile.png")
+async def get_blank_tile():
+    """Serve a blank tile for missing tiles"""
+    return Response(
+        content=BLANK_TILE,
+        media_type="image/png",
+        headers={
+            "Cache-Control": "public, max-age=3600",
+            "Access-Control-Allow-Origin": "*",
+        }
+    )
+
+@app.get("/favicon.ico")
+async def favicon():
+    """Serve empty favicon to prevent 404 errors"""
+    return Response(content=b"", media_type="image/x-icon")
 
 @app.get("/")
 async def root():
@@ -268,7 +281,7 @@ async def get_config():
 
 @app.get("/tiles/{source}/{z}/{x}/{y}.png")
 async def get_tile_endpoint(source: str, z: int, x: int, y: int):
-    """Serve tile image"""
+    """Serve tile image with strict cache-first approach"""
     logger.info(f"Tile requested: {source}/{z}/{x}/{y}")
     
     if source not in TILE_SOURCES:
@@ -287,31 +300,83 @@ async def get_tile_endpoint(source: str, z: int, x: int, y: int):
         logger.error(f"Invalid tile coordinates: {x},{y} for zoom {z}")
         raise HTTPException(status_code=400, detail="Invalid tile coordinates")
     
-    try:
-        logger.info(f"Getting tile from cache: {source}/{z}/{x}/{y}")
-        tile_data = await tile_cache.get_tile(source, z, x, y)
-        if tile_data:
-            logger.info(f"Serving tile: {source}/{z}/{x}/{y} ({len(tile_data)} bytes)")
-            return Response(
-                content=tile_data,
+    # Get tile path
+    tile_path = tile_cache.get_tile_path(source, z, x, y)
+    logger.info(f"Looking for cached tile at: {tile_path}")
+    
+    # First check if tile exists in cache
+    if tile_path.exists():
+        file_size = tile_path.stat().st_size
+        logger.info(f"Found cached tile, size: {file_size} bytes")
+        
+        if file_size > 0:
+            logger.info(f"Serving cached tile: {source}/{z}/{x}/{y}")
+            return FileResponse(
+                tile_path,
                 media_type="image/png",
                 headers={
-                    "Cache-Control": "public, max-age=86400",  # Cache for 24 hours
-                    "Access-Control-Allow-Origin": "http://127.0.0.1:8081",  # Specific origin for QtWebEngine
+                    "Cache-Control": "public, max-age=86400",
+                    "Access-Control-Allow-Origin": "*",
                     "Access-Control-Allow-Methods": "GET, OPTIONS",
                     "Access-Control-Allow-Headers": "*",
-                    "Access-Control-Allow-Credentials": "true",  # Allow credentials for same-origin
-                    "X-Content-Type-Options": "nosniff",  # Security header
-                    "Content-Security-Policy": "default-src 'self'"  # CSP for QtWebEngine
                 }
             )
         else:
-            logger.error(f"Tile not available: {source}/{z}/{x}/{y}")
-            raise HTTPException(status_code=404, detail="Tile not available")
+            logger.warning(f"Cached tile is empty: {source}/{z}/{x}/{y}")
+    else:
+        logger.info(f"Tile not found in cache: {source}/{z}/{x}/{y}")
+    
+    # Only try to download if we can connect to internet quickly
+    try:
+        # Very quick connectivity test
+        connector = aiohttp.TCPConnector(limit=1, limit_per_host=1)
+        timeout = aiohttp.ClientTimeout(total=0.5, connect=0.5)
+        
+        async with aiohttp.ClientSession(connector=connector, timeout=timeout) as session:
+            url = TILE_SOURCES[source]["url"].format(x=x, y=y, z=z)
+            headers = TILE_SOURCES[source]["headers"]
             
+            logger.info(f"Attempting quick download: {source}/{z}/{x}/{y}")
+            async with session.get(url, headers=headers) as response:
+                if response.status == 200:
+                    tile_data = await response.read()
+                    if len(tile_data) > 0:
+                        # Cache the newly downloaded tile
+                        tile_path.parent.mkdir(parents=True, exist_ok=True)
+                        try:
+                            async with aiofiles.open(tile_path, 'wb') as f:
+                                await f.write(tile_data)
+                            logger.info(f"Downloaded and cached: {source}/{z}/{x}/{y}")
+                        except Exception as e:
+                            logger.error(f"Error caching tile: {e}")
+                        
+                        return Response(
+                            content=tile_data,
+                            media_type="image/png",
+                            headers={
+                                "Cache-Control": "public, max-age=86400",
+                                "Access-Control-Allow-Origin": "*",
+                                "Access-Control-Allow-Methods": "GET, OPTIONS",
+                                "Access-Control-Allow-Headers": "*",
+                            }
+                        )
+                else:
+                    logger.warning(f"Download failed with status {response.status}")
     except Exception as e:
-        logger.error(f"Error serving tile {source}/{z}/{x}/{y}: {e}")
-        raise HTTPException(status_code=500, detail="Internal server error")
+        logger.info(f"Network unavailable (offline mode): {e}")
+    
+    # If we get here, tile is not available - return blank tile instead of 404
+    logger.info(f"Returning blank tile for: {source}/{z}/{x}/{y}")
+    return Response(
+        content=BLANK_TILE,
+        media_type="image/png",
+        headers={
+            "Cache-Control": "public, max-age=3600",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, OPTIONS",
+            "Access-Control-Allow-Headers": "*",
+        }
+    )
 
 # Add OSM-compatible tile endpoint
 @app.get("/{z}/{x}/{y}.png")
@@ -395,30 +460,56 @@ async def satellite_map():
     else:
         return {"error": "satellite_map.html not found"}
 
+async def preload_default_area():
+    """Preload tiles for the default area from config"""
+    try:
+        preload = config.get('tile_preload', {})
+        if not preload:
+            logger.warning("No tile preload configuration found")
+            return
+            
+        lat = preload['latitude']
+        lon = preload['longitude']
+        radius_km = preload['radius_km']
+        min_zoom = preload['min_zoom']
+        max_zoom = preload['max_zoom']
+        
+        # Convert radius to lat/lon offset (approximate)
+        # 1 degree latitude = 111km
+        lat_offset = radius_km / 111.0
+        # Adjust longitude offset based on latitude
+        lon_offset = lat_offset / math.cos(math.radians(lat))
+        
+        lat_min = lat - lat_offset
+        lat_max = lat + lat_offset
+        lon_min = lon - lon_offset
+        lon_max = lon + lon_offset
+        zoom_levels = list(range(min_zoom, max_zoom + 1))
+        
+        logger.info(f"Preloading tiles for default area:")
+        logger.info(f"Center: {lat}, {lon}")
+        logger.info(f"Coverage: {lat_min},{lon_min} to {lat_max},{lon_max}")
+        logger.info(f"Zoom levels: {zoom_levels}")
+        
+        await preload_region("satellite", lat_min, lat_max, lon_min, lon_max, zoom_levels)
+        logger.info("✓ Default area tiles preloaded successfully")
+        
+    except Exception as e:
+        logger.error(f"Error preloading default area: {e}")
+
 if __name__ == "__main__":
-    # Command line interface for running server or pre-loading tiles
-    if len(sys.argv) > 1 and sys.argv[1] == "preload":
-        # Example: python tile_server.py preload satellite 40.0 41.0 -74.0 -73.0 10 11 12
-        if len(sys.argv) < 8:
-            print("Usage: python tile_server.py preload <source> <lat_min> <lat_max> <lon_min> <lon_max> <zoom1> [zoom2] ...")
-            sys.exit(1)
-        
-        source = sys.argv[2]
-        lat_min = float(sys.argv[3])
-        lat_max = float(sys.argv[4])
-        lon_min = float(sys.argv[5])
-        lon_max = float(sys.argv[6])
-        zoom_levels = [int(z) for z in sys.argv[7:]]
-        
-        asyncio.run(preload_region(source, lat_min, lat_max, lon_min, lon_max, zoom_levels))
-    else:
-        # Run the server using configured host and port
-        logger.info(f"Starting REACT Tile Server on http://{SERVER_HOST}:{SERVER_PORT}")
-        logger.info("Serving HTML content and satellite tiles from same origin")
-        uvicorn.run(
-            app,
-            host=SERVER_HOST,
-            port=SERVER_PORT,
-            reload=False,
-            log_level="info"
-        )
+    # Run the server using configured host and port
+    logger.info(f"Starting REACT Tile Server on http://{SERVER_HOST}:{SERVER_PORT}")
+    logger.info("Serving HTML content and satellite tiles from same origin")
+    
+    # Preload default area tiles on startup
+    asyncio.run(preload_default_area())
+    
+    # Start the server
+    uvicorn.run(
+        app,
+        host=SERVER_HOST,
+        port=SERVER_PORT,
+        reload=False,
+        log_level="info"
+    )

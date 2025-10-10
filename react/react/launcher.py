@@ -10,6 +10,8 @@ import time
 import threading
 import signal
 import os
+import math
+import yaml
 from pathlib import Path
 import urllib.request
 
@@ -120,6 +122,57 @@ class REACTLauncher:
                 self.running = False
                 break
     
+    def preload_default_area(self):
+        """Preload map tiles around the default position from config"""
+        try:
+            print("\nPreloading map tiles for default area...")
+            config_path = Path(__file__).parent / "config.yaml"
+            with open(config_path, 'r') as f:
+                config = yaml.safe_load(f)
+            
+            default_pos = config.get('default_home_position', {})
+            if not default_pos:
+                print("No default position found in config.yaml, skipping tile preload")
+                return True
+
+            lat = default_pos.get('latitude')
+            lon = default_pos.get('longitude')
+            zoom = default_pos.get('zoom', 12)
+            
+            if lat is None or lon is None:
+                print("Invalid default position in config.yaml, skipping tile preload")
+                return True
+                
+            # Calculate a bounding box around the default position (roughly 10km radius)
+            lat_offset = 0.02  # About 11km at equator
+            lon_offset = 0.02 / math.cos(math.radians(lat))  # Adjust for latitude
+            
+            # Preload tiles for zoom levels around default
+            min_zoom = max(1, zoom -1)  # 1 levels out
+            max_zoom = min(18, zoom + 1)  # 1 levels in
+
+            print(f"Default position: {lat:.6f}, {lon:.6f}, zoom {zoom}")
+            print(f"Preloading area: {lat-lat_offset:.6f},{lon-lon_offset:.6f} to {lat+lat_offset:.6f},{lon+lon_offset:.6f}")
+            print(f"Zoom levels: {min_zoom} to {max_zoom}")
+            
+            script_dir = Path(__file__).parent
+            tile_server_path = script_dir / "maps" / "tile_server.py"
+            
+            # Run preload command
+            subprocess.run([
+                "py", "-3.12", str(tile_server_path), "preload", "satellite",
+                str(lat-lat_offset), str(lat+lat_offset), 
+                str(lon-lon_offset), str(lon+lon_offset),
+                *[str(z) for z in range(min_zoom, max_zoom + 1)]
+            ], check=True, cwd=str(script_dir))
+            
+            print("✓ Successfully preloaded map tiles for default area")
+            return True
+            
+        except Exception as e:
+            print(f"Warning: Failed to preload default area tiles: {e}")
+            return True  # Continue anyway
+
     def run(self):
         """Main launcher function"""
         print("=" * 50)
@@ -135,7 +188,7 @@ class REACTLauncher:
             print("Failed to install dependencies, exiting...")
             return 1
         
-        # Start tile server
+        # Start tile server (will automatically preload tiles based on config)
         if not self.start_tile_server():
             print("Failed to start tile server, exiting...")
             return 1
@@ -183,39 +236,12 @@ def install_dependencies():
         print("Failed to install dependencies")
         return False
 
-def preload_tiles():
-    """Pre-load tiles for a specific region"""
-    if len(sys.argv) < 7:
-        print("Usage: python launcher.py preload <lat_min> <lat_max> <lon_min> <lon_max> <zoom1> [zoom2] ...")
-        return 1
-    
-    lat_min = float(sys.argv[2])
-    lat_max = float(sys.argv[3]) 
-    lon_min = float(sys.argv[4])
-    lon_max = float(sys.argv[5])
-    zoom_levels = [int(z) for z in sys.argv[6:]]
-    
-    print(f"Pre-loading tiles for region: {lat_min},{lon_min} to {lat_max},{lon_max}")
-    print(f"Zoom levels: {zoom_levels}")
-    
-    try:
-        script_dir = Path(__file__).parent
-        tile_server_path = script_dir / "maps" / "tile_server.py"
-        result = subprocess.run([
-            "py", "-3.12", str(tile_server_path), "preload", "satellite",
-            str(lat_min), str(lat_max), str(lon_min), str(lon_max)
-        ] + [str(z) for z in zoom_levels], cwd=str(script_dir))
-        return result.returncode
-    except Exception as e:
-        print(f"Error pre-loading tiles: {e}")
-        return 1
+# Removed preload_tiles function as it's now handled automatically by tile_server.py
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         if sys.argv[1] == "install":
             sys.exit(0 if install_dependencies() else 1)
-        elif sys.argv[1] == "preload":
-            sys.exit(preload_tiles())
         elif sys.argv[1] == "server-only":
             # Run only the tile server
             try:
