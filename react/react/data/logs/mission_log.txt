@@ -3229,3 +3229,38 @@
 2025-10-10 18:22:41,220 - REACT.SafetyMonitor - WARNING - WARNING - UAV_2: Altitude too low: 0.0m AGL
 2025-10-10 18:22:41,224 - REACT.SafetyMonitor - WARNING - WARNING - UAV_3: Altitude too low: 0.0m AGL
 2025-10-10 18:22:41,224 - REACT.SafetyMonitor - WARNING - WARNING - UAV_1: Altitude too low: 0.0m AGL
+2025-10-10 18:23:14,424 - REACT.UAVController - INFO - Requesting arm command for UAV UAV_1
+2025-10-10 18:23:14,425 - REACT.TelemetryManager - INFO - Sending command_long to UAV_1: CMD_400
+2025-10-10 18:23:14,427 - REACT.UAVController - INFO - Requesting arm command for UAV UAV_2
+2025-10-10 18:23:14,427 - REACT.TelemetryManager - INFO - Sending command_long to UAV_2: CMD_400
+2025-10-10 18:23:14,429 - REACT.UAVController - INFO - Requesting arm command for UAV UAV_3
+2025-10-10 18:23:14,429 - REACT.TelemetryManager - INFO - Sending command_long to UAV_3: CMD_400
+2025-10-10 18:23:14,433 - REACT.UAVController - WARNING - Cannot arm unknown UAV: UAV_4
+2025-10-10 18:23:14,433 - REACT.UAVController - WARNING - Cannot arm unknown UAV: UAV_5
+2025-10-10 18:23:14,434 - REACT.UAVController - WARNING - Cannot arm unknown UAV: UAV_6
+2025-10-10 18:23:14,434 - REACT.UAVController - WARNING - Cannot arm unknown UAV: UAV_7
+2025-10-10 18:23:14,435 - REACT.UAVController - WARNING - Cannot arm unknown UAV: UAV_8
+2025-10-10 18:23:14,435 - REACT.UAVController - WARNING - Cannot arm unknown UAV: UAV_9
+2025-10-10 18:23:14,436 - REACT.UAVController - WARNING - Cannot arm unknown UAV: UAV_10
+2025-10-10 18:23:14,829 - REACT.TelemetryManager - INFO - UAV_1 ARM/DISARM command accepted
+2025-10-10 18:23:14,859 - REACT.TelemetryManager - INFO - UAV_2 ARM/DISARM command accepted
+2025-10-10 18:23:14,884 - REACT.TelemetryManager - INFO - UAV_3 ARM/DISARM command accepted
+2025-10-10 18:23:15,219 - REACT.SafetyMonitor - WARNING - WARNING - UAV_2: Altitude too low: 0.0m AGL
+2025-10-10 18:23:15,221 - REACT.SafetyMonitor - WARNING - WARNING - UAV_3: Altitude too low: 0.0m AGL
+2025-10-10 18:23:15,222 - REACT.SafetyMonitor - WARNING - WARNING - UAV_1: Altitude too low: 0.0m AGL
+2025-10-10 18:23:30,698 - REACT.UAVController - INFO - Requesting arm command for UAV UAV_1
+2025-10-10 18:23:30,698 - REACT.TelemetryManager - INFO - Sending command_long to UAV_1: CMD_400
+2025-10-10 18:23:30,701 - REACT.UAVController - INFO - Requesting arm command for UAV UAV_2
+2025-10-10 18:23:30,701 - REACT.TelemetryManager - INFO - Sending command_long to UAV_2: CMD_400
+2025-10-10 18:23:30,701 - REACT.UAVController - INFO - Requesting arm command for UAV UAV_3
+2025-10-10 18:23:30,701 - REACT.TelemetryManager - INFO - Sending command_long to UAV_3: CMD_400
+2025-10-10 18:23:30,707 - REACT.UAVController - WARNING - Cannot arm unknown UAV: UAV_4
+2025-10-10 18:23:30,707 - REACT.UAVController - WARNING - Cannot arm unknown UAV: UAV_5
+2025-10-10 18:23:30,707 - REACT.UAVController - WARNING - Cannot arm unknown UAV: UAV_6
+2025-10-10 18:23:30,709 - REACT.UAVController - WARNING - Cannot arm unknown UAV: UAV_7
+2025-10-10 18:23:30,709 - REACT.UAVController - WARNING - Cannot arm unknown UAV: UAV_8
+2025-10-10 18:23:30,709 - REACT.UAVController - WARNING - Cannot arm unknown UAV: UAV_9
+2025-10-10 18:23:30,709 - REACT.UAVController - WARNING - Cannot arm unknown UAV: UAV_10
+2025-10-10 18:23:30,906 - REACT.TelemetryManager - INFO - UAV_1 ARM/DISARM command accepted
+2025-10-10 18:23:30,967 - REACT.TelemetryManager - INFO - UAV_2 ARM/DISARM command accepted
+2025-10-10 18:23:30,993 - REACT.TelemetryManager - INFO - UAV_3 ARM/DISARM command accepted
