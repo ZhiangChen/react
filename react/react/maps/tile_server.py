@@ -97,7 +97,7 @@ TILE_SOURCES = {
         "name": "Google Satellite",
         "url": "https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
         "attribution": "© Google",
-        "max_zoom": 20,
+        "max_zoom": 22,
         "headers": {
             "User-Agent": "REACT-GCS/1.0"
         }
@@ -106,7 +106,7 @@ TILE_SOURCES = {
         "name": "OpenStreetMap",
         "url": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
         "attribution": "© OpenStreetMap contributors",
-        "max_zoom": 18,
+        "max_zoom": 22,  # Increased from 18, but tiles may not be available
         "headers": {
             "User-Agent": "REACT-GCS/1.0"
         }
@@ -115,7 +115,7 @@ TILE_SOURCES = {
         "name": "ESRI Satellite Imagery",
         "url": "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
         "attribution": "Source: Esri, Maxar, Earthstar Geographics",
-        "max_zoom": 19,
+        "max_zoom": 22,  # Increased from 19
         "headers": {
             "User-Agent": "REACT-GCS/1.0"
         }

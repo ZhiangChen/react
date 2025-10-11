@@ -13,6 +13,11 @@ def setup_global_logging(config):
     """Configure logging for the entire application."""
     log_file_path = config.get("device_options", {}).get("log_file_path", "data/logs/mission_log.txt")
     
+    # If path is relative, make it relative to the script directory
+    if not os.path.isabs(log_file_path):
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        log_file_path = os.path.join(script_dir, log_file_path)
+    
     # Create directory if it doesn't exist
     os.makedirs(os.path.dirname(log_file_path), exist_ok=True)
     

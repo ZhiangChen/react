@@ -41,17 +41,43 @@
             border-radius: 4px;
             background: white;
             font-size: 13px;
-            box-shadow: 0 1px 5px rgba(0,0,0,0.2);
             cursor: pointer;
-            min-width: 120px; /* Consistent width */
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
-        .map-controls button:hover {
-            background: #f0f0f0;
+        .map-controls select:hover, .map-controls button:hover {
+            background: #f5f5f5;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
         }
         
-        .map-controls select:hover {
-            background: #f0f0f0;
+        /* UAV Marker Styles */
+        .uav-marker {
+            transition: transform 0.3s ease;
+        }
+        
+        .uav-marker:hover {
+            transform: scale(1.2);
+        }
+        
+        /* Home Marker Animation */
+        .home-marker {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.7;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
     </style>
 </head>
@@ -63,6 +89,53 @@
             <option value="satellite">Satellite</option>
             <option value="hybrid">Hybrid</option>
         </select>
+        <div id="infoDisplay" style="
+            background: rgba(0, 0, 0, 0.4); 
+            color: white; 
+            padding: 6px 8px; 
+            border-radius: 3px; 
+            margin-top: 5px;
+            text-align: center;
+            line-height: 1.2;
+        ">
+            <div id="zoomDisplay" style="
+                font-size: 12px; 
+                font-weight: bold;
+                margin-bottom: 2px;
+            ">Zoom: --</div>
+            <div id="latDisplay" style="
+                font-size: 11px; 
+                font-family: monospace;
+                margin-bottom: 1px;
+            ">Lat: --</div>
+            <div id="lonDisplay" style="
+                font-size: 11px; 
+                font-family: monospace;
+            ">Lon: --</div>
+        </div>
+    </div>
+    
+    <!-- Scale bar at bottom right -->
+    <div id="scaleBar" style="
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        background: rgba(255, 255, 255, 0.9);
+        border: 2px solid #333;
+        border-radius: 3px;
+        padding: 5px 8px;
+        font-size: 11px;
+        font-weight: bold;
+        color: #333;
+        z-index: 1000;
+    ">
+        <div id="scaleBarLine" style="
+            height: 3px;
+            background: #333;
+            margin-bottom: 2px;
+            width: 100px;
+        "></div>
+        <div id="scaleBarText">-- km</div>
     </div>
     
     <div id="map"></div>
@@ -111,13 +184,13 @@
                     // Same-origin tiles (cache-first for offline)
                     mapLayers = {
                         osm: L.tileLayer(currentOrigin + '/tiles/openstreetmap/{z}/{x}/{y}.png', {
-                            maxZoom: 19,
+                            maxZoom: 22,
                             attribution: '© OpenStreetMap contributors',
                             errorTileUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=='
                         }),
                         
                         satellite: L.tileLayer(currentOrigin + '/tiles/satellite/{z}/{x}/{y}.png', {
-                            maxZoom: 19,
+                            maxZoom: 22,
                             attribution: 'Google Satellite via Local Cache',
                             updateWhenIdle: false,
                             updateWhenZooming: true,
@@ -132,12 +205,12 @@
                         
                         hybrid: L.layerGroup([
                             L.tileLayer(currentOrigin + '/tiles/satellite/{z}/{x}/{y}.png', {
-                                maxZoom: 19,
+                                maxZoom: 22,
                                 attribution: 'Google Satellite via Local Cache',
                                 errorTileUrl: currentOrigin + '/blank_tile.png'
                             }),
                             L.tileLayer(currentOrigin + '/tiles/openstreetmap/{z}/{x}/{y}.png', {
-                                maxZoom: 19,
+                                maxZoom: 22,
                                 attribution: '© OpenStreetMap contributors',
                                 opacity: streetTransparency,
                                 errorTileUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=='
@@ -153,13 +226,13 @@
                     const currentOrigin = window.location.origin;
                     mapLayers = {
                         osm: L.tileLayer(currentOrigin + '/tiles/openstreetmap/{z}/{x}/{y}.png', {
-                            maxZoom: 19,
+                            maxZoom: 22,
                             attribution: '© OpenStreetMap contributors',
                             errorTileUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=='
                         }),
                         
                         satellite: L.tileLayer(currentOrigin + '/tiles/satellite/{z}/{x}/{y}.png', {
-                            maxZoom: 19,
+                            maxZoom: 22,
                             attribution: 'Google Satellite via Local Cache',
                             updateWhenIdle: false,
                             updateWhenZooming: true,
@@ -174,12 +247,12 @@
                         
                         hybrid: L.layerGroup([
                             L.tileLayer(currentOrigin + '/tiles/satellite/{z}/{x}/{y}.png', {
-                                maxZoom: 19,
+                                maxZoom: 22,
                                 attribution: 'Google Satellite via Local Cache',
                                 errorTileUrl: currentOrigin + '/blank_tile.png'
                             }),
                             L.tileLayer(currentOrigin + '/tiles/openstreetmap/{z}/{x}/{y}.png', {
-                                maxZoom: 19,
+                                maxZoom: 22,
                                 attribution: '© OpenStreetMap contributors',
                                 opacity: 0.5,
                                 errorTileUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=='
@@ -282,28 +355,30 @@
                 
                 console.log(`Map initialized at ${homePos.latitude}, ${homePos.longitude} with zoom ${homePos.zoom}`);
                 
-                // Add a test UAV marker at home position
-                const uavIcon = L.divIcon({
-                    html: '🚁',
-                    className: 'uav-icon',
-                    iconSize: [20, 20],
-                    iconAnchor: [10, 10]
-                });
-                
-                const testUAV = L.marker([homePos.latitude, homePos.longitude], {icon: uavIcon})
-                    .addTo(map)
-                    .bindPopup('TEST UAV<br/>Status: Active');
-                    
-                uavMarkers['TEST_UAV'] = testUAV;
-                
                 // Set up map type selector
                 const mapTypeSelect = document.getElementById('mapTypeSelect');
                 mapTypeSelect.addEventListener('change', function() {
                     changeMapType(this.value);
                 });
                 
+                // Initialize displays
+                updateZoomDisplay();
+                updateCoordsDisplay();
+                updateScaleBar();
+                
                 // Test tile loading
                 testTileServer();
+                
+                // Add map event handlers for all displays
+                map.on('zoomend', function(e) {
+                    updateZoomDisplay();
+                    updateScaleBar();
+                });
+                
+                map.on('moveend', function(e) {
+                    updateCoordsDisplay();
+                    updateScaleBar();
+                });
                 
                 // Add debug logging for map events
                 map.on('movestart', function(e) {
@@ -364,6 +439,83 @@
             }
         }
         
+        // Update zoom level display
+        function updateZoomDisplay() {
+            const zoomDisplay = document.getElementById('zoomDisplay');
+            if (map && zoomDisplay) {
+                const currentZoom = map.getZoom();
+                zoomDisplay.textContent = `Zoom: ${currentZoom}`;
+            }
+        }
+        
+        // Update coordinates display
+        function updateCoordsDisplay() {
+            const latDisplay = document.getElementById('latDisplay');
+            const lonDisplay = document.getElementById('lonDisplay');
+            if (map && latDisplay && lonDisplay) {
+                const center = map.getCenter();
+                const lat = center.lat.toFixed(6);
+                const lon = center.lng.toFixed(6);
+                latDisplay.textContent = `Lat: ${lat}`;
+                lonDisplay.textContent = `Lon: ${lon}`;
+            }
+        }
+        
+        // Update scale bar
+        function updateScaleBar() {
+            if (!map) return;
+            
+            const scaleBarLine = document.getElementById('scaleBarLine');
+            const scaleBarText = document.getElementById('scaleBarText');
+            
+            if (!scaleBarLine || !scaleBarText) return;
+            
+            // Get current zoom and calculate scale
+            const zoom = map.getZoom();
+            const center = map.getCenter();
+            
+            // Calculate meters per pixel at current zoom and latitude
+            const earthCircumference = 40075017; // meters
+            const metersPerPixelAtEquator = earthCircumference / Math.pow(2, zoom + 8);
+            const metersPerPixel = metersPerPixelAtEquator * Math.cos(center.lat * Math.PI / 180);
+            
+            // Scale bar width in pixels
+            const scaleBarWidthPixels = 100;
+            const scaleBarWidthMeters = metersPerPixel * scaleBarWidthPixels;
+            
+            // Choose appropriate scale and unit
+            let scaleText;
+            let actualWidth;
+            
+            if (scaleBarWidthMeters > 1000) {
+                const km = scaleBarWidthMeters / 1000;
+                if (km > 10) {
+                    scaleText = `${Math.round(km)} km`;
+                    actualWidth = Math.round(km) * 1000 / metersPerPixel;
+                } else if (km > 1) {
+                    scaleText = `${km.toFixed(1)} km`;
+                    actualWidth = parseFloat(km.toFixed(1)) * 1000 / metersPerPixel;
+                } else {
+                    scaleText = `${Math.round(scaleBarWidthMeters)} m`;
+                    actualWidth = Math.round(scaleBarWidthMeters) / metersPerPixel;
+                }
+            } else {
+                if (scaleBarWidthMeters > 100) {
+                    scaleText = `${Math.round(scaleBarWidthMeters)} m`;
+                    actualWidth = Math.round(scaleBarWidthMeters) / metersPerPixel;
+                } else if (scaleBarWidthMeters > 10) {
+                    scaleText = `${Math.round(scaleBarWidthMeters)} m`;
+                    actualWidth = Math.round(scaleBarWidthMeters) / metersPerPixel;
+                } else {
+                    scaleText = `${Math.round(scaleBarWidthMeters)} m`;
+                    actualWidth = Math.round(scaleBarWidthMeters) / metersPerPixel;
+                }
+            }
+            
+            scaleBarLine.style.width = actualWidth + 'px';
+            scaleBarText.textContent = scaleText;
+        }
+        
         function testTileServer() {
             const currentOrigin = window.location.origin;
             
@@ -392,10 +544,40 @@
                 });
         }
         
+        // Center map on UAV
+        function centerOnUAV(uavId) {
+            if (uavId && uavMarkers[uavId]) {
+                const marker = uavMarkers[uavId];
+                const pos = marker.getLatLng();
+                map.setView([pos.lat, pos.lng], Math.max(map.getZoom(), 16));
+                
+                // Briefly highlight the UAV
+                marker.openPopup();
+                setTimeout(() => {
+                    marker.closePopup();
+                }, 2000);
+            }
+        }
+
         function fitAllUAVs() {
             const group = new L.featureGroup(Object.values(uavMarkers));
             if (group.getLayers().length > 0) {
                 map.fitBounds(group.getBounds(), {padding: [20, 20]});
+            }
+        }
+
+        // Center map on specific UAV
+        function centerOnUAV(uavId) {
+            if (uavMarkers[uavId]) {
+                const marker = uavMarkers[uavId];
+                const position = marker.getLatLng();
+                map.setView([position.lat, position.lng], Math.max(map.getZoom(), 16));
+                
+                // Briefly highlight the UAV
+                marker.openPopup();
+                setTimeout(() => {
+                    marker.closePopup();
+                }, 2000);
             }
         }
         
@@ -421,9 +603,223 @@
         setTimeout(() => {
             if (typeof QWebChannel !== 'undefined') {
                 console.log('QWebChannel available, setting up Qt bridge...');
-                // Initialize Qt communication here if needed
+                initQtWebChannel();
+            } else {
+                console.log('QWebChannel not available - using test UAV markers');
+                addTestUAVMarkers();
             }
         }, 1000);
+
+        // Qt WebChannel setup
+        function initQtWebChannel() {
+            try {
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    console.log('Qt WebChannel initialized');
+                    qtChannel = channel;
+                    qtBridge = channel.objects.mapBridge;
+                    
+                    if (qtBridge) {
+                        console.log('Qt mapBridge connected');
+                        
+                        // Connect to UAV position updates
+                        qtBridge.uavPositionChanged.connect(function(uavId, lat, lon, heading, mode, armed) {
+                            console.log('UAV position update:', uavId, lat, lon, heading, mode, armed);
+                            updateUAVMarker(uavId, lat, lon, heading, mode, armed);
+                        });
+                        
+                        // Connect to home position updates
+                        qtBridge.homePositionChanged.connect(function(lat, lon) {
+                            console.log('Home position update:', lat, lon);
+                            updateHomeMarker(lat, lon);
+                        });
+                        
+                        // Connect to mission path updates
+                        qtBridge.missionPathChanged.connect(function(waypoints) {
+                            console.log('Mission path update:', waypoints);
+                            updateMissionPath(waypoints);
+                        });
+                        
+                        // Signal that web map is ready
+                        if (qtBridge.webMapReady) {
+                            qtBridge.webMapReady();
+                        }
+                    } else {
+                        console.error('Qt mapBridge object not found');
+                    }
+                });
+            } catch (error) {
+                console.error('Qt WebChannel initialization failed:', error);
+                addTestUAVMarkers();
+            }
+        }
+
+        // Create custom UAV icon with orientation and status
+        function createUAVIcon(heading, mode, armed, uavId) {
+            const color = getUAVColor(mode, armed);
+            const size = 14; // Smaller triangle
+            
+            // Create simple triangle UAV icon with modern styling
+            const html = `
+                <div style="
+                    width: 0; 
+                    height: 0; 
+                    border-left: ${size/2}px solid transparent; 
+                    border-right: ${size/2}px solid transparent; 
+                    border-bottom: ${size}px solid ${color};
+                    transform: rotate(${heading}deg);
+                    filter: drop-shadow(0 1px 3px rgba(0,0,0,0.4));
+                    position: relative;
+                ">
+                    <div style="
+                        position: absolute;
+                        top: ${size + 3}px;
+                        left: 50%;
+                        transform: translateX(-50%) rotate(-${heading}deg);
+                        background: rgba(0,0,0,0.85);
+                        color: white;
+                        padding: 1px 6px;
+                        border-radius: 4px;
+                        font-size: 9px;
+                        font-weight: 500;
+                        white-space: nowrap;
+                        text-align: center;
+                        min-width: max-content;
+                        backdrop-filter: blur(2px);
+                        border: 1px solid rgba(255,255,255,0.1);
+                    ">${uavId}</div>
+                </div>
+            `;
+            
+            return L.divIcon({
+                html: html,
+                className: 'uav-marker',
+                iconSize: [size, size],
+                iconAnchor: [size/2, size]
+            });
+        }
+
+        // Get UAV color based on mode and armed state
+        function getUAVColor(mode, armed) {
+            if (!armed) return '#808080'; // Gray for disarmed
+            
+            switch(mode) {
+                case 'MANUAL': return '#0066cc';     // Blue
+                case 'STABILIZE': return '#00cc00';  // Green
+                case 'AUTO': return '#6600cc';       // Purple
+                case 'GUIDED': return '#ff6600';     // Orange
+                case 'RTL': return '#ffcc00';        // Yellow
+                case 'LAND': return '#cc0000';       // Red
+                default: return '#808080';           // Gray for unknown
+            }
+        }
+
+        // Update or create UAV marker
+        function updateUAVMarker(uavId, lat, lon, heading, mode, armed) {
+            if (!map) {
+                console.warn('Map not initialized yet');
+                return;
+            }
+            
+            // Remove existing marker if it exists
+            if (uavMarkers[uavId]) {
+                map.removeLayer(uavMarkers[uavId]);
+            }
+            
+            // Create new marker with current data
+            const icon = createUAVIcon(heading, mode, armed, uavId);
+            const marker = L.marker([lat, lon], {icon: icon});
+            
+            // Create popup with UAV information
+            const popupContent = `
+                <div style="font-family: Arial, sans-serif;">
+                    <h4 style="margin: 0 0 8px 0; color: #333;">${uavId}</h4>
+                    <div><strong>Mode:</strong> ${mode}</div>
+                    <div><strong>Armed:</strong> ${armed ? 'Yes' : 'No'}</div>
+                    <div><strong>Heading:</strong> ${heading.toFixed(1)}°</div>
+                    <div><strong>Position:</strong> ${lat.toFixed(6)}, ${lon.toFixed(6)}</div>
+                </div>
+            `;
+            
+            marker.bindPopup(popupContent);
+            
+            // Add click handler for UAV selection
+            marker.on('click', function() {
+                console.log('UAV clicked:', uavId);
+                if (qtBridge && qtBridge.uavSelected) {
+                    qtBridge.uavSelected(uavId);
+                }
+            });
+            
+            // Add to map and store reference
+            marker.addTo(map);
+            uavMarkers[uavId] = marker;
+            
+            console.log('UAV marker updated:', uavId, 'at', lat, lon);
+        }
+
+        // Update home marker
+        let homeMarker = null;
+        function updateHomeMarker(lat, lon) {
+            if (!map) return;
+            
+            if (homeMarker) {
+                map.removeLayer(homeMarker);
+            }
+            
+            const homeIcon = L.divIcon({
+                html: `
+                    <div style="
+                        width: 16px; 
+                        height: 16px; 
+                        background: #00cc00; 
+                        border: 2px solid white; 
+                        border-radius: 50%;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+                    "></div>
+                `,
+                className: 'home-marker',
+                iconSize: [16, 16],
+                iconAnchor: [8, 8]
+            });
+            
+            homeMarker = L.marker([lat, lon], {icon: homeIcon});
+            homeMarker.bindPopup('<strong>Home Position</strong><br/>Launch/Return point');
+            homeMarker.addTo(map);
+        }
+
+        // Update mission path
+        let missionPath = null;
+        function updateMissionPath(waypoints) {
+            if (!map) return;
+            
+            if (missionPath) {
+                map.removeLayer(missionPath);
+            }
+            
+            if (waypoints && waypoints.length > 0) {
+                const latlngs = waypoints.map(wp => [wp.lat, wp.lon]);
+                missionPath = L.polyline(latlngs, {
+                    color: '#ff0000',
+                    weight: 3,
+                    opacity: 0.7,
+                    dashArray: '10, 5'
+                });
+                missionPath.addTo(map);
+            }
+        }
+
+        // Add test UAV markers for demonstration
+        function addTestUAVMarkers() {
+            console.log('Adding test UAV markers');
+            
+            // Add some test UAVs at different locations
+            updateUAVMarker('UAV_1', homePos.latitude + 0.001, homePos.longitude + 0.001, 45, 'STABILIZE', true);
+            updateUAVMarker('UAV_2', homePos.latitude - 0.001, homePos.longitude + 0.002, 90, 'AUTO', true);
+            updateUAVMarker('UAV_3', homePos.latitude + 0.002, homePos.longitude - 0.001, 180, 'RTL', false);
+            
+            // Add home marker
+            updateHomeMarker(homePos.latitude, homePos.longitude);
+        }
     </script>
 </body>
 </html>

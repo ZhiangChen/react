@@ -12,7 +12,7 @@ telemetry1:
   routed_to:
     protocol: "udp"
     udp_address: "127.0.0.1"
-    udp_port: 14550
+    udp_port: 14552
 
 telemetry2:
   protocol: "serial"
@@ -44,9 +44,9 @@ map:
 
 # Default home position for map view
 default_home_position:
-  latitude: 40.7128    # New York City latitude (example)
-  longitude: -76.0060  # New York City longitude (example)
-  zoom: 12             # Default zoom level
+  latitude: 34.163808    # New York City latitude (example)
+  longitude: -118.074877  # New York City longitude (example)
+  zoom: 16             # Default zoom level
 
 device_options:
   max_uavs: 10

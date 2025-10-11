@@ -21,6 +21,7 @@ ApplicationWindow {
 
     // Button highlight properties for keyboard shortcuts
     property bool pauseButtonHighlighted: false
+    property bool manualButtonHighlighted: false
     property bool rtlButtonHighlighted: false
     property bool landButtonHighlighted: false
     property bool stopButtonHighlighted: false
@@ -289,12 +290,22 @@ ApplicationWindow {
                                     height: parent.height
                                 }
                                 onClicked: {
+                                    console.log("Arm button clicked!")
+                                    console.log("controlAllUAVs:", uavList.controlAllUAVs)
+                                    console.log("selectedUAVs:", uavList.selectedUAVs)
+                                    console.log("uavList object:", uavList)
+                                    console.log("uavList.armUAV function:", uavList.armUAV)
                                     if (uavList.controlAllUAVs) {
                                         uavList.armAllUAVs()
                                     } else {
                                         // Arm all selected UAVs
                                         for (var i = 0; i < uavList.selectedUAVs.length; i++) {
-                                            uavList.armUAV(uavList.selectedUAVs[i])
+                                            console.log("Calling armUAV for:", uavList.selectedUAVs[i])
+                                            try {
+                                                uavList.armUAV(uavList.selectedUAVs[i])
+                                            } catch(e) {
+                                                console.log("Error calling uavList.armUAV:", e)
+                                            }
                                         }
                                     }
                                 }
@@ -392,6 +403,39 @@ ApplicationWindow {
                                         // Pause all selected UAVs
                                         for (var i = 0; i < uavList.selectedUAVs.length; i++) {
                                             console.log("Pause UAV", uavList.selectedUAVs[i])
+                                        }
+                                    }
+                                }
+                            }
+
+                            Button {
+                                width: 90
+                                height: 50
+                                font.pointSize: 8
+                                text: "Manual"
+                                background: Rectangle {
+                                    color: manualButtonHighlighted ? "#ffff99" : (parent.hovered ? "#f0f0f0" : "#f8f8f8")
+                                    border.color: manualButtonHighlighted ? "#ffcc00" : "#cccccc"
+                                    border.width: manualButtonHighlighted ? 2 : 1
+                                    radius: 2
+                                }
+                                contentItem: Text {
+                                    text: "<b>M</b>anual"
+                                    font: parent.font
+                                    color: "#333333"
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                    width: parent.width
+                                    height: parent.height
+                                }
+                                enabled: true
+                                onClicked: {
+                                    if (uavList.controlAllUAVs) {
+                                        console.log("Switch all UAVs to manual mode")
+                                    } else {
+                                        // Switch all selected UAVs to manual mode
+                                        for (var i = 0; i < uavList.selectedUAVs.length; i++) {
+                                            console.log("Switch UAV to manual mode", uavList.selectedUAVs[i])
                                         }
                                     }
                                 }
@@ -749,6 +793,16 @@ ApplicationWindow {
                 Row {
                     spacing: 20
                     Text { 
+                        text: "<b>Ctrl+M</b>"
+                        width: 60
+                        font.family: "Courier New"
+                    }
+                    Text { text: "Switch to Manual mode" }
+                }
+                
+                Row {
+                    spacing: 20
+                    Text { 
                         text: "<b>Ctrl+R</b>"
                         width: 60
                         font.family: "Courier New"
@@ -824,6 +878,13 @@ ApplicationWindow {
     }
 
     Timer {
+        id: manualHighlightTimer
+        interval: 500
+        repeat: false
+        onTriggered: manualButtonHighlighted = false
+    }
+
+    Timer {
         id: rtlHighlightTimer
         interval: 500
         repeat: false
@@ -862,6 +923,7 @@ ApplicationWindow {
     }
     
     function armUAV() {
+        console.log("MainWindow.armUAV() called")
         if (backend && backend.uav_controller) {
             try {
                 backend.uav_controller.arm_uav("UAV_1")
@@ -991,6 +1053,25 @@ ApplicationWindow {
                 // Pause all selected UAVs
                 for (var i = 0; i < uavList.selectedUAVs.length; i++) {
                     console.log("Pause UAV", uavList.selectedUAVs[i], "(shortcut)")
+                }
+            }
+        }
+    }
+
+    Shortcut {
+        sequence: "Ctrl+M"
+        onActivated: {
+            // Highlight button and trigger action
+            manualButtonHighlighted = true
+            manualHighlightTimer.start()
+            
+            // Trigger Manual button
+            if (uavList.controlAllUAVs) {
+                console.log("Switch all UAVs to manual mode (shortcut)")
+            } else {
+                // Switch all selected UAVs to manual mode
+                for (var i = 0; i < uavList.selectedUAVs.length; i++) {
+                    console.log("Switch UAV to manual mode", uavList.selectedUAVs[i], "(shortcut)")
                 }
             }
         }

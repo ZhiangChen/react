@@ -122,7 +122,7 @@ class TelemetryManager(QObject):
             # Periodically send Telem2 connection check (if enabled)
             self._check_telem2_connection()
             
-            time.sleep(0.01)  # Avoid CPU hog
+            time.sleep(0.005)  # Faster processing for responsive GUI (200Hz)
 
     def _is_telem1_available(self):
         """Check if Telem1 is available and responsive."""
@@ -202,7 +202,12 @@ class TelemetryManager(QObject):
     def _handle_statustext_message(self, uav_id, msg):
         """Handle STATUSTEXT messages to monitor Telem2 connection status."""
         try:
-            text = msg.text.decode('utf-8').strip()
+            # Handle both bytes and string types for msg.text
+            if isinstance(msg.text, bytes):
+                text = msg.text.decode('utf-8').strip()
+            else:
+                text = str(msg.text).strip()
+            
             system_id = int(uav_id.split('_')[1])
             current_time = time.time()
             
@@ -224,6 +229,26 @@ class TelemetryManager(QObject):
                     
         except Exception as e:
             self.logger.error(f"Error processing STATUSTEXT for Telem2 status: {e}")
+
+    def _request_immediate_heartbeat(self, uav_id):
+        """Request an immediate HEARTBEAT message from UAV for status update."""
+        try:
+            system_id = int(uav_id.split('_')[1]) if '_' in uav_id else 1
+            
+            if self._is_telem1_available():
+                # Request immediate HEARTBEAT message
+                self.telem1_connection.mav.command_long_send(
+                    system_id,  # target_system
+                    1,  # target_component
+                    mavutil.mavlink.MAV_CMD_REQUEST_MESSAGE,  # command
+                    0,  # confirmation
+                    mavutil.mavlink.MAVLINK_MSG_ID_HEARTBEAT,  # param1: message ID
+                    0, 0, 0, 0, 0, 0  # param2-7: unused
+                )
+                self.logger.debug(f"Requested immediate HEARTBEAT from {uav_id}")
+                
+        except Exception as e:
+            self.logger.debug(f"Error requesting immediate heartbeat from {uav_id}: {e}")
 
     def _check_telem2_status(self):
         """Check Telem2 connection status based on messages from UAVs via Telem1."""
@@ -262,7 +287,7 @@ class TelemetryManager(QObject):
             )
 
         elif msg_type == "HEARTBEAT":
-            state.update_telemetry(
+            state.update_telemetry_protected(
                 mode=mavutil.mode_string_v10(msg),
                 armed=(msg.base_mode & mavutil.mavlink.MAV_MODE_FLAG_SAFETY_ARMED) != 0
             )
@@ -295,6 +320,31 @@ class TelemetryManager(QObject):
         elif msg_type == "STATUSTEXT":
             # Monitor for Telem2 status messages from Lua script
             self._handle_statustext_message(uav_id, msg)
+
+        elif msg_type == "COMMAND_ACK":
+            # Handle command acknowledgments for immediate UI feedback
+            cmd_id = msg.command
+            result = msg.result
+            
+            if cmd_id == mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM:
+                if result == mavutil.mavlink.MAV_RESULT_ACCEPTED:
+                    # ARM/DISARM command accepted - request immediate status update
+                    self.logger.info(f"{uav_id} ARM/DISARM command accepted")
+                    self._request_immediate_heartbeat(uav_id)
+                    
+                elif result == mavutil.mavlink.MAV_RESULT_IN_PROGRESS:
+                    self.logger.debug(f"{uav_id} ARM/DISARM command in progress")
+                    
+                else:
+                    # Command rejected
+                    result_msgs = {
+                        mavutil.mavlink.MAV_RESULT_DENIED: "Command denied",
+                        mavutil.mavlink.MAV_RESULT_UNSUPPORTED: "Command unsupported",
+                        mavutil.mavlink.MAV_RESULT_TEMPORARILY_REJECTED: "Temporarily rejected",
+                        mavutil.mavlink.MAV_RESULT_FAILED: "Command failed"
+                    }
+                    error_msg = result_msgs.get(result, f"Unknown result {result}")
+                    self.logger.warning(f"{uav_id} ARM/DISARM command rejected: {error_msg}")
 
         # Emit signal to update GUI (or log)
         self.telemetry_updated.emit(uav_id, state.get_telemetry())

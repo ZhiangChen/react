@@ -1,7 +1,7 @@
 # core/uav_controller.py
 
 import logging
-from PySide6.QtCore import QObject, Signal
+from PySide6.QtCore import QObject, Signal, Slot
 from pymavlink import mavutil
 
 class UAVController(QObject):
@@ -21,11 +21,16 @@ class UAVController(QObject):
         self.logger = logging.getLogger("REACT.UAVController")
         self.logger.info("UAV Controller initialized")
     
+    @Slot(str)
     def arm_uav(self, uav_id):
         """Arm a specific UAV."""
         if uav_id not in self.uav_states:
             self.logger.warning(f"Cannot arm unknown UAV: {uav_id}")
             return False
+        
+        # Optimistic UI update with pending command protection
+        self.uav_states[uav_id].set_pending_arm_command()
+        # Note: The telemetry manager will emit the signal when HEARTBEAT confirms the status
             
         command = {
             'type': 'command_long',
@@ -38,11 +43,16 @@ class UAVController(QObject):
         self.command_requested.emit(uav_id, command)
         return True
     
+    @Slot(str)
     def disarm_uav(self, uav_id):
         """Disarm a specific UAV."""
         if uav_id not in self.uav_states:
             self.logger.warning(f"Cannot disarm unknown UAV: {uav_id}")
             return False
+        
+        # Optimistic UI update with pending command protection
+        self.uav_states[uav_id].set_pending_disarm_command()
+        # Note: The telemetry manager will emit the signal when HEARTBEAT confirms the status
             
         command = {
             'type': 'command_long',

@@ -103,33 +103,44 @@ Item {
         // Get UAV data from backend
         if (typeof backend !== 'undefined') {
             try {
-                var position = backend.getUAVPosition(currentUAV)
-                if (position && position.isValid && position.latitude !== 0) {
-                    var heading = backend.getUAVHeading(currentUAV) || 0
-                    var mode = backend.getUAVMode(currentUAV) || "UNKNOWN"
-                    var armed = backend.getArmedState(currentUAV) === "ARMED"
-                    
-                    // Send to web map
-                    mapBridge.uavPositionChanged(
-                        currentUAV, 
-                        position.latitude, 
-                        position.longitude, 
-                        heading, 
-                        mode, 
-                        armed
-                    )
-                }
-                
-                // Update home position
-                var home = backend.getHomePosition(currentUAV)
-                if (home && home.isValid && home.latitude !== 0) {
-                    if (homePosition.latitude !== home.latitude || homePosition.longitude !== home.longitude) {
-                        homePosition = home
-                        mapBridge.homePositionChanged(home.latitude, home.longitude)
+                // Get all UAVs and update their positions
+                var allUAVs = backend.getAllUAVs()
+                if (allUAVs && allUAVs.length > 0) {
+                    for (var i = 0; i < allUAVs.length; i++) {
+                        var uavData = allUAVs[i]
+                        var uavId = uavData.uav_id
+                        
+                        // Check if position is valid
+                        if (uavData.position && uavData.position.latitude !== 0 && uavData.gps && uavData.gps.fix_type >= 2) {
+                            var heading = uavData.attitude ? (uavData.attitude.yaw || 0) : 0
+                            var mode = uavData.flight_status ? (uavData.flight_status.mode || "UNKNOWN") : "UNKNOWN"
+                            var armed = uavData.flight_status ? (uavData.flight_status.armed || false) : false
+                            
+                            // Send to web map
+                            mapBridge.uavPositionChanged(
+                                uavId, 
+                                uavData.position.latitude, 
+                                uavData.position.longitude, 
+                                heading, 
+                                mode, 
+                                armed
+                            )
+                        }
+                        
+                        // Update home position for the current UAV
+                        if (uavId === currentUAV) {
+                            var home = backend.getHomePosition(currentUAV)
+                            if (home && home.isValid && home.latitude !== 0) {
+                                if (homePosition.latitude !== home.latitude || homePosition.longitude !== home.longitude) {
+                                    homePosition = home
+                                    mapBridge.homePositionChanged(home.latitude, home.longitude)
+                                }
+                            }
+                        }
                     }
                 }
                 
-                // Update waypoints
+                // Update waypoints for current UAV
                 var newWaypoints = backend.getWaypoints(currentUAV)
                 if (newWaypoints && newWaypoints.length > 0) {
                     if (JSON.stringify(waypoints) !== JSON.stringify(newWaypoints)) {
@@ -155,8 +166,9 @@ Item {
     }
     
     // Functions to control the map
-    function centerOnUAV() {
-        webView.runJavaScript("centerOnUAV()")
+    function centerOnUAV(uavId) {
+        if (!uavId) uavId = currentUAV
+        webView.runJavaScript("centerOnUAV('" + uavId + "')")
     }
     
     function fitAllUAVs() {

@@ -18,6 +18,17 @@ Rectangle {
     property int missionFileUpdateCounter: 0  // Counter to trigger UI updates when mission files change
     property var selectedUAVs: []  // Array to track multiple selected UAVs
     property int selectionUpdateCounter: 0  // Counter to force UI updates when selection changes
+    property int telemetryUpdateCounter: 0  // Counter to force UI updates when telemetry changes
+    
+    // Signal-based telemetry updates
+    Connections {
+        target: backend
+        function onTelemetry_changed(uavId, telemetryData) {
+            // Trigger immediate UI update for real-time display
+            telemetryUpdateCounter++
+            // Uncomment for debugging: console.log("Telemetry updated for", uavId)
+        }
+    }
     
     onWidthChanged: {
         // Binding chain handles Grid updates: panel -> ScrollView -> Column -> Grid
@@ -30,7 +41,7 @@ Rectangle {
     // Timer to continuously check for backend availability and update maxUAVs
     Timer {
         id: backendCheckTimer
-        interval: 500  // Check every 500ms
+        interval: 100  
         running: true
         repeat: true
         onTriggered: {
@@ -47,16 +58,16 @@ Rectangle {
         }
     }
     
-    // Timer to refresh telemetry data
+    // Timer to refresh telemetry data (reduced frequency due to signal-based updates)
     Timer {
         id: refreshTimer
-        interval: 500  // Update every 500ms
+        interval: 100  
         running: true
         repeat: true
         onTriggered: {
             if (backend && backend.get_uav_status) {
-                // Trigger UI updates - QML will automatically refresh bindings
-                uavPanel.update()
+                // Fallback update in case signals are missed
+                telemetryUpdateCounter++
             }
         }
     }
@@ -136,6 +147,11 @@ Rectangle {
                         radius: 3  // Smaller radius for tighter look
                         
                         property string uavId: "UAV_" + (index + 1)
+                        property var uavStatus: {
+                            // Force reevaluation when telemetryUpdateCounter changes
+                            var dummy = telemetryUpdateCounter
+                            return backend ? backend.get_uav_status(uavId) : null
+                        }
                         
                         Component.onCompleted: {
                             // UAV status rectangle initialized
@@ -155,7 +171,7 @@ Rectangle {
                                 width: parent.width * 0.65  // Even narrower
                                 height: 20  // Even smaller height
                                 radius: 10  // Adjusted for smaller height
-                                color: getArmedState(uavId) === "ARMED" ? "#4CAF50" : "#F44336"  // Green for armed, red for disarmed
+                                color: (uavStatus && uavStatus.flight_status && uavStatus.flight_status.armed) ? "#4CAF50" : "#F44336"  // Green for armed, red for disarmed
                                 
                                 anchors.horizontalCenter: parent.horizontalCenter  // Center the light
                                 
@@ -209,7 +225,7 @@ Rectangle {
                                         width: 12
                                         height: 12
                                         radius: 6  // Circular light
-                                        color: getTelem1Status(uavId) ? "#4CAF50" : "#F44336"
+                                        color: (uavStatus && uavStatus.connections && uavStatus.connections.telem1_connected) ? "#4CAF50" : "#F44336"
                                         anchors.horizontalCenter: parent.horizontalCenter
                                     }
                                     Text {
@@ -226,7 +242,7 @@ Rectangle {
                                         width: 12
                                         height: 12
                                         radius: 6  // Circular light
-                                        color: getTelem2Status(uavId) ? "#4CAF50" : "#F44336"
+                                        color: (uavStatus && uavStatus.connections && uavStatus.connections.telem2_connected) ? "#4CAF50" : "#F44336"
                                         anchors.horizontalCenter: parent.horizontalCenter
                                     }
                                     Text {
@@ -243,7 +259,7 @@ Rectangle {
                                         width: 12
                                         height: 12
                                         radius: 6  // Circular light
-                                        color: getGPSStatus(uavId) ? "#4CAF50" : "#F44336"
+                                        color: (uavStatus && uavStatus.gps && uavStatus.gps.fix_type >= 3) ? "#4CAF50" : "#F44336"
                                         anchors.horizontalCenter: parent.horizontalCenter
                                     }
                                     Text {
@@ -260,7 +276,14 @@ Rectangle {
                                         width: 12
                                         height: 12
                                         radius: 6  // Circular light
-                                        color: getBatteryStatus(uavId)
+                                        color: {
+                                            if (!uavStatus || !uavStatus.battery) return "#9E9E9E"
+                                            var batteryLevel = uavStatus.battery.remaining_percent || 0
+                                            if (batteryLevel >= 50) return "#4CAF50"  // Green for good
+                                            if (batteryLevel >= 25) return "#FF9800"  // Orange for warning
+                                            if (batteryLevel >= 10) return "#F44336"  // Red for critical
+                                            return "#9E9E9E"  // Gray for unknown
+                                        }
                                         anchors.horizontalCenter: parent.horizontalCenter
                                     }
                                     Text {
@@ -275,7 +298,7 @@ Rectangle {
                                 width: parent.width
                                 spacing: 8
                                 Text { 
-                                    text: "Mode: " + getFlightMode(uavId)
+                                    text: "Mode: " + (uavStatus && uavStatus.flight_status ? (uavStatus.flight_status.flight_mode || "UNKNOWN") : "UNKNOWN")
                                     font.pointSize: 9 
                                     width: parent.width
                                     elide: Text.ElideRight
@@ -283,9 +306,13 @@ Rectangle {
                             }
                             
                             Text { 
-                                text: "Battery: " + getBatteryLevel(uavId) + "%"
+                                text: "Battery: " + (uavStatus && uavStatus.battery ? (uavStatus.battery.remaining_percent || 0) : 0) + "%"
                                 font.pointSize: 9
-                                color: getBatteryLevel(uavId) < 25 ? "red" : (getBatteryLevel(uavId) < 50 ? "orange" : "green")
+                                color: {
+                                    if (!uavStatus || !uavStatus.battery) return "gray"
+                                    var batteryLevel = uavStatus.battery.remaining_percent || 0
+                                    return batteryLevel < 25 ? "red" : (batteryLevel < 50 ? "orange" : "green")
+                                }
                             }
                             
                             Text { 
@@ -296,21 +323,21 @@ Rectangle {
                             }
                             
                             Text { 
-                                text: "Alt: " + getAltitude(uavId).toFixed(1) + "m"
+                                text: "Alt: " + (uavStatus && uavStatus.position ? (uavStatus.position.altitude || 0).toFixed(1) : "0.0") + "m"
                                 font.pointSize: 9
                             }
                             
                             Text { 
-                                text: "Speed: " + getGroundSpeed(uavId).toFixed(1) + " m/s"
+                                text: "Speed: " + (uavStatus && uavStatus.motion ? (uavStatus.motion.ground_speed || 0).toFixed(1) : "0.0") + " m/s"
                                 font.pointSize: 9
                                 width: parent.width
                                 elide: Text.ElideRight
                             }
                             
                             Text { 
-                                text: "GPS: " + getGPSInfo(uavId)
+                                text: "GPS: " + (uavStatus && uavStatus.gps ? ((uavStatus.gps.satellites_visible || 0) + " sats (Fix: " + (uavStatus.gps.fix_type || 0) + ")") : "No GPS")
                                 font.pointSize: 9
-                                color: getGPSFixType(uavId) >= 3 ? "green" : "orange"
+                                color: (uavStatus && uavStatus.gps && uavStatus.gps.fix_type >= 3) ? "green" : "orange"
                                 width: parent.width
                                 elide: Text.ElideRight
                             }
@@ -584,6 +611,9 @@ Rectangle {
     
     // Control functions
     function armUAV(uavId) {
+        console.log("armUAV function called with:", uavId)
+        console.log("backend:", backend)
+        console.log("backend.uav_controller:", backend ? backend.uav_controller : "backend is null")
         if (backend && backend.uav_controller) {
             console.log("Arming UAV:", uavId)
             try {
@@ -591,6 +621,8 @@ Rectangle {
             } catch(e) {
                 console.log("Error arming UAV:", e)
             }
+        } else {
+            console.log("Backend or uav_controller not available")
         }
     }
     
@@ -642,9 +674,10 @@ Rectangle {
         if (backend && backend.uav_controller) {
             console.log("Arming ALL UAVs")
             for (var i = 1; i <= maxUAVs; i++) {
-                var uavId = "UAV " + i
+                var uavId = "UAV_" + i
                 try {
                     backend.uav_controller.arm_uav(uavId)
+                    console.log("Arming UAV:", uavId)
                 } catch(e) {
                     console.log("Error arming UAV", uavId, ":", e)
                 }
@@ -656,9 +689,10 @@ Rectangle {
         if (backend && backend.uav_controller) {
             console.log("Disarming ALL UAVs")
             for (var i = 1; i <= maxUAVs; i++) {
-                var uavId = "UAV " + i
+                var uavId = "UAV_" + i
                 try {
                     backend.uav_controller.disarm_uav(uavId)
+                    console.log("Disarming UAV:", uavId)
                 } catch(e) {
                     console.log("Error disarming UAV", uavId, ":", e)
                 }

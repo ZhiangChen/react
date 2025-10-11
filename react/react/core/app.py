@@ -1,13 +1,17 @@
 # core/app.py
-from PySide6.QtCore import QObject, Slot
+from PySide6.QtCore import QObject, Slot, Signal, Property
 from core.telemetry_manager import TelemetryManager
 from core.uav_controller import UAVController
 from core.mission_manager import MissionManager
 from core.safety_monitor import SafetyMonitor
 from core.uav_state import UAVState
+from pymavlink import mavutil
 import logging
 
 class App(QObject):
+    # Signal to notify QML of telemetry updates
+    telemetry_changed = Signal(str, 'QVariant')  # uav_id, telemetry_data
+    
     def __init__(self, config):
         super().__init__()
         self.config = config
@@ -19,7 +23,7 @@ class App(QObject):
 
         # Initialize managers in dependency order
         self.telemetry_manager = TelemetryManager(self.uav_states, self.config)
-        self.uav_controller = UAVController(self.uav_states, self.config)
+        self._uav_controller = UAVController(self.uav_states, self.config)
         self.mission_manager = MissionManager(self.uav_states, self.config)
         self.safety_monitor = SafetyMonitor(self.uav_states, self.config)
 
@@ -27,6 +31,11 @@ class App(QObject):
         self._setup_connections()
 
         self.logger.info("All managers initialized successfully")
+
+    # QML Property to expose UAV controller
+    @Property(QObject, constant=True)
+    def uav_controller(self):
+        return self._uav_controller
 
     def _setup_connections(self):
         """Set up signal connections between components."""
@@ -36,7 +45,7 @@ class App(QObject):
         self.telemetry_manager.telemetry_updated.connect(self.on_telemetry_updated)
         
         # Connect UAVController commands to TelemetryManager
-        self.uav_controller.command_requested.connect(self._handle_command_request)
+        self._uav_controller.command_requested.connect(self._handle_command_request)
         
         # Connect MissionManager upload requests to TelemetryManager
         self.mission_manager.mission_upload_requested.connect(self._handle_mission_upload_request)
@@ -87,8 +96,13 @@ class App(QObject):
         self.logger.debug(f"Processing command request for {uav_id}: {command.get('type', 'unknown')}")
         success = self.telemetry_manager.send_command(uav_id, command)
         
+        # For ARM/DISARM commands, emit telemetry update to reflect optimistic GUI updates
+        if command.get('command_id') == mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM:
+            if uav_id in self.uav_states:
+                self.telemetry_changed.emit(uav_id, self.uav_states[uav_id].get_telemetry())
+        
         # Emit command result signal back to UAVController
-        self.uav_controller.command_sent.emit(uav_id, command.get('type', 'unknown'))
+        self._uav_controller.command_sent.emit(uav_id, command.get('type', 'unknown'))
         
         if not success:
             self.logger.warning(f"Command failed for {uav_id}: {command}")
@@ -167,7 +181,7 @@ class App(QObject):
         else:
             # Single UAV emergency
             self.mission_manager.abort_mission(uav_id, f"Emergency land: {reason}")
-            success = self.uav_controller.land_uav(uav_id)
+            success = self._uav_controller.land_uav(uav_id)
             
         if not success:
             self.logger.error(f"Emergency land command failed for {uav_id}")
@@ -184,17 +198,20 @@ class App(QObject):
         else:
             # Single UAV emergency
             self.mission_manager.abort_mission(uav_id, f"Emergency disarm: {reason}")
-            success = self.uav_controller.disarm_uav(uav_id)
+            success = self._uav_controller.disarm_uav(uav_id)
             
         if not success:
             self.logger.error(f"Emergency disarm command failed for {uav_id}")
 
     def on_telemetry_updated(self, uav_id, telemetry_data):
-        """Handle telemetry updates."""
+        """Handle telemetry updates and emit signal to QML."""
         self.logger.debug(f"Telemetry update for {uav_id}: {telemetry_data}")
         
         # Forward telemetry to other managers that need it
         # SafetyMonitor and MissionManager will receive updates through shared uav_states
+        
+        # Emit signal to update QML immediately
+        self.telemetry_changed.emit(uav_id, telemetry_data)
 
     # Public API methods for external control
     
@@ -236,24 +253,7 @@ class App(QObject):
         """Get UAV status information for QML frontend."""
         if uav_id in self.uav_states:
             uav_state = self.uav_states[uav_id]
-            return {
-                'uav_id': uav_state.uav_id,
-                'latitude': uav_state.latitude,
-                'longitude': uav_state.longitude,
-                'altitude': uav_state.altitude,
-                'height': uav_state.height,
-                'mode': uav_state.mode,
-                'heading': uav_state.heading,
-                'ground_speed': uav_state.ground_speed,
-                'vertical_speed': uav_state.vertical_speed,
-                'armed': uav_state.armed,
-                'battery_status': uav_state.battery_status,
-                'gps_fix_type': uav_state.gps_fix_type,
-                'satellites_visible': uav_state.satellites_visible,
-                'telem1_status': uav_state.telem1_status,
-                'telem2_status': uav_state.telem2_status,
-                'last_update': uav_state.last_update
-            }
+            return uav_state.get_telemetry()  # Use the new organized structure
         return None
 
     @Slot(result='QVariant')
@@ -261,24 +261,7 @@ class App(QObject):
         """Get all UAV information for QML frontend."""
         uav_list = []
         for uav_id, uav_state in self.uav_states.items():
-            uav_info = {
-                'uav_id': uav_state.uav_id,
-                'latitude': uav_state.latitude,
-                'longitude': uav_state.longitude,
-                'altitude': uav_state.altitude,
-                'height': uav_state.height,
-                'mode': uav_state.mode,
-                'heading': uav_state.heading,
-                'ground_speed': uav_state.ground_speed,
-                'vertical_speed': uav_state.vertical_speed,
-                'armed': uav_state.armed,
-                'battery_status': uav_state.battery_status,
-                'gps_fix_type': uav_state.gps_fix_type,
-                'satellites_visible': uav_state.satellites_visible,
-                'telem1_status': uav_state.telem1_status,
-                'telem2_status': uav_state.telem2_status,
-                'last_update': uav_state.last_update
-            }
+            uav_info = uav_state.get_telemetry()  # Use the new organized structure
             uav_list.append(uav_info)
         return uav_list
 

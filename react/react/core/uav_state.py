@@ -28,6 +28,11 @@ class UAVState:
 
         # Battery Time
         self.battery_status = battery_status
+        
+        # Pending command tracking for optimistic updates
+        self.pending_arm_command = None  # Timestamp when ARM command was sent
+        self.pending_disarm_command = None  # Timestamp when DISARM command was sent
+        self.command_timeout = 3.0  # Seconds to wait before allowing telemetry override
         self.remaining_battery_time = 0.0  # Estimated remaining battery time in seconds
         self.average_power_consumption = 1.0  # Example: 1% battery per minute (adjust as needed)
 
@@ -79,6 +84,45 @@ class UAVState:
         # Update home position if needed (when UAV gets first good GPS fix)
         self.update_home_position_if_needed()
 
+    def update_telemetry_protected(self, **kwargs):
+        """Update telemetry but respect pending command states to prevent flickering."""
+        import time
+        current_time = time.time()
+        
+        # Check if we have a pending ARM command that should override armed status
+        if 'armed' in kwargs:
+            if self.pending_arm_command and (current_time - self.pending_arm_command) < self.command_timeout:
+                # ARM command is pending, keep optimistic armed=True state
+                if not kwargs['armed']:  # Real telemetry says disarmed, but we're pending ARM
+                    kwargs['armed'] = True  # Keep optimistic state
+            elif self.pending_disarm_command and (current_time - self.pending_disarm_command) < self.command_timeout:
+                # DISARM command is pending, keep optimistic armed=False state  
+                if kwargs['armed']:  # Real telemetry says armed, but we're pending DISARM
+                    kwargs['armed'] = False  # Keep optimistic state
+                    
+        # If enough time has passed, clear pending commands
+        if self.pending_arm_command and (current_time - self.pending_arm_command) >= self.command_timeout:
+            self.pending_arm_command = None
+        if self.pending_disarm_command and (current_time - self.pending_disarm_command) >= self.command_timeout:
+            self.pending_disarm_command = None
+            
+        # Update telemetry normally
+        self.update_telemetry(**kwargs)
+
+    def set_pending_arm_command(self):
+        """Set that an ARM command is pending - used for optimistic updates."""
+        import time
+        self.pending_arm_command = time.time()
+        self.pending_disarm_command = None  # Clear any pending disarm
+        self.armed = True  # Optimistic update
+
+    def set_pending_disarm_command(self):
+        """Set that a DISARM command is pending - used for optimistic updates."""
+        import time
+        self.pending_disarm_command = time.time()
+        self.pending_arm_command = None  # Clear any pending arm
+        self.armed = False  # Optimistic update
+
     def update_remaining_battery_time(self):
         """Estimate the remaining battery time based on the current battery status and power consumption."""
         if self.battery_status > 0 and self.average_power_consumption > 0:
@@ -114,6 +158,47 @@ class UAVState:
     def get_telemetry(self):
         return {
             'uav_id': self.uav_id,
+            'position': {
+                'latitude': self.latitude,
+                'longitude': self.longitude,
+                'altitude': self.altitude,
+                'height': self.height
+            },
+            'attitude': {
+                'heading': self.heading,
+                'roll': self.roll,
+                'pitch': self.pitch,
+                'yaw': self.yaw
+            },
+            'motion': {
+                'ground_speed': self.ground_speed,
+                'vertical_speed': self.vertical_speed
+            },
+            'flight_status': {
+                'mode': self.mode,
+                'armed': self.armed,
+                'flight_mode': self.mode  # Alias for compatibility
+            },
+            'battery': {
+                'battery_status': self.battery_status,
+                'remaining_percent': self.battery_status,  # Alias for compatibility
+                'remaining_battery_time': self.remaining_battery_time,
+                'average_power_consumption': self.average_power_consumption
+            },
+            'connections': {
+                'telem1_status': self.telem1_status,
+                'telem2_status': self.telem2_status,
+                'telem1_connected': self.telem1_status,  # Alias for compatibility
+                'telem2_connected': self.telem2_status,  # Alias for compatibility
+                'connected': self.telem1_status  # Primary connection status
+            },
+            'gps': {
+                'fix_type': self.gps_fix_type,
+                'satellites_visible': self.satellites_visible
+            },
+            'last_update': self.last_update,
+            
+            # Keep flat structure for backward compatibility
             'latitude': self.latitude,
             'longitude': self.longitude,
             'altitude': self.altitude,
@@ -131,8 +216,7 @@ class UAVState:
             'armed': self.armed,
             'telem1_status': self.telem1_status,
             'telem2_status': self.telem2_status,
-            'connected': self.telem1_status,  # Primary connection status
-            'last_update': self.last_update,
+            'connected': self.telem1_status,
             'remaining_battery_time': self.remaining_battery_time,
             'average_power_consumption': self.average_power_consumption
         }
