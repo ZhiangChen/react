@@ -11,6 +11,8 @@ import logging
 class App(QObject):
     # Signal to notify QML of telemetry updates
     telemetry_changed = Signal(str, 'QVariant')  # uav_id, telemetry_data
+    # Signal to notify QML when GCS home position changes
+    gcs_home_changed = Signal(float, float, float)  # latitude, longitude, altitude
     
     def __init__(self, config):
         super().__init__()
@@ -181,7 +183,7 @@ class App(QObject):
         else:
             # Single UAV emergency
             self.mission_manager.abort_mission(uav_id, f"Emergency land: {reason}")
-            success = self._uav_controller.land_uav(uav_id)
+            success = self._uav_controller.land(uav_id)
             
         if not success:
             self.logger.error(f"Emergency land command failed for {uav_id}")
@@ -277,6 +279,40 @@ class App(QObject):
                 'isValid': uav_state.home_lat != 0.0 or uav_state.home_lng != 0.0
             }
         return {'latitude': 0.0, 'longitude': 0.0, 'altitude': 0.0, 'isValid': False}
+    
+    @Slot(result='QVariant')
+    def getGCSHomePosition(self):
+        """Get global GCS home position (ground control station)."""
+        gcs_home = self.config.get('gcs_home_position', {})
+        if gcs_home and ('latitude' in gcs_home and 'longitude' in gcs_home):
+            return {
+                'latitude': gcs_home.get('latitude', 0.0),
+                'longitude': gcs_home.get('longitude', 0.0),
+                'altitude': gcs_home.get('altitude', 0.0),
+                'isValid': True
+            }
+        # Fall back to default_home_position if GCS home not set
+        default_home = self.config.get('default_home_position', {})
+        has_default = default_home.get('latitude') is not None and default_home.get('longitude') is not None
+        return {
+            'latitude': default_home.get('latitude', 0.0),
+            'longitude': default_home.get('longitude', 0.0),
+            'altitude': default_home.get('altitude', 0.0),
+            'isValid': has_default
+        }
+    
+    @Slot(float, float, float)
+    def setGCSHomePosition(self, latitude, longitude, altitude=0.0):
+        """Set global GCS home position (ground control station)."""
+        self.logger.info(f"Setting GCS home position to: {latitude}, {longitude}, {altitude}")
+        self.config['gcs_home_position'] = {
+            'latitude': latitude,
+            'longitude': longitude,
+            'altitude': altitude
+        }
+        # Emit signal to notify QML that GCS home has changed
+        self.gcs_home_changed.emit(latitude, longitude, altitude)
+        self.logger.info("GCS home position updated and signal emitted")
 
     @Slot(str, result='QVariant')
     def getWaypoints(self, uav_id):

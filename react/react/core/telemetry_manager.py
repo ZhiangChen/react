@@ -276,13 +276,22 @@ class TelemetryManager(QObject):
         msg_type = msg.get_type()
 
         if msg_type == "GLOBAL_POSITION_INT":
+            # vx: North velocity (cm/s), vy: East velocity (cm/s), vz: Down velocity (cm/s) in NED frame
+            # Calculate horizontal ground speed: sqrt(vx² + vy²)
+            vx_ms = msg.vx / 100.0  # Convert cm/s to m/s
+            vy_ms = msg.vy / 100.0  # Convert cm/s to m/s
+            horizontal_speed = (vx_ms**2 + vy_ms**2)**0.5
+            
+            # vz is positive DOWN in NED frame, so negate it for climb rate (positive UP)
+            vertical_speed_ms = -msg.vz / 100.0  # Convert to m/s, negate for climb rate
+            
             state.update_telemetry(
                 latitude=msg.lat / 1e7,
                 longitude=msg.lon / 1e7,
                 altitude=msg.alt / 1000.0,  # MSL altitude in meters
                 height=msg.relative_alt / 1000.0,  # AGL height in meters
-                ground_speed=msg.vx / 100.0,  # Ground speed in m/s
-                vertical_speed=msg.vz / 100.0,  # Vertical speed in m/s
+                ground_speed=horizontal_speed,  # Horizontal ground speed in m/s
+                vertical_speed=vertical_speed_ms,  # Vertical speed in m/s (positive = climbing up)
                 heading=msg.hdg / 100.0  # Heading in degrees
             )
 

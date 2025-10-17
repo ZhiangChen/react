@@ -59,6 +59,7 @@ class SafetyMonitor(QObject):
         self.alert_history = {}  # uav_id -> list of alerts
         self.last_alert_time = {}  # uav_id -> dict of alert_type -> timestamp
         self.mission_start_times = {}  # uav_id -> start_timestamp
+        self.emergency_actions_taken = {}  # uav_id -> dict of action_type -> timestamp (prevent repeated emergency actions)
         
         # Alert suppression (prevent spam)
         self.alert_cooldown = 30  # seconds between same alert types
@@ -107,6 +108,7 @@ class SafetyMonitor(QObject):
                 self.uav_safety_status[uav_id] = SafetyLevel.NORMAL
                 self.alert_history[uav_id] = []
                 self.last_alert_time[uav_id] = {}
+                self.emergency_actions_taken[uav_id] = {}
             
             # Perform all safety checks
             self._monitor_battery(uav_id, uav_state, current_time)
@@ -128,8 +130,12 @@ class SafetyMonitor(QObject):
             if self._should_send_alert(uav_id, AlertType.CRITICAL_BATTERY, current_time):
                 self._send_alert(uav_id, AlertType.CRITICAL_BATTERY, 
                                f"CRITICAL battery: {battery_percent}%", SafetyLevel.EMERGENCY, current_time)
-                self.emergency_action.emit(uav_id, "EMERGENCY_LAND")
-                self.emergency_land_triggered.emit(uav_id, f"Critical battery level: {battery_percent}%")
+                
+                # Only send emergency land ONCE per emergency condition
+                if not self._has_emergency_action_been_taken(uav_id, "EMERGENCY_LAND"):
+                    self.emergency_action.emit(uav_id, "EMERGENCY_LAND")
+                    self.emergency_land_triggered.emit(uav_id, f"Critical battery level: {battery_percent}%")
+                    self._mark_emergency_action_taken(uav_id, "EMERGENCY_LAND", current_time)
                 
         elif battery_percent <= self.battery_critical_threshold:
             if self._should_send_alert(uav_id, AlertType.CRITICAL_BATTERY, current_time):
@@ -151,10 +157,12 @@ class SafetyMonitor(QObject):
                     self._send_alert(uav_id, AlertType.COMM_LOSS, 
                                    f"Communication lost for {time_since_update:.1f}s", 
                                    SafetyLevel.CRITICAL, current_time)
-                    # Trigger emergency RTL after prolonged communication loss
+                    # Trigger emergency RTL after prolonged communication loss (only once)
                     if time_since_update > self.communication_timeout * 2:  # Double timeout
-                        self.emergency_rtl_triggered.emit(uav_id, f"Communication lost for {time_since_update:.1f}s")
-                        self.emergency_action.emit(uav_id, "EMERGENCY_RTL")
+                        if not self._has_emergency_action_been_taken(uav_id, "EMERGENCY_RTL"):
+                            self.emergency_rtl_triggered.emit(uav_id, f"Communication lost for {time_since_update:.1f}s")
+                            self.emergency_action.emit(uav_id, "EMERGENCY_RTL")
+                            self._mark_emergency_action_taken(uav_id, "EMERGENCY_RTL", current_time)
 
     def _monitor_gps(self, uav_id, uav_state, current_time):
         """Monitor GPS status."""
@@ -224,6 +232,21 @@ class SafetyMonitor(QObject):
         """Check if alert should be sent (not in cooldown)."""
         last_time = self.last_alert_time[uav_id].get(alert_type, 0)
         return (current_time - last_time) > self.alert_cooldown
+    
+    def _has_emergency_action_been_taken(self, uav_id, action_type):
+        """Check if an emergency action has already been taken for this UAV."""
+        return action_type in self.emergency_actions_taken[uav_id]
+    
+    def _mark_emergency_action_taken(self, uav_id, action_type, current_time):
+        """Mark that an emergency action has been taken for this UAV."""
+        self.emergency_actions_taken[uav_id][action_type] = current_time
+        self.logger.info(f"Emergency action {action_type} taken for {uav_id} at {current_time}")
+    
+    def reset_emergency_actions(self, uav_id):
+        """Reset emergency action tracking for a UAV (e.g., after battery swap, repair)."""
+        if uav_id in self.emergency_actions_taken:
+            self.emergency_actions_taken[uav_id] = {}
+            self.logger.info(f"Emergency action tracking reset for {uav_id}")
 
     def _send_alert(self, uav_id, alert_type, message, safety_level, current_time):
         """Send safety alert and update tracking."""

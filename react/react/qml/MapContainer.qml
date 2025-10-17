@@ -35,6 +35,8 @@ Item {
         // Signals to send data to JavaScript
         signal uavPositionChanged(string uavId, real lat, real lon, real heading, string mode, bool armed)
         signal homePositionChanged(real lat, real lon)
+        signal launchLocationChanged(string uavId, real lat, real lon)  // New signal for launch locations
+        signal gcsHomePositionChanged(real lat, real lon)  // New signal for GCS home position
         signal missionPathChanged(var waypoints)
         signal geofencesChanged(var geofences)
         
@@ -47,6 +49,13 @@ Item {
         function mapClicked(latitude, longitude) {
             console.log("Map clicked at:", latitude, longitude)
             mapContainer.mapClicked(latitude, longitude)
+        }
+        
+        function setGCSHome(latitude, longitude) {
+            console.log("Set GCS home from web:", latitude, longitude)
+            if (backend) {
+                backend.setGCSHomePosition(latitude, longitude, 0.0)
+            }
         }
         
         function webMapReady() {
@@ -112,7 +121,7 @@ Item {
                         
                         // Check if position is valid
                         if (uavData.position && uavData.position.latitude !== 0 && uavData.gps && uavData.gps.fix_type >= 2) {
-                            var heading = uavData.attitude ? (uavData.attitude.yaw || 0) : 0
+                            var heading = uavData.attitude ? (uavData.attitude.heading || 0) : 0
                             var mode = uavData.flight_status ? (uavData.flight_status.mode || "UNKNOWN") : "UNKNOWN"
                             var armed = uavData.flight_status ? (uavData.flight_status.armed || false) : false
                             
@@ -127,15 +136,10 @@ Item {
                             )
                         }
                         
-                        // Update home position for the current UAV
-                        if (uavId === currentUAV) {
-                            var home = backend.getHomePosition(currentUAV)
-                            if (home && home.isValid && home.latitude !== 0) {
-                                if (homePosition.latitude !== home.latitude || homePosition.longitude !== home.longitude) {
-                                    homePosition = home
-                                    mapBridge.homePositionChanged(home.latitude, home.longitude)
-                                }
-                            }
+                        // Update launch location for each UAV (when home position is set)
+                        var home = backend.getHomePosition(uavId)
+                        if (home && home.isValid && home.latitude !== 0) {
+                            mapBridge.launchLocationChanged(uavId, home.latitude, home.longitude)
                         }
                     }
                 }
@@ -156,6 +160,12 @@ Item {
                         geofences = newGeofences
                         mapBridge.geofencesChanged(geofences)
                     }
+                }
+                
+                // Update GCS home position
+                var gcsHome = backend.getGCSHomePosition()
+                if (gcsHome && gcsHome.isValid) {
+                    mapBridge.gcsHomePositionChanged(gcsHome.latitude, gcsHome.longitude)
                 }
                 
             } catch (e) {

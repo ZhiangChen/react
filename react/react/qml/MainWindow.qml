@@ -315,6 +315,32 @@ ApplicationWindow {
                                 width: 90
                                 height: 50
                                 font.pointSize: 8
+                                text: "Takeoff"
+                                background: Rectangle {
+                                    color: parent.hovered ? "#f0f0f0" : "#f8f8f8"
+                                    border.color: "#999999"
+                                    border.width: 1
+                                    radius: 2
+                                }
+                                contentItem: Text {
+                                    text: parent.text
+                                    font: parent.font
+                                    color: "#333333"
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                    width: parent.width
+                                    height: parent.height
+                                }
+                                onClicked: {
+                                    console.log("Takeoff button clicked!")
+                                    takeoffDialog.open()
+                                }
+                            }
+
+                            Button {
+                                width: 90
+                                height: 50
+                                font.pointSize: 8
                                 text: "Upload Mission"
                                 background: Rectangle {
                                     color: parent.hovered ? "#f0f0f0" : "#f8f8f8"
@@ -357,17 +383,7 @@ ApplicationWindow {
                                     height: parent.height
                                 }
                                 onClicked: {
-                                    if (backend) {
-                                        if (uavList.controlAllUAVs) {
-                                            console.log("Start mission for all UAVs")
-                                        } else {
-                                            // Start mission for all selected UAVs
-                                            for (var i = 0; i < uavList.selectedUAVs.length; i++) {
-                                                console.log("Start mission for UAV", uavList.selectedUAVs[i])
-                                                backend.start_mission(uavList.selectedUAVs[i])
-                                            }
-                                        }
-                                    }
+                                    startMissionDialog.open()
                                 }
                             }
                         }
@@ -397,14 +413,7 @@ ApplicationWindow {
                                 }
                                 enabled: true
                                 onClicked: {
-                                    if (uavList.controlAllUAVs) {
-                                        console.log("Pause all UAVs")
-                                    } else {
-                                        // Pause all selected UAVs
-                                        for (var i = 0; i < uavList.selectedUAVs.length; i++) {
-                                            console.log("Pause UAV", uavList.selectedUAVs[i])
-                                        }
-                                    }
+                                    pauseDialog.open()
                                 }
                             }
 
@@ -430,14 +439,7 @@ ApplicationWindow {
                                 }
                                 enabled: true
                                 onClicked: {
-                                    if (uavList.controlAllUAVs) {
-                                        console.log("Switch all UAVs to manual mode")
-                                    } else {
-                                        // Switch all selected UAVs to manual mode
-                                        for (var i = 0; i < uavList.selectedUAVs.length; i++) {
-                                            console.log("Switch UAV to manual mode", uavList.selectedUAVs[i])
-                                        }
-                                    }
+                                    manualDialog.open()
                                 }
                             }
 
@@ -463,14 +465,7 @@ ApplicationWindow {
                                 }
                                 enabled: true
                                 onClicked: {
-                                    if (uavList.controlAllUAVs) {
-                                        console.log("Resume all UAVs")
-                                    } else {
-                                        // Resume all selected UAVs
-                                        for (var i = 0; i < uavList.selectedUAVs.length; i++) {
-                                            console.log("Resume UAV", uavList.selectedUAVs[i])
-                                        }
-                                    }
+                                    resumeDialog.open()
                                 }
                             }
 
@@ -533,14 +528,7 @@ ApplicationWindow {
                                 }
                                 enabled: true
                                 onClicked: {
-                                    if (uavList.controlAllUAVs) {
-                                        uavList.returnToLaunchAll()
-                                    } else {
-                                        // RTL all selected UAVs
-                                        for (var i = 0; i < uavList.selectedUAVs.length; i++) {
-                                            uavList.returnToLaunch(uavList.selectedUAVs[i])
-                                        }
-                                    }
+                                    rtlDialog.open()
                                 }
                             }
 
@@ -566,14 +554,7 @@ ApplicationWindow {
                                 }
                                 enabled: true
                                 onClicked: {
-                                    if (uavList.controlAllUAVs) {
-                                        uavList.landAllUAVs()
-                                    } else {
-                                        // Land all selected UAVs
-                                        for (var i = 0; i < uavList.selectedUAVs.length; i++) {
-                                            uavList.landUAV(uavList.selectedUAVs[i])
-                                        }
-                                    }
+                                    landDialog.open()
                                 }
                             }
 
@@ -1133,4 +1114,417 @@ ApplicationWindow {
         source: "MissionPlanner.qml"
         active: false
     }
+
+    // Takeoff Altitude Dialog
+    Dialog {
+        id: takeoffDialog
+        title: "Takeoff Altitude"
+        width: 300
+        height: 180
+        modal: true
+        x: (parent.width - width) / 2
+        y: (parent.height - height) / 2
+        
+        property real takeoffAltitude: 1.0  // Default 1 meter
+        
+        Column {
+            anchors.fill: parent
+            spacing: 15
+            
+            Text {
+                text: "Enter takeoff altitude (meters):"
+                font.pointSize: 10
+                color: "#333333"
+            }
+            
+            TextField {
+                id: altitudeInput
+                width: parent.width
+                text: "1.0"
+                validator: DoubleValidator {
+                    bottom: 0.5
+                    top: 100.0
+                    decimals: 1
+                }
+                placeholderText: "1.0"
+                font.pointSize: 10
+                
+                onAccepted: {
+                    takeoffDialog.accept()
+                }
+            }
+            
+            Row {
+                spacing: 10
+                anchors.horizontalCenter: parent.horizontalCenter
+                
+                Button {
+                    text: "Cancel"
+                    width: 80
+                    onClicked: takeoffDialog.reject()
+                }
+                
+                Button {
+                    text: "Takeoff"
+                    width: 80
+                    highlighted: true
+                    onClicked: takeoffDialog.accept()
+                }
+            }
+        }
+        
+        onAccepted: {
+            var altitude = parseFloat(altitudeInput.text)
+            if (isNaN(altitude) || altitude < 0.5) {
+                altitude = 1.0  // Default to 1 meter if invalid
+            }
+            
+            console.log("Takeoff confirmed with altitude:", altitude)
+            
+            if (uavList.controlAllUAVs) {
+                uavList.takeoffAllUAVs(altitude)
+            } else {
+                // Takeoff all selected UAVs
+                for (var i = 0; i < uavList.selectedUAVs.length; i++) {
+                    console.log("Calling takeoff for:", uavList.selectedUAVs[i])
+                    try {
+                        uavList.takeoffUAV(uavList.selectedUAVs[i], altitude)
+                    } catch(e) {
+                        console.log("Error calling uavList.takeoffUAV:", e)
+                    }
+                }
+            }
+        }
+        
+        onOpened: {
+            altitudeInput.text = "1.0"
+            altitudeInput.selectAll()
+            altitudeInput.forceActiveFocus()
+        }
+    }
+
+    // Pause (Brake) Confirmation Dialog
+    Dialog {
+        id: pauseDialog
+        title: "Confirm Pause"
+        width: 350
+        height: 150
+        modal: true
+        x: (parent.width - width) / 2
+        y: (parent.height - height) / 2
+        
+        Column {
+            anchors.fill: parent
+            spacing: 20
+            
+            Text {
+                text: uavList.controlAllUAVs ? 
+                    "Enter BRAKE mode for all UAVs?" : 
+                    "Enter BRAKE mode for " + uavList.selectedUAVs.length + " selected UAV(s)?"
+                font.pointSize: 10
+                color: "#333333"
+                wrapMode: Text.WordWrap
+                width: parent.width
+            }
+            
+            Row {
+                spacing: 10
+                anchors.horizontalCenter: parent.horizontalCenter
+                
+                Button {
+                    text: "Cancel"
+                    width: 80
+                    onClicked: pauseDialog.reject()
+                }
+                
+                Button {
+                    text: "Pause"
+                    width: 80
+                    highlighted: true
+                    onClicked: pauseDialog.accept()
+                }
+            }
+        }
+        
+        onAccepted: {
+            if (uavList.controlAllUAVs) {
+                uavList.brakeAllUAVs()
+            } else {
+                for (var i = 0; i < uavList.selectedUAVs.length; i++) {
+                    uavList.brakeUAV(uavList.selectedUAVs[i])
+                }
+            }
+        }
+    }
+
+    // Manual (Loiter) Confirmation Dialog
+    Dialog {
+        id: manualDialog
+        title: "Confirm Manual Mode"
+        width: 350
+        height: 150
+        modal: true
+        x: (parent.width - width) / 2
+        y: (parent.height - height) / 2
+        
+        Column {
+            anchors.fill: parent
+            spacing: 20
+            
+            Text {
+                text: uavList.controlAllUAVs ? 
+                    "Switch all UAVs to LOITER mode?" : 
+                    "Switch " + uavList.selectedUAVs.length + " selected UAV(s) to LOITER mode?"
+                font.pointSize: 10
+                color: "#333333"
+                wrapMode: Text.WordWrap
+                width: parent.width
+            }
+            
+            Row {
+                spacing: 10
+                anchors.horizontalCenter: parent.horizontalCenter
+                
+                Button {
+                    text: "Cancel"
+                    width: 80
+                    onClicked: manualDialog.reject()
+                }
+                
+                Button {
+                    text: "Manual"
+                    width: 80
+                    highlighted: true
+                    onClicked: manualDialog.accept()
+                }
+            }
+        }
+        
+        onAccepted: {
+            if (uavList.controlAllUAVs) {
+                uavList.setLoiterModeAll()
+            } else {
+                for (var i = 0; i < uavList.selectedUAVs.length; i++) {
+                    uavList.setLoiterMode(uavList.selectedUAVs[i])
+                }
+            }
+        }
+    }
+
+    // Resume (Auto) Confirmation Dialog
+    Dialog {
+        id: resumeDialog
+        title: "Confirm Resume Mission"
+        width: 350
+        height: 150
+        modal: true
+        x: (parent.width - width) / 2
+        y: (parent.height - height) / 2
+        
+        Column {
+            anchors.fill: parent
+            spacing: 20
+            
+            Text {
+                text: uavList.controlAllUAVs ? 
+                    "Resume mission (AUTO mode) for all UAVs?" : 
+                    "Resume mission (AUTO mode) for " + uavList.selectedUAVs.length + " selected UAV(s)?"
+                font.pointSize: 10
+                color: "#333333"
+                wrapMode: Text.WordWrap
+                width: parent.width
+            }
+            
+            Row {
+                spacing: 10
+                anchors.horizontalCenter: parent.horizontalCenter
+                
+                Button {
+                    text: "Cancel"
+                    width: 80
+                    onClicked: resumeDialog.reject()
+                }
+                
+                Button {
+                    text: "Resume"
+                    width: 80
+                    highlighted: true
+                    onClicked: resumeDialog.accept()
+                }
+            }
+        }
+        
+        onAccepted: {
+            if (uavList.controlAllUAVs) {
+                uavList.setAutoModeAll()
+            } else {
+                for (var i = 0; i < uavList.selectedUAVs.length; i++) {
+                    uavList.setAutoMode(uavList.selectedUAVs[i])
+                }
+            }
+        }
+    }
+
+    // RTL Confirmation Dialog
+    Dialog {
+        id: rtlDialog
+        title: "Confirm Return to Launch"
+        width: 350
+        height: 150
+        modal: true
+        x: (parent.width - width) / 2
+        y: (parent.height - height) / 2
+        
+        Column {
+            anchors.fill: parent
+            spacing: 20
+            
+            Text {
+                text: uavList.controlAllUAVs ? 
+                    "Return to launch for all UAVs?" : 
+                    "Return to launch for " + uavList.selectedUAVs.length + " selected UAV(s)?"
+                font.pointSize: 10
+                color: "#333333"
+                wrapMode: Text.WordWrap
+                width: parent.width
+            }
+            
+            Row {
+                spacing: 10
+                anchors.horizontalCenter: parent.horizontalCenter
+                
+                Button {
+                    text: "Cancel"
+                    width: 80
+                    onClicked: rtlDialog.reject()
+                }
+                
+                Button {
+                    text: "RTL"
+                    width: 80
+                    highlighted: true
+                    onClicked: rtlDialog.accept()
+                }
+            }
+        }
+        
+        onAccepted: {
+            if (uavList.controlAllUAVs) {
+                uavList.returnToLaunchAll()
+            } else {
+                for (var i = 0; i < uavList.selectedUAVs.length; i++) {
+                    uavList.returnToLaunch(uavList.selectedUAVs[i])
+                }
+            }
+        }
+    }
+
+    // Land Confirmation Dialog
+    Dialog {
+        id: landDialog
+        title: "Confirm Landing"
+        width: 350
+        height: 150
+        modal: true
+        x: (parent.width - width) / 2
+        y: (parent.height - height) / 2
+        
+        Column {
+            anchors.fill: parent
+            spacing: 20
+            
+            Text {
+                text: uavList.controlAllUAVs ? 
+                    "Land all UAVs at current position?" : 
+                    "Land " + uavList.selectedUAVs.length + " selected UAV(s)?"
+                font.pointSize: 10
+                color: "#333333"
+                wrapMode: Text.WordWrap
+                width: parent.width
+            }
+            
+            Row {
+                spacing: 10
+                anchors.horizontalCenter: parent.horizontalCenter
+                
+                Button {
+                    text: "Cancel"
+                    width: 80
+                    onClicked: landDialog.reject()
+                }
+                
+                Button {
+                    text: "Land"
+                    width: 80
+                    highlighted: true
+                    onClicked: landDialog.accept()
+                }
+            }
+        }
+        
+        onAccepted: {
+            if (uavList.controlAllUAVs) {
+                uavList.landAllUAVs()
+            } else {
+                for (var i = 0; i < uavList.selectedUAVs.length; i++) {
+                    uavList.landUAV(uavList.selectedUAVs[i])
+                }
+            }
+        }
+    }
+
+    // Start Mission Confirmation Dialog
+    Dialog {
+        id: startMissionDialog
+        title: "Confirm Start Mission"
+        width: 400
+        height: 180
+        modal: true
+        x: (parent.width - width) / 2
+        y: (parent.height - height) / 2
+        
+        Column {
+            anchors.fill: parent
+            spacing: 20
+            
+            Text {
+                text: uavList.controlAllUAVs ? 
+                    "Start mission for all UAVs?\n\n• Sets AUTO mode\n• Sends MISSION_START command" : 
+                    "Start mission for " + uavList.selectedUAVs.length + " selected UAV(s)?\n\n• Sets AUTO mode\n• Sends MISSION_START command"
+                font.pointSize: 10
+                color: "#333333"
+                wrapMode: Text.WordWrap
+                width: parent.width
+            }
+            
+            Row {
+                spacing: 10
+                anchors.horizontalCenter: parent.horizontalCenter
+                
+                Button {
+                    text: "Cancel"
+                    width: 100
+                    onClicked: startMissionDialog.reject()
+                }
+                
+                Button {
+                    text: "Start Mission"
+                    width: 120
+                    highlighted: true
+                    onClicked: startMissionDialog.accept()
+                }
+            }
+        }
+        
+        onAccepted: {
+            if (uavList.controlAllUAVs) {
+                uavList.startMissionAll()
+            } else {
+                for (var i = 0; i < uavList.selectedUAVs.length; i++) {
+                    uavList.startMission(uavList.selectedUAVs[i])
+                }
+            }
+        }
+    }
 }
+

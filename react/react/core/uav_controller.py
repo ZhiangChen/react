@@ -65,6 +65,40 @@ class UAVController(QObject):
         self.command_requested.emit(uav_id, command)
         return True
     
+    @Slot(str, float)
+    def request_takeoff(self, uav_id, altitude):
+        """Command UAV to takeoff to specified altitude.
+        
+        Per ArduPilot Copter documentation:
+        1. Vehicle must be in GUIDED mode before takeoff
+        2. Then send MAV_CMD_NAV_TAKEOFF command
+        """
+        # Convert altitude to float (handles both int and float from QML)
+        altitude = float(altitude)
+        
+        if uav_id not in self.uav_states:
+            self.logger.warning(f"Cannot takeoff unknown UAV: {uav_id}")
+            return False
+        
+        # Step 1: Set GUIDED mode (required for takeoff command)
+        self.logger.info(f"Setting GUIDED mode for UAV {uav_id} before takeoff")
+        if not self.set_mode(uav_id, 'GUIDED'):
+            self.logger.error(f"Failed to set GUIDED mode for {uav_id}")
+            return False
+        
+        # Step 2: Send takeoff command
+        command = {
+            'type': 'command_long',
+            'command_id': mavutil.mavlink.MAV_CMD_NAV_TAKEOFF,
+            'params': [0, 0, 0, 0, 0, 0, altitude],  # param7 is target altitude in meters
+            'description': f'TAKEOFF to {altitude}m'
+        }
+        
+        self.logger.info(f"Requesting takeoff to {altitude}m for UAV {uav_id}")
+        self.command_requested.emit(uav_id, command)
+        return True
+    
+    @Slot(str, str, result=bool)
     def set_mode(self, uav_id, mode):
         """Set flight mode for a specific UAV."""
         if uav_id not in self.uav_states:
@@ -116,6 +150,7 @@ class UAVController(QObject):
         self.command_requested.emit(uav_id, command)
         return True
 
+    @Slot(str, result=bool)
     def land(self, uav_id):
         """Command UAV to land."""
         if uav_id not in self.uav_states:
@@ -133,6 +168,7 @@ class UAVController(QObject):
         self.command_requested.emit(uav_id, command)
         return True
 
+    @Slot(str, result=bool)
     def return_to_launch(self, uav_id):
         """Command UAV to return to launch position."""
         if uav_id not in self.uav_states:
@@ -150,6 +186,7 @@ class UAVController(QObject):
         self.command_requested.emit(uav_id, command)
         return True
 
+    @Slot(str, result=bool)
     def brake(self, uav_id):
         """Command UAV to enter BRAKE mode - immediate stop and hold position."""
         if uav_id not in self.uav_states:
@@ -164,6 +201,31 @@ class UAVController(QObject):
         }
         
         self.logger.info(f"Requesting BRAKE mode for UAV {uav_id}")
+        self.command_requested.emit(uav_id, command)
+        return True
+
+    @Slot(str, result=bool)
+    def start_mission(self, uav_id):
+        """Start mission for UAV - sets AUTO mode then sends mission start command."""
+        if uav_id not in self.uav_states:
+            self.logger.warning(f"Cannot start mission for unknown UAV: {uav_id}")
+            return False
+        
+        # Step 1: Set AUTO mode (required for mission execution)
+        self.logger.info(f"Setting AUTO mode for UAV {uav_id} before starting mission")
+        if not self.set_mode(uav_id, 'AUTO'):
+            self.logger.error(f"Failed to set AUTO mode for {uav_id}")
+            return False
+        
+        # Step 2: Send MAV_CMD_MISSION_START command
+        command = {
+            'type': 'command_long',
+            'command_id': mavutil.mavlink.MAV_CMD_MISSION_START,
+            'params': [0, 0, 0, 0, 0, 0, 0],  # All params 0 for mission start
+            'description': 'MISSION_START'
+        }
+        
+        self.logger.info(f"Requesting MISSION_START for UAV {uav_id}")
         self.command_requested.emit(uav_id, command)
         return True
 

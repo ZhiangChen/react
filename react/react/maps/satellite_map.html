@@ -79,6 +79,35 @@
                 opacity: 1;
             }
         }
+        
+        /* Context Menu Styles */
+        #contextMenu {
+            display: none;
+            position: absolute;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 10000;
+            padding: 5px 0;
+            min-width: 150px;
+        }
+        
+        .context-menu-item {
+            padding: 8px 15px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        
+        .context-menu-item:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .context-menu-separator {
+            height: 1px;
+            background-color: #e0e0e0;
+            margin: 5px 0;
+        }
     </style>
 </head>
 <body>
@@ -138,9 +167,12 @@
         <div id="scaleBarText">-- km</div>
     </div>
     
-    <div id="map"></div>
+    <!-- Context Menu -->
+    <div id="contextMenu">
+        <div class="context-menu-item" onclick="setHomeAtContextPosition()">📍 Set GCS Home Here</div>
+    </div>
 
-    <!-- Qt WebChannel Script (conditionally loaded) -->
+    <div id="map"></div>    <!-- Qt WebChannel Script (conditionally loaded) -->
     <script>
         // Try to load Qt WebChannel if available
         try {
@@ -397,30 +429,86 @@
                     console.log('Map drag event');
                 });
                 
-                map.on('zoomstart', function(e) {
-                    console.log('Zoom started');
+                // Add context menu on right-click
+                map.on('contextmenu', function(e) {
+                    showContextMenu(e.originalEvent.clientX, e.originalEvent.clientY, e.latlng);
                 });
                 
-                map.on('zoomend', function(e) {
-                    console.log('Zoom ended, level:', map.getZoom());
+                // Hide context menu on left-click
+                map.on('click', function(e) {
+                    hideContextMenu();
                 });
-
-                // Add tile loading debug
-                map.on('tileloadstart', function(e) {
-                    console.log('Tile load start:', e.coords);
-                });
-                
-                map.on('tileload', function(e) {
-                    console.log('Tile loaded:', e.coords);
-                });
-                
-                map.on('tileerror', function(e) {
-                    console.error('Tile error:', e.coords, e.error);
-                });
-
             } catch (error) {
                 console.error('Map initialization error:', error);
             }
+        }
+        
+        // Context menu handling
+        let contextMenuPosition = null;
+        
+        function showContextMenu(x, y, latlng) {
+            const contextMenu = document.getElementById('contextMenu');
+            contextMenu.style.display = 'block';
+            contextMenu.style.left = x + 'px';
+            contextMenu.style.top = y + 'px';
+            contextMenuPosition = latlng;
+        }
+        
+        function hideContextMenu() {
+            const contextMenu = document.getElementById('contextMenu');
+            contextMenu.style.display = 'none';
+            contextMenuPosition = null;
+        }
+        
+        function setHomeAtContextPosition() {
+            if (contextMenuPosition && qtBridge && qtBridge.setGCSHome) {
+                console.log('Setting GCS home at:', contextMenuPosition.lat, contextMenuPosition.lng);
+                qtBridge.setGCSHome(contextMenuPosition.lat, contextMenuPosition.lng);
+                updateGCSHomeMarker(contextMenuPosition.lat, contextMenuPosition.lng);
+            }
+            hideContextMenu();
+        }
+        
+        // GCS Home marker (blue with 'H')
+        let gcsHomeMarker = null;
+        function updateGCSHomeMarker(lat, lon) {
+            if (!map) return;
+            
+            if (gcsHomeMarker) {
+                map.removeLayer(gcsHomeMarker);
+            }
+            
+            const gcsIcon = L.divIcon({
+                html: `
+                    <div style="
+                        width: 24px; 
+                        height: 24px; 
+                        background: rgba(30, 144, 255, 0.3); 
+                        border: 3px solid #1E90FF; 
+                        border-radius: 50%;
+                        box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    ">
+                        <span style="
+                            color: #1E90FF;
+                            font-weight: bold;
+                            font-size: 14px;
+                            font-family: Arial, sans-serif;
+                        ">H</span>
+                    </div>
+                `,
+                className: 'gcs-home-marker',
+                iconSize: [24, 24],
+                iconAnchor: [12, 12]
+            });
+            
+            gcsHomeMarker = L.marker([lat, lon], {icon: gcsIcon});
+            gcsHomeMarker.bindPopup(`<strong>GCS Home Position</strong><br/>Ground Control Station<br/>Position: ${lat.toFixed(6)}, ${lon.toFixed(6)}`);
+            gcsHomeMarker.addTo(map);
+            
+            console.log('GCS home marker updated at:', lat, lon);
         }
         
         let currentLayer = null;
@@ -597,6 +685,13 @@
             console.log('DOM loaded, waiting for Leaflet...');
             console.log('Loading Leaflet...');
             waitForLeaflet();
+            
+            // Hide context menu when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('#contextMenu')) {
+                    hideContextMenu();
+                }
+            });
         });
         
         // Qt WebChannel integration (if available)
@@ -627,10 +722,19 @@
                             updateUAVMarker(uavId, lat, lon, heading, mode, armed);
                         });
                         
-                        // Connect to home position updates
-                        qtBridge.homePositionChanged.connect(function(lat, lon) {
-                            console.log('Home position update:', lat, lon);
-                            updateHomeMarker(lat, lon);
+                        // REMOVED: homePositionChanged - now using gcsHomePositionChanged for GCS home
+                        // and launchLocationChanged for individual UAV launch positions
+                        
+                        // Connect to launch location updates
+                        qtBridge.launchLocationChanged.connect(function(uavId, lat, lon) {
+                            console.log('Launch location update:', uavId, lat, lon);
+                            updateLaunchLocationMarker(uavId, lat, lon);
+                        });
+                        
+                        // Connect to GCS home position updates
+                        qtBridge.gcsHomePositionChanged.connect(function(lat, lon) {
+                            console.log('GCS home position update:', lat, lon);
+                            updateGCSHomeMarker(lat, lon);
                         });
                         
                         // Connect to mission path updates
@@ -656,15 +760,17 @@
         // Create custom UAV icon with orientation and status
         function createUAVIcon(heading, mode, armed, uavId) {
             const color = getUAVColor(mode, armed);
-            const size = 14; // Smaller triangle
+            const size = 20; // Triangle height
+            const triangleWidth = size * 0.6; // Make triangle narrower (60% of height)
+            const labelDistance = 12; // Distance from triangle to label (increased from 8)
             
             // Create simple triangle UAV icon with modern styling
             const html = `
                 <div style="
                     width: 0; 
                     height: 0; 
-                    border-left: ${size/2}px solid transparent; 
-                    border-right: ${size/2}px solid transparent; 
+                    border-left: ${triangleWidth/2}px solid transparent; 
+                    border-right: ${triangleWidth/2}px solid transparent; 
                     border-bottom: ${size}px solid ${color};
                     transform: rotate(${heading}deg);
                     filter: drop-shadow(0 1px 3px rgba(0,0,0,0.4));
@@ -672,10 +778,10 @@
                 ">
                     <div style="
                         position: absolute;
-                        top: ${size + 3}px;
+                        top: ${size + labelDistance}px;
                         left: 50%;
                         transform: translateX(-50%) rotate(-${heading}deg);
-                        background: rgba(0,0,0,0.85);
+                        background: rgba(0,0,0,0.5);
                         color: white;
                         padding: 1px 6px;
                         border-radius: 4px;
@@ -693,28 +799,61 @@
             return L.divIcon({
                 html: html,
                 className: 'uav-marker',
-                iconSize: [size, size],
-                iconAnchor: [size/2, size]
+                iconSize: [triangleWidth, size],
+                iconAnchor: [triangleWidth/2, size]
             });
         }
 
         // Get UAV color based on mode and armed state
         function getUAVColor(mode, armed) {
-            if (!armed) return '#808080'; // Gray for disarmed
+            // Debug logging
+            console.log('getUAVColor called - mode:', mode, 'armed:', armed);
             
-            switch(mode) {
-                case 'MANUAL': return '#0066cc';     // Blue
-                case 'STABILIZE': return '#00cc00';  // Green
-                case 'AUTO': return '#6600cc';       // Purple
-                case 'GUIDED': return '#ff6600';     // Orange
-                case 'RTL': return '#ffcc00';        // Yellow
-                case 'LAND': return '#cc0000';       // Red
-                default: return '#808080';           // Gray for unknown
+            if (!armed) {
+                console.log('  -> Returning gray (disarmed)');
+                return '#808080'; // Gray for disarmed
             }
+            
+            // Normalize mode to uppercase for case-insensitive matching
+            const normalizedMode = mode ? mode.toUpperCase() : 'UNKNOWN';
+            let color;
+            
+            switch(normalizedMode) {
+                case 'STABILIZE': 
+                    color = '#6600cc';  // Purple
+                    break;
+                case 'AUTO': 
+                    color = '#00cc00';  // Green
+                    break;
+                case 'GUIDED': 
+                    color = '#0066cc';  // Blue
+                    break;
+                case 'RTL': 
+                    color = '#ffcc00';  // Yellow
+                    break;
+                case 'LAND': 
+                    color = '#cc0000';  // Red
+                    break;
+                case 'LOITER': 
+                    color = '#0066cc';  // Blue
+                    break;
+                case 'BRAKE': 
+                    color = '#0066cc';  // Blue
+                    break;
+                default: 
+                    color = '#ffffff';  // White for unknown
+                    console.warn('  -> Unknown mode:', normalizedMode, '- using white');
+                    break;
+            }
+            
+            console.log('  -> Mode:', normalizedMode, 'Color:', color);
+            return color;
         }
 
         // Update or create UAV marker
         function updateUAVMarker(uavId, lat, lon, heading, mode, armed) {
+            console.log('updateUAVMarker called for', uavId, '- mode:', mode, 'armed:', armed, 'heading:', heading);
+            
             if (!map) {
                 console.warn('Map not initialized yet');
                 return;
@@ -722,10 +861,12 @@
             
             // Remove existing marker if it exists
             if (uavMarkers[uavId]) {
+                console.log('  -> Removing old marker for', uavId);
                 map.removeLayer(uavMarkers[uavId]);
             }
             
             // Create new marker with current data
+            console.log('  -> Creating new marker for', uavId);
             const icon = createUAVIcon(heading, mode, armed, uavId);
             const marker = L.marker([lat, lon], {icon: icon});
             
@@ -769,8 +910,8 @@
             const homeIcon = L.divIcon({
                 html: `
                     <div style="
-                        width: 16px; 
-                        height: 16px; 
+                        width: 10px; 
+                        height: 10px; 
                         background: #00cc00; 
                         border: 2px solid white; 
                         border-radius: 50%;
@@ -778,13 +919,62 @@
                     "></div>
                 `,
                 className: 'home-marker',
-                iconSize: [16, 16],
-                iconAnchor: [8, 8]
+                iconSize: [10, 10],
+                iconAnchor: [5, 5]
             });
             
             homeMarker = L.marker([lat, lon], {icon: homeIcon});
             homeMarker.bindPopup('<strong>Home Position</strong><br/>Launch/Return point');
             homeMarker.addTo(map);
+        }
+
+        // Launch location markers for each UAV
+        let launchMarkers = {};
+        function updateLaunchLocationMarker(uavId, lat, lon) {
+            if (!map) return;
+            
+            // Remove existing launch marker if it exists
+            if (launchMarkers[uavId]) {
+                map.removeLayer(launchMarkers[uavId]);
+            }
+            
+            // Extract UAV number (e.g., "UAV_3" -> "3")
+            const uavNumber = uavId.replace('UAV_', '');
+            const labelText = 'L' + uavNumber;
+            
+            // Create launch location icon with label
+            const launchIcon = L.divIcon({
+                html: `
+                    <div style="
+                        width: 14px; 
+                        height: 14px; 
+                        background: rgba(255, 165, 0, 0.3); 
+                        border: 2px solid #ff8800; 
+                        border-radius: 50%;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    ">
+                        <span style="
+                            color: #ff8800;
+                            font-weight: bold;
+                            font-size: 9px;
+                            font-family: Arial, sans-serif;
+                        ">${labelText}</span>
+                    </div>
+                `,
+                className: 'launch-marker',
+                iconSize: [14, 14],
+                iconAnchor: [7, 7]
+            });
+            
+            const marker = L.marker([lat, lon], {icon: launchIcon});
+            marker.bindPopup(`<strong>${uavId} Launch Location</strong><br/>Position: ${lat.toFixed(6)}, ${lon.toFixed(6)}`);
+            marker.addTo(map);
+            launchMarkers[uavId] = marker;
+            
+            console.log('Launch location marker updated:', uavId, 'at', lat, lon);
         }
 
         // Update mission path

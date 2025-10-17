@@ -19,6 +19,7 @@ Rectangle {
     property var selectedUAVs: []  // Array to track multiple selected UAVs
     property int selectionUpdateCounter: 0  // Counter to force UI updates when selection changes
     property int telemetryUpdateCounter: 0  // Counter to force UI updates when telemetry changes
+    property int gcsHomeUpdateCounter: 0  // Counter to force UI updates when GCS home changes
     
     // Signal-based telemetry updates
     Connections {
@@ -27,6 +28,12 @@ Rectangle {
             // Trigger immediate UI update for real-time display
             telemetryUpdateCounter++
             // Uncomment for debugging: console.log("Telemetry updated for", uavId)
+        }
+        
+        function onGcs_home_changed(latitude, longitude, altitude) {
+            // Trigger UI update when GCS home position changes
+            gcsHomeUpdateCounter++
+            console.log("GCS home changed to:", latitude, longitude, altitude)
         }
     }
     
@@ -316,19 +323,28 @@ Rectangle {
                             }
                             
                             Text { 
-                                text: "Dist: " + getDistanceFromHome(uavId) + "m"
+                                text: {
+                                    var dummy = gcsHomeUpdateCounter  // Create dependency on GCS home changes
+                                    return "Dist: " + getDistanceFromHome(uavId) + "m"
+                                }
                                 font.pointSize: 8
                                 width: parent.width
                                 elide: Text.ElideRight
                             }
                             
                             Text { 
-                                text: "Alt: " + (uavStatus && uavStatus.position ? (uavStatus.position.altitude || 0).toFixed(1) : "0.0") + "m"
+                                text: {
+                                    var dummy = telemetryUpdateCounter  // Create dependency on telemetry updates
+                                    return "Alt: " + getAltitude(uavId).toFixed(1) + "m"
+                                }
                                 font.pointSize: 9
                             }
                             
                             Text { 
-                                text: "Speed: " + (uavStatus && uavStatus.motion ? (uavStatus.motion.ground_speed || 0).toFixed(1) : "0.0") + " m/s"
+                                text: {
+                                    var dummy = telemetryUpdateCounter  // Create dependency on telemetry updates
+                                    return "Speed: " + getGroundSpeed(uavId).toFixed(1) + " m/s"
+                                }
                                 font.pointSize: 9
                                 width: parent.width
                                 elide: Text.ElideRight
@@ -463,20 +479,20 @@ Rectangle {
         try {
             var status = backend.get_uav_status(uavId)
             if (status && status.position) {
-                // Get home position from config or use default
-                var homeLat = 40.7128  // Default NYC coordinates
-                var homeLon = -76.0060
+                // Get GCS home position (ground control station home)
+                var home = backend.getGCSHomePosition()
                 
-                // Try to get home position from backend config
-                if (backend && backend.config && backend.config.default_home_position) {
-                    homeLat = backend.config.default_home_position.latitude || homeLat
-                    homeLon = backend.config.default_home_position.longitude || homeLon
+                // If GCS home position is not set, return N/A
+                if (!home || !home.isValid || home.latitude === 0) {
+                    return "N/A"
                 }
                 
+                var homeLat = home.latitude
+                var homeLon = home.longitude
                 var uavLat = status.position.latitude || 0
                 var uavLon = status.position.longitude || 0
                 
-                // Calculate distance using haversine formula approximation
+                // Calculate horizontal distance using haversine formula
                 var dLat = (uavLat - homeLat) * Math.PI / 180
                 var dLon = (uavLon - homeLon) * Math.PI / 180
                 var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
@@ -497,7 +513,18 @@ Rectangle {
         if (!backend) return 0
         try {
             var status = backend.get_uav_status(uavId)
-            return status && status.position ? status.position.altitude_msl || 0 : 0
+            if (status && status.position) {
+                // Get current altitude (MSL)
+                var currentAlt = status.position.altitude || 0
+                
+                // Get UAV launch position altitude
+                var launchPos = backend.getHomePosition(uavId)
+                var launchAlt = (launchPos && launchPos.altitude) ? launchPos.altitude : 0
+                
+                // Return relative altitude (current - launch)
+                return currentAlt - launchAlt
+            }
+            return 0
         } catch(e) {
             return 0
         }
@@ -507,7 +534,14 @@ Rectangle {
         if (!backend) return 0
         try {
             var status = backend.get_uav_status(uavId)
-            return status && status.position ? status.position.ground_speed || 0 : 0
+            if (status && status.motion) {
+                // Calculate 3D speed: V = sqrt(V_h^2 + V_v^2)
+                var horizontalSpeed = status.motion.ground_speed || 0
+                var verticalSpeed = status.motion.vertical_speed || 0
+                var totalSpeed = Math.sqrt(Math.pow(horizontalSpeed, 2) + Math.pow(verticalSpeed, 2))
+                return totalSpeed
+            }
+            return 0
         } catch(e) {
             return 0
         }
@@ -637,6 +671,17 @@ Rectangle {
         }
     }
     
+    function takeoffUAV(uavId, altitude) {
+        if (backend && backend.uav_controller) {
+            console.log("Takeoff UAV:", uavId, "to altitude:", altitude)
+            try {
+                backend.uav_controller.request_takeoff(uavId, altitude)
+            } catch(e) {
+                console.log("Error takeoff:", e)
+            }
+        }
+    }
+    
     function returnToLaunch(uavId) {
         if (backend && backend.uav_controller) {
             console.log("RTL for UAV:", uavId)
@@ -700,29 +745,16 @@ Rectangle {
         }
     }
     
-    function returnToLaunchAll() {
+    function takeoffAllUAVs(altitude) {
         if (backend && backend.uav_controller) {
-            console.log("RTL for ALL UAVs")
+            console.log("Takeoff ALL UAVs to altitude:", altitude)
             for (var i = 1; i <= maxUAVs; i++) {
-                var uavId = "UAV " + i
+                var uavId = "UAV_" + i
                 try {
-                    backend.uav_controller.return_to_launch(uavId)
+                    backend.uav_controller.request_takeoff(uavId, altitude)
+                    console.log("Takeoff UAV:", uavId)
                 } catch(e) {
-                    console.log("Error RTL for UAV", uavId, ":", e)
-                }
-            }
-        }
-    }
-    
-    function landAllUAVs() {
-        if (backend && backend.uav_controller) {
-            console.log("Landing ALL UAVs")
-            for (var i = 1; i <= maxUAVs; i++) {
-                var uavId = "UAV " + i
-                try {
-                    backend.uav_controller.land(uavId)
-                } catch(e) {
-                    console.log("Error landing UAV", uavId, ":", e)
+                    console.log("Error takeoff UAV", uavId, ":", e)
                 }
             }
         }
@@ -747,12 +779,140 @@ Rectangle {
     }
     
     function startMission(uavId) {
-        if (backend) {
+        if (backend && backend.uav_controller) {
             console.log("Starting mission for UAV:", uavId)
             try {
-                backend.start_mission(uavId)
+                backend.uav_controller.start_mission(uavId)
             } catch(e) {
                 console.log("Error starting mission:", e)
+            }
+        }
+    }
+    
+    function startMissionAll() {
+        if (backend && backend.uav_controller) {
+            console.log("Starting mission for ALL UAVs")
+            for (var i = 1; i <= maxUAVs; i++) {
+                var uavId = "UAV_" + i
+                try {
+                    backend.uav_controller.start_mission(uavId)
+                    console.log("Starting mission for UAV:", uavId)
+                } catch(e) {
+                    console.log("Error starting mission for UAV", uavId, ":", e)
+                }
+            }
+        }
+    }
+    
+    // Pause (Brake) functions
+    function brakeUAV(uavId) {
+        if (backend && backend.uav_controller) {
+            console.log("Brake UAV:", uavId)
+            try {
+                backend.uav_controller.brake(uavId)
+            } catch(e) {
+                console.log("Error brake:", e)
+            }
+        }
+    }
+    
+    function brakeAllUAVs() {
+        if (backend && backend.uav_controller) {
+            console.log("Brake ALL UAVs")
+            for (var i = 1; i <= maxUAVs; i++) {
+                var uavId = "UAV_" + i
+                try {
+                    backend.uav_controller.brake(uavId)
+                    console.log("Brake UAV:", uavId)
+                } catch(e) {
+                    console.log("Error brake UAV", uavId, ":", e)
+                }
+            }
+        }
+    }
+    
+    // RTL All function
+    function returnToLaunchAll() {
+        if (backend && backend.uav_controller) {
+            console.log("RTL for ALL UAVs")
+            for (var i = 1; i <= maxUAVs; i++) {
+                var uavId = "UAV_" + i
+                try {
+                    backend.uav_controller.return_to_launch(uavId)
+                    console.log("RTL UAV:", uavId)
+                } catch(e) {
+                    console.log("Error RTL for UAV", uavId, ":", e)
+                }
+            }
+        }
+    }
+    
+    // Land All function
+    function landAllUAVs() {
+        if (backend && backend.uav_controller) {
+            console.log("Landing ALL UAVs")
+            for (var i = 1; i <= maxUAVs; i++) {
+                var uavId = "UAV_" + i
+                try {
+                    backend.uav_controller.land(uavId)
+                    console.log("Landing UAV:", uavId)
+                } catch(e) {
+                    console.log("Error landing UAV", uavId, ":", e)
+                }
+            }
+        }
+    }
+    
+    // Manual mode (Loiter) functions
+    function setLoiterMode(uavId) {
+        if (backend && backend.uav_controller) {
+            console.log("Set LOITER mode for UAV:", uavId)
+            try {
+                backend.uav_controller.set_mode(uavId, "LOITER")
+            } catch(e) {
+                console.log("Error setting LOITER mode:", e)
+            }
+        }
+    }
+    
+    function setLoiterModeAll() {
+        if (backend && backend.uav_controller) {
+            console.log("Set LOITER mode for ALL UAVs")
+            for (var i = 1; i <= maxUAVs; i++) {
+                var uavId = "UAV_" + i
+                try {
+                    backend.uav_controller.set_mode(uavId, "LOITER")
+                    console.log("Set LOITER mode for UAV:", uavId)
+                } catch(e) {
+                    console.log("Error setting LOITER mode for UAV", uavId, ":", e)
+                }
+            }
+        }
+    }
+    
+    // Resume (Auto mode) functions
+    function setAutoMode(uavId) {
+        if (backend && backend.uav_controller) {
+            console.log("Set AUTO mode for UAV:", uavId)
+            try {
+                backend.uav_controller.set_mode(uavId, "AUTO")
+            } catch(e) {
+                console.log("Error setting AUTO mode:", e)
+            }
+        }
+    }
+    
+    function setAutoModeAll() {
+        if (backend && backend.uav_controller) {
+            console.log("Set AUTO mode for ALL UAVs")
+            for (var i = 1; i <= maxUAVs; i++) {
+                var uavId = "UAV_" + i
+                try {
+                    backend.uav_controller.set_mode(uavId, "AUTO")
+                    console.log("Set AUTO mode for UAV:", uavId)
+                } catch(e) {
+                    console.log("Error setting AUTO mode for UAV", uavId, ":", e)
+                }
             }
         }
     }
