@@ -29,6 +29,11 @@ class UAVState:
         # Battery Time
         self.battery_status = battery_status
         
+        # Mission Timer
+        self.mission_start_time = None  # Timestamp when mission started (takeoff)
+        self.mission_elapsed_time = 0.0  # Elapsed mission time in seconds
+        self.mission_running = False  # True if mission timer is running
+        
         # Pending command tracking for optimistic updates
         self.pending_arm_command = None  # Timestamp when ARM command was sent
         self.pending_disarm_command = None  # Timestamp when DISARM command was sent
@@ -183,8 +188,10 @@ class UAVState:
                 'battery_status': self.battery_status,
                 'remaining_percent': self.battery_status,  # Alias for compatibility
                 'remaining_battery_time': self.remaining_battery_time,
-                'average_power_consumption': self.average_power_consumption
-            },
+                'average_power_consumption': self.average_power_consumption,
+            'mission_elapsed_time': self.get_mission_elapsed_time(),
+            'mission_running': self.mission_running
+        },
             'connections': {
                 'telem1_status': self.telem1_status,
                 'telem2_status': self.telem2_status,
@@ -218,5 +225,34 @@ class UAVState:
             'telem2_status': self.telem2_status,
             'connected': self.telem1_status,
             'remaining_battery_time': self.remaining_battery_time,
-            'average_power_consumption': self.average_power_consumption
+            'average_power_consumption': self.average_power_consumption,
+            'mission_elapsed_time': self.get_mission_elapsed_time(),
+            'mission_running': self.mission_running
         }
+
+    def start_mission_timer(self):
+        """Start the mission timer (called on takeoff)"""
+        import time
+        self.mission_start_time = time.time()
+        self.mission_elapsed_time = 0.0
+        self.mission_running = True
+    
+    def stop_mission_timer(self):
+        """Stop the mission timer (called on landing)"""
+        if self.mission_running and self.mission_start_time:
+            import time
+            self.mission_elapsed_time = time.time() - self.mission_start_time
+        self.mission_running = False
+    
+    def get_mission_elapsed_time(self):
+        """Get the current mission elapsed time in seconds"""
+        if not self.mission_running or not self.mission_start_time:
+            return self.mission_elapsed_time
+        import time
+        return time.time() - self.mission_start_time
+    
+    def reset_mission_timer(self):
+        """Reset the mission timer (called when new mission starts)"""
+        self.mission_start_time = None
+        self.mission_elapsed_time = 0.0
+        self.mission_running = False

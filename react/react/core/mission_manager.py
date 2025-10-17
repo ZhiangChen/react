@@ -139,6 +139,12 @@ class MissionManager(QObject):
             mission_data = self.active_missions[uav_id]
             mission_id = self.mission_status[uav_id]['mission_id']
             
+            # Reset mission timer for new mission
+            uav_state = self.app.uav_states.get(uav_id)
+            if uav_state:
+                uav_state.reset_mission_timer()
+                self.logger.info(f"Mission timer reset for {uav_id}")
+            
             # Update status
             self.mission_status[uav_id]['status'] = 'active'
             self.mission_status[uav_id]['start_time'] = time.time()

@@ -17,7 +17,6 @@ ApplicationWindow {
     
     property bool connected: backend ? backend.get_uav_status("UAV_1") !== null : false
     property string currentTime: getCurrentTime()
-    property string missionTimer: getMissionTimer()
 
     // Button highlight properties for keyboard shortcuts
     property bool pauseButtonHighlighted: false
@@ -318,7 +317,7 @@ ApplicationWindow {
                                 text: "Takeoff"
                                 background: Rectangle {
                                     color: parent.hovered ? "#f0f0f0" : "#f8f8f8"
-                                    border.color: "#999999"
+                                    border.color: "#cccccc"
                                     border.width: 1
                                     radius: 2
                                 }
@@ -598,15 +597,6 @@ ApplicationWindow {
                             horizontalAlignment: Text.AlignHCenter
                         }
 
-                        Text {
-                            width: parent.width
-                            text: "Mission: " + missionTimer
-                            font.pointSize: 12
-                            font.bold: true
-                            color: "#1976D2"
-                            horizontalAlignment: Text.AlignHCenter
-                        }
-
                         Button {
                             anchors.horizontalCenter: parent.horizontalCenter  // Center the button horizontally
                             width: parent.width * 0.8  // 80% width to make it narrower
@@ -662,6 +652,13 @@ ApplicationWindow {
         height: 300
         modal: true
         anchors.centerIn: parent
+        
+        background: Rectangle {
+            color: "white"
+            border.color: "#cccccc"
+            border.width: 1
+            radius: 0  // Rectangular corners
+        }
         
         Column {
             anchors.fill: parent
@@ -721,6 +718,21 @@ ApplicationWindow {
             anchors.bottom: parent.bottom
             anchors.margins: 10
             onClicked: aboutDialog.close()
+            
+            background: Rectangle {
+                color: parent.pressed ? "#d0d0d0" : (parent.hovered ? "#e0e0e0" : "#f0f0f0")
+                border.color: "#707070"
+                border.width: 1
+                radius: 0  // Rectangular button
+            }
+            
+            contentItem: Text {
+                text: parent.text
+                font: parent.font
+                color: "#000000"
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
         }
     }
     
@@ -732,6 +744,13 @@ ApplicationWindow {
         height: 350
         modal: true
         anchors.centerIn: parent
+        
+        background: Rectangle {
+            color: "white"
+            border.color: "#cccccc"
+            border.width: 1
+            radius: 0  // Rectangular corners
+        }
         
         Column {
             anchors.fill: parent
@@ -833,6 +852,21 @@ ApplicationWindow {
             anchors.bottom: parent.bottom
             anchors.margins: 10
             onClicked: hotkeysDialog.close()
+            
+            background: Rectangle {
+                color: parent.pressed ? "#d0d0d0" : (parent.hovered ? "#e0e0e0" : "#f0f0f0")
+                border.color: "#707070"
+                border.width: 1
+                radius: 0  // Rectangular button
+            }
+            
+            contentItem: Text {
+                text: parent.text
+                font: parent.font
+                color: "#000000"
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
         }
     }
     
@@ -846,7 +880,6 @@ ApplicationWindow {
             connected = backend ? backend.get_uav_status("UAV_1") !== null : false
             // Update live time displays
             currentTime = getCurrentTime()
-            missionTimer = getMissionTimer()
         }
     }
 
@@ -987,25 +1020,6 @@ ApplicationWindow {
         return new Date().toLocaleTimeString()
     }
     
-    function getMissionTimer() {
-        if (!backend) return "00:00:00"
-        try {
-            var status = backend.get_mission_status("UAV_1")
-            if (status && status.active && status.start_time) {
-                var elapsed = Math.floor((new Date() - new Date(status.start_time * 1000)) / 1000)
-                var hours = Math.floor(elapsed / 3600)
-                var minutes = Math.floor((elapsed % 3600) / 60)
-                var seconds = elapsed % 60
-                return String(hours).padStart(2, '0') + ":" + 
-                       String(minutes).padStart(2, '0') + ":" + 
-                       String(seconds).padStart(2, '0')
-            }
-            return "00:00:00"
-        } catch(e) {
-            return "00:00:00"
-        }
-    }
-    
     function getMissionStatus() {
         if (!backend) return "No mission"
         try {
@@ -1027,15 +1041,8 @@ ApplicationWindow {
             pauseButtonHighlighted = true
             pauseHighlightTimer.start()
             
-            // Trigger Pause button
-            if (uavList.controlAllUAVs) {
-                console.log("Pause all UAVs (shortcut)")
-            } else {
-                // Pause all selected UAVs
-                for (var i = 0; i < uavList.selectedUAVs.length; i++) {
-                    console.log("Pause UAV", uavList.selectedUAVs[i], "(shortcut)")
-                }
-            }
+            // Open pause confirmation dialog
+            pauseDialog.open()
         }
     }
 
@@ -1046,15 +1053,8 @@ ApplicationWindow {
             manualButtonHighlighted = true
             manualHighlightTimer.start()
             
-            // Trigger Manual button
-            if (uavList.controlAllUAVs) {
-                console.log("Switch all UAVs to manual mode (shortcut)")
-            } else {
-                // Switch all selected UAVs to manual mode
-                for (var i = 0; i < uavList.selectedUAVs.length; i++) {
-                    console.log("Switch UAV to manual mode", uavList.selectedUAVs[i], "(shortcut)")
-                }
-            }
+            // Open manual mode confirmation dialog
+            manualDialog.open()
         }
     }
 
@@ -1065,15 +1065,8 @@ ApplicationWindow {
             rtlButtonHighlighted = true
             rtlHighlightTimer.start()
             
-            // Trigger RTL button
-            if (uavList.controlAllUAVs) {
-                uavList.returnToLaunchAll()
-            } else {
-                // RTL all selected UAVs
-                for (var i = 0; i < uavList.selectedUAVs.length; i++) {
-                    uavList.returnToLaunch(uavList.selectedUAVs[i])
-                }
-            }
+            // Open RTL confirmation dialog
+            rtlDialog.open()
         }
     }
 
@@ -1084,15 +1077,8 @@ ApplicationWindow {
             landButtonHighlighted = true
             landHighlightTimer.start()
             
-            // Trigger Land button
-            if (uavList.controlAllUAVs) {
-                uavList.landAllUAVs()
-            } else {
-                // Land all selected UAVs
-                for (var i = 0; i < uavList.selectedUAVs.length; i++) {
-                    uavList.landUAV(uavList.selectedUAVs[i])
-                }
-            }
+            // Open land confirmation dialog
+            landDialog.open()
         }
     }
 
@@ -1126,6 +1112,21 @@ ApplicationWindow {
         y: (parent.height - height) / 2
         
         property real takeoffAltitude: 1.0  // Default 1 meter
+        
+        background: Rectangle {
+            color: "white"
+            border.color: "#cccccc"
+            border.width: 1
+            radius: 0  // Rectangular corners
+        }
+        
+        Item {
+            anchors.fill: parent
+            focus: true
+            
+            Keys.onReturnPressed: takeoffDialog.accept()
+            Keys.onEnterPressed: takeoffDialog.accept()
+            Keys.onEscapePressed: takeoffDialog.reject()
         
         Column {
             anchors.fill: parent
@@ -1162,6 +1163,21 @@ ApplicationWindow {
                     text: "Cancel"
                     width: 80
                     onClicked: takeoffDialog.reject()
+                    
+                    background: Rectangle {
+                        color: parent.pressed ? "#d0d0d0" : (parent.hovered ? "#e0e0e0" : "#f0f0f0")
+                        border.color: "#707070"
+                        border.width: 1
+                        radius: 0
+                    }
+                    
+                    contentItem: Text {
+                        text: parent.text
+                        font: parent.font
+                        color: "#000000"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
                 }
                 
                 Button {
@@ -1169,9 +1185,25 @@ ApplicationWindow {
                     width: 80
                     highlighted: true
                     onClicked: takeoffDialog.accept()
+                    
+                    background: Rectangle {
+                        color: parent.pressed ? "#0050a0" : (parent.hovered ? "#0060c0" : "#0078d4")
+                        border.color: "#003d80"
+                        border.width: 1
+                        radius: 0
+                    }
+                    
+                    contentItem: Text {
+                        text: parent.text
+                        font: parent.font
+                        color: "#ffffff"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
                 }
             }
         }
+        }  // End Item wrapper
         
         onAccepted: {
             var altitude = parseFloat(altitudeInput.text)
@@ -1213,6 +1245,21 @@ ApplicationWindow {
         x: (parent.width - width) / 2
         y: (parent.height - height) / 2
         
+        background: Rectangle {
+            color: "white"
+            border.color: "#cccccc"
+            border.width: 1
+            radius: 0  // Rectangular corners
+        }
+        
+        Item {
+            anchors.fill: parent
+            focus: true
+            
+            Keys.onReturnPressed: pauseDialog.accept()
+            Keys.onEnterPressed: pauseDialog.accept()
+            Keys.onEscapePressed: pauseDialog.reject()
+        
         Column {
             anchors.fill: parent
             spacing: 20
@@ -1235,6 +1282,21 @@ ApplicationWindow {
                     text: "Cancel"
                     width: 80
                     onClicked: pauseDialog.reject()
+                    
+                    background: Rectangle {
+                        color: parent.pressed ? "#d0d0d0" : (parent.hovered ? "#e0e0e0" : "#f0f0f0")
+                        border.color: "#707070"
+                        border.width: 1
+                        radius: 0
+                    }
+                    
+                    contentItem: Text {
+                        text: parent.text
+                        font: parent.font
+                        color: "#000000"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
                 }
                 
                 Button {
@@ -1242,9 +1304,25 @@ ApplicationWindow {
                     width: 80
                     highlighted: true
                     onClicked: pauseDialog.accept()
+                    
+                    background: Rectangle {
+                        color: parent.pressed ? "#0050a0" : (parent.hovered ? "#0060c0" : "#0078d4")
+                        border.color: "#003d80"
+                        border.width: 1
+                        radius: 0
+                    }
+                    
+                    contentItem: Text {
+                        text: parent.text
+                        font: parent.font
+                        color: "#ffffff"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
                 }
             }
         }
+        }  // End Item wrapper
         
         onAccepted: {
             if (uavList.controlAllUAVs) {
@@ -1266,6 +1344,21 @@ ApplicationWindow {
         modal: true
         x: (parent.width - width) / 2
         y: (parent.height - height) / 2
+        
+        background: Rectangle {
+            color: "white"
+            border.color: "#cccccc"
+            border.width: 1
+            radius: 0  // Rectangular corners
+        }
+        
+        Item {
+            anchors.fill: parent
+            focus: true
+            
+            Keys.onReturnPressed: manualDialog.accept()
+            Keys.onEnterPressed: manualDialog.accept()
+            Keys.onEscapePressed: manualDialog.reject()
         
         Column {
             anchors.fill: parent
@@ -1289,6 +1382,21 @@ ApplicationWindow {
                     text: "Cancel"
                     width: 80
                     onClicked: manualDialog.reject()
+                    
+                    background: Rectangle {
+                        color: parent.pressed ? "#d0d0d0" : (parent.hovered ? "#e0e0e0" : "#f0f0f0")
+                        border.color: "#707070"
+                        border.width: 1
+                        radius: 0
+                    }
+                    
+                    contentItem: Text {
+                        text: parent.text
+                        font: parent.font
+                        color: "#000000"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
                 }
                 
                 Button {
@@ -1296,9 +1404,25 @@ ApplicationWindow {
                     width: 80
                     highlighted: true
                     onClicked: manualDialog.accept()
+                    
+                    background: Rectangle {
+                        color: parent.pressed ? "#0050a0" : (parent.hovered ? "#0060c0" : "#0078d4")
+                        border.color: "#003d80"
+                        border.width: 1
+                        radius: 0
+                    }
+                    
+                    contentItem: Text {
+                        text: parent.text
+                        font: parent.font
+                        color: "#ffffff"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
                 }
             }
         }
+        }  // End Item wrapper
         
         onAccepted: {
             if (uavList.controlAllUAVs) {
@@ -1320,6 +1444,21 @@ ApplicationWindow {
         modal: true
         x: (parent.width - width) / 2
         y: (parent.height - height) / 2
+        
+        background: Rectangle {
+            color: "white"
+            border.color: "#cccccc"
+            border.width: 1
+            radius: 0  // Rectangular corners
+        }
+        
+        Item {
+            anchors.fill: parent
+            focus: true
+            
+            Keys.onReturnPressed: resumeDialog.accept()
+            Keys.onEnterPressed: resumeDialog.accept()
+            Keys.onEscapePressed: resumeDialog.reject()
         
         Column {
             anchors.fill: parent
@@ -1343,6 +1482,21 @@ ApplicationWindow {
                     text: "Cancel"
                     width: 80
                     onClicked: resumeDialog.reject()
+                    
+                    background: Rectangle {
+                        color: parent.pressed ? "#d0d0d0" : (parent.hovered ? "#e0e0e0" : "#f0f0f0")
+                        border.color: "#707070"
+                        border.width: 1
+                        radius: 0
+                    }
+                    
+                    contentItem: Text {
+                        text: parent.text
+                        font: parent.font
+                        color: "#000000"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
                 }
                 
                 Button {
@@ -1350,9 +1504,25 @@ ApplicationWindow {
                     width: 80
                     highlighted: true
                     onClicked: resumeDialog.accept()
+                    
+                    background: Rectangle {
+                        color: parent.pressed ? "#0050a0" : (parent.hovered ? "#0060c0" : "#0078d4")
+                        border.color: "#003d80"
+                        border.width: 1
+                        radius: 0
+                    }
+                    
+                    contentItem: Text {
+                        text: parent.text
+                        font: parent.font
+                        color: "#ffffff"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
                 }
             }
         }
+        }  // End Item wrapper
         
         onAccepted: {
             if (uavList.controlAllUAVs) {
@@ -1374,6 +1544,21 @@ ApplicationWindow {
         modal: true
         x: (parent.width - width) / 2
         y: (parent.height - height) / 2
+        
+        background: Rectangle {
+            color: "white"
+            border.color: "#cccccc"
+            border.width: 1
+            radius: 0  // Rectangular corners
+        }
+        
+        Item {
+            anchors.fill: parent
+            focus: true
+            
+            Keys.onReturnPressed: rtlDialog.accept()
+            Keys.onEnterPressed: rtlDialog.accept()
+            Keys.onEscapePressed: rtlDialog.reject()
         
         Column {
             anchors.fill: parent
@@ -1397,6 +1582,21 @@ ApplicationWindow {
                     text: "Cancel"
                     width: 80
                     onClicked: rtlDialog.reject()
+                    
+                    background: Rectangle {
+                        color: parent.pressed ? "#d0d0d0" : (parent.hovered ? "#e0e0e0" : "#f0f0f0")
+                        border.color: "#707070"
+                        border.width: 1
+                        radius: 0
+                    }
+                    
+                    contentItem: Text {
+                        text: parent.text
+                        font: parent.font
+                        color: "#000000"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
                 }
                 
                 Button {
@@ -1404,9 +1604,25 @@ ApplicationWindow {
                     width: 80
                     highlighted: true
                     onClicked: rtlDialog.accept()
+                    
+                    background: Rectangle {
+                        color: parent.pressed ? "#0050a0" : (parent.hovered ? "#0060c0" : "#0078d4")
+                        border.color: "#003d80"
+                        border.width: 1
+                        radius: 0
+                    }
+                    
+                    contentItem: Text {
+                        text: parent.text
+                        font: parent.font
+                        color: "#ffffff"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
                 }
             }
         }
+        }  // End Item wrapper
         
         onAccepted: {
             if (uavList.controlAllUAVs) {
@@ -1428,6 +1644,21 @@ ApplicationWindow {
         modal: true
         x: (parent.width - width) / 2
         y: (parent.height - height) / 2
+        
+        background: Rectangle {
+            color: "white"
+            border.color: "#cccccc"
+            border.width: 1
+            radius: 0  // Rectangular corners
+        }
+        
+        Item {
+            anchors.fill: parent
+            focus: true
+            
+            Keys.onReturnPressed: landDialog.accept()
+            Keys.onEnterPressed: landDialog.accept()
+            Keys.onEscapePressed: landDialog.reject()
         
         Column {
             anchors.fill: parent
@@ -1451,6 +1682,21 @@ ApplicationWindow {
                     text: "Cancel"
                     width: 80
                     onClicked: landDialog.reject()
+                    
+                    background: Rectangle {
+                        color: parent.pressed ? "#d0d0d0" : (parent.hovered ? "#e0e0e0" : "#f0f0f0")
+                        border.color: "#707070"
+                        border.width: 1
+                        radius: 0
+                    }
+                    
+                    contentItem: Text {
+                        text: parent.text
+                        font: parent.font
+                        color: "#000000"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
                 }
                 
                 Button {
@@ -1458,9 +1704,25 @@ ApplicationWindow {
                     width: 80
                     highlighted: true
                     onClicked: landDialog.accept()
+                    
+                    background: Rectangle {
+                        color: parent.pressed ? "#0050a0" : (parent.hovered ? "#0060c0" : "#0078d4")
+                        border.color: "#003d80"
+                        border.width: 1
+                        radius: 0
+                    }
+                    
+                    contentItem: Text {
+                        text: parent.text
+                        font: parent.font
+                        color: "#ffffff"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
                 }
             }
         }
+        }  // End Item wrapper
         
         onAccepted: {
             if (uavList.controlAllUAVs) {
@@ -1482,6 +1744,21 @@ ApplicationWindow {
         modal: true
         x: (parent.width - width) / 2
         y: (parent.height - height) / 2
+        
+        background: Rectangle {
+            color: "white"
+            border.color: "#cccccc"
+            border.width: 1
+            radius: 0  // Rectangular corners
+        }
+        
+        Item {
+            anchors.fill: parent
+            focus: true
+            
+            Keys.onReturnPressed: startMissionDialog.accept()
+            Keys.onEnterPressed: startMissionDialog.accept()
+            Keys.onEscapePressed: startMissionDialog.reject()
         
         Column {
             anchors.fill: parent
@@ -1505,6 +1782,21 @@ ApplicationWindow {
                     text: "Cancel"
                     width: 100
                     onClicked: startMissionDialog.reject()
+                    
+                    background: Rectangle {
+                        color: parent.pressed ? "#d0d0d0" : (parent.hovered ? "#e0e0e0" : "#f0f0f0")
+                        border.color: "#707070"
+                        border.width: 1
+                        radius: 0
+                    }
+                    
+                    contentItem: Text {
+                        text: parent.text
+                        font: parent.font
+                        color: "#000000"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
                 }
                 
                 Button {
@@ -1512,9 +1804,25 @@ ApplicationWindow {
                     width: 120
                     highlighted: true
                     onClicked: startMissionDialog.accept()
+                    
+                    background: Rectangle {
+                        color: parent.pressed ? "#0050a0" : (parent.hovered ? "#0060c0" : "#0078d4")
+                        border.color: "#003d80"
+                        border.width: 1
+                        radius: 0
+                    }
+                    
+                    contentItem: Text {
+                        text: parent.text
+                        font: parent.font
+                        color: "#ffffff"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
                 }
             }
         }
+        }  // End Item wrapper
         
         onAccepted: {
             if (uavList.controlAllUAVs) {

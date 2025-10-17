@@ -2,6 +2,10 @@
 
 A professional Ground Control Station (GCS) for UAV fleet management with dual telemetry architecture, comprehensive mission planning, and modern QML-based user interface.
 
+
+
+![react](docs/figures/react.png)
+
 ## Installation
 
 ### Prerequisites

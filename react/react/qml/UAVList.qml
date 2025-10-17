@@ -143,7 +143,7 @@ Rectangle {
                     // UAV Status Template Component
                     Rectangle {
                         width: 100  // Fixed width for each UAV status box
-                        height: 200  // Fixed height for each UAV status box
+                        height: 205  // Fixed height for each UAV status box (increased for mission timer)
                         color: "white"
                         border.color: {
                             // Force reevaluation when selectionUpdateCounter changes
@@ -387,6 +387,18 @@ Rectangle {
                                     onExited: missionText.color = "#0066cc"
                                 }
                             }
+                            
+                            // Mission timer display
+                            Text {
+                                text: {
+                                    telemetryUpdateCounter  // Update when telemetry changes
+                                    return "Time: " + getMissionTime(uavId)
+                                }
+                                font.pointSize: 9
+                                color: "#666666"
+                                width: parent.width
+                                elide: Text.ElideRight
+                            }
                         }
                     }
                 }
@@ -544,6 +556,25 @@ Rectangle {
             return 0
         } catch(e) {
             return 0
+        }
+    }
+    
+    function getMissionTime(uavId) {
+        if (!backend) return "00:00:00"
+        try {
+            var status = backend.get_uav_status(uavId)
+            if (status && status.mission_elapsed_time !== undefined) {
+                var elapsed = Math.floor(status.mission_elapsed_time)
+                var hours = Math.floor(elapsed / 3600)
+                var minutes = Math.floor((elapsed % 3600) / 60)
+                var seconds = elapsed % 60
+                return String(hours).padStart(2, '0') + ":" + 
+                       String(minutes).padStart(2, '0') + ":" + 
+                       String(seconds).padStart(2, '0')
+            }
+            return "00:00:00"
+        } catch(e) {
+            return "00:00:00"
         }
     }
     

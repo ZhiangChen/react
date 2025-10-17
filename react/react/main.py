@@ -1,5 +1,10 @@
 import sys
 import os
+
+# Set Qt Quick Controls style BEFORE any Qt imports
+# This ensures rectangular (non-rounded) UI elements like classic Windows
+os.environ["QT_QUICK_CONTROLS_STYLE"] = "Fusion"
+
 import yaml
 import logging
 from PySide6.QtWidgets import QApplication

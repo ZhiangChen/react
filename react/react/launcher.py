@@ -4,12 +4,16 @@ REACT Ground Control Station Launcher
 Starts the tile server and main application
 """
 
+# Set Qt Quick Controls style BEFORE any Qt imports
+# This ensures rectangular (non-rounded) UI elements
+import os
+os.environ["QT_QUICK_CONTROLS_STYLE"] = "Fusion"  # Fusion style provides rectangular dialogs and buttons
+
 import subprocess
 import sys
 import time
 import threading
 import signal
-import os
 import math
 import yaml
 import logging

@@ -296,10 +296,40 @@ class TelemetryManager(QObject):
             )
 
         elif msg_type == "HEARTBEAT":
+            # Get previous mode and armed status
+            previous_mode = state.mode
+            previous_armed = state.armed
+            
+            # Update telemetry
+            new_mode = mavutil.mode_string_v10(msg)
+            new_armed = (msg.base_mode & mavutil.mavlink.MAV_MODE_FLAG_SAFETY_ARMED) != 0
+            
             state.update_telemetry_protected(
-                mode=mavutil.mode_string_v10(msg),
-                armed=(msg.base_mode & mavutil.mavlink.MAV_MODE_FLAG_SAFETY_ARMED) != 0
+                mode=new_mode,
+                armed=new_armed
             )
+            
+            # Mission timer logic
+            # Start timer when transitioning to armed + flying mode (not on ground)
+            if not previous_armed and new_armed:
+                # Just armed - wait for takeoff (will be detected by mode change)
+                pass
+            elif new_armed and previous_mode != new_mode:
+                # Mode changed while armed
+                if new_mode in ["GUIDED", "AUTO", "LOITER", "POSHOLD", "ALT_HOLD"] and not state.mission_running:
+                    # UAV is flying - start timer
+                    state.start_mission_timer()
+                    self.logger.info(f"{uav_id}: Mission timer started (mode: {new_mode})")
+            
+            # Stop timer when landing or disarming
+            if previous_armed and not new_armed and state.mission_running:
+                # Disarmed - stop timer
+                state.stop_mission_timer()
+                self.logger.info(f"{uav_id}: Mission timer stopped (disarmed)")
+            elif new_armed and new_mode == "LAND" and previous_mode != "LAND" and state.mission_running:
+                # Entered land mode - stop timer
+                state.stop_mission_timer()
+                self.logger.info(f"{uav_id}: Mission timer stopped (landing)")
 
         elif msg_type == "ATTITUDE":
             state.update_telemetry(

@@ -2,6 +2,7 @@
 
 A professional Ground Control Station (GCS) for UAV fleet management with dual telemetry architecture, comprehensive mission planning, and modern QML-based user interface.
 
+
 ## Features
 
 - **Dual Telemetry Architecture**: Primary (MAVProxy routing) + Backup (direct SiK radio) connections
