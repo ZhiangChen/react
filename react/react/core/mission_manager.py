@@ -14,6 +14,7 @@ class MissionManager(QObject):
     waypoint_reached = Signal(str, int)       # uav_id, waypoint_number
     mission_progress = Signal(str, float)     # uav_id, progress_percent
     mission_upload_requested = Signal(str, str)  # uav_id, waypoint_file_path
+    mission_upload_result = Signal(str, bool, int, str)  # uav_id, success, waypoints, message
     
     def __init__(self, uav_states: dict, config: dict):
         super().__init__()
@@ -113,11 +114,15 @@ class MissionManager(QObject):
             
             mission_id = self.mission_status[uav_id]['mission_id']
             self.logger.info(f"Mission {mission_id} successfully uploaded to UAV {uav_id} ({total_waypoints} waypoints)")
+            # Emit success signal
+            self.mission_upload_result.emit(uav_id, True, total_waypoints, f"Successfully uploaded {total_waypoints} waypoints")
         else:
             # Upload failed, clean up
             mission_id = self.mission_status[uav_id]['mission_id']
             del self.mission_status[uav_id]
             self.logger.error(f"Mission upload failed for UAV {uav_id}: {mission_id}")
+            # Emit failure signal
+            self.mission_upload_result.emit(uav_id, False, 0, "Upload failed")
 
     def mission_upload_failed(self, uav_id, error_message):
         """Called when mission upload fails.
@@ -126,8 +131,11 @@ class MissionManager(QObject):
             uav_id (str): Target UAV identifier  
             error_message (str): Error description
         """
-        self.mission_upload_completed(uav_id, False)
         self.logger.error(f"Mission upload failed for UAV {uav_id}: {error_message}")
+        # Emit failure signal with specific error
+        if uav_id in self.mission_status:
+            del self.mission_status[uav_id]
+        self.mission_upload_result.emit(uav_id, False, 0, error_message)
 
     def start_mission(self, uav_id):
         """Start AUTO mission on UAV."""

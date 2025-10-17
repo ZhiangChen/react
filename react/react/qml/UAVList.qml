@@ -324,7 +324,8 @@ Rectangle {
                             
                             Text { 
                                 text: {
-                                    var dummy = gcsHomeUpdateCounter  // Create dependency on GCS home changes
+                                    var dummy1 = gcsHomeUpdateCounter  // Create dependency on GCS home changes
+                                    var dummy2 = telemetryUpdateCounter  // Create dependency on telemetry updates (UAV position)
                                     return "Dist: " + getDistanceFromHome(uavId) + "m"
                                 }
                                 font.pointSize: 8
@@ -418,15 +419,7 @@ Rectangle {
             missionFilePaths[targetUAV] = filePath
             missionFileUpdateCounter++  // Trigger UI update
             console.log("Selected mission file for", targetUAV, ":", filePath)
-            
-            // Load the mission for the UAV
-            if (backend) {
-                try {
-                    backend.load_mission(targetUAV, filePath)
-                } catch(e) {
-                    console.log("Error loading mission:", e)
-                }
-            }
+            // Note: Mission will be uploaded when "Upload Mission" button is clicked
         }
     }
     
@@ -503,6 +496,11 @@ Rectangle {
                 var homeLon = home.longitude
                 var uavLat = status.position.latitude || 0
                 var uavLon = status.position.longitude || 0
+                
+                // Check if UAV has valid GPS position (not at 0,0)
+                if (uavLat === 0 && uavLon === 0) {
+                    return "N/A"
+                }
                 
                 // Calculate horizontal distance using haversine formula
                 var dLat = (uavLat - homeLat) * Math.PI / 180
@@ -628,12 +626,18 @@ Rectangle {
         return "Click to select..."
     }
     
+    function getMissionFileFullPath(uavId) {
+        // Return the full file path for uploading
+        var filePath = missionFilePaths[uavId]
+        return filePath ? filePath : ""
+    }
+    
     function getTelem1Status(uavId) {
         if (!backend) return false
         try {
             // Check if telem1 connection is active for this UAV
             var status = backend.get_uav_status(uavId)
-            return status && status.telemetry && status.telemetry.telem1_connected
+            return status && status.connections && status.connections.telem1_connected
         } catch(e) {
             return false
         }

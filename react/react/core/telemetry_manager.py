@@ -22,6 +22,7 @@ class TelemetryManager(QObject):
         self.discovered_uavs = set()  # Track discovered UAV system IDs
         self.uav_last_seen = {}  # Track last message time for each UAV
         self.uav_connection_timeout = 10  # seconds
+        self.mission_upload_timeout = config.get("safety", {}).get("mission_upload_timeout", 30)  # Mission upload timeout from config
         
         # Telem2 connection check variables (broadcast via Telem2)
         self.telem2_check_enabled = config.get("telemetry2", {}).get("connection_check", True)
@@ -34,6 +35,9 @@ class TelemetryManager(QObject):
         self.uav_telem2_status = {}  # Track Telem2 connection status per UAV
         self.uav_telem2_last_update = {}  # Track last Telem2 status update per UAV
         self.telem2_status_timeout = 5.0  # seconds - if no status update, assume Telem2 lost
+        
+        # Mission upload state tracking (for handling MISSION_REQUEST in main loop)
+        self.active_mission_uploads = {}  # Track active mission uploads: {uav_id: upload_state}
         
         # Get logger using standard Python logging
         self.logger = logging.getLogger("REACT.TelemetryManager")
@@ -274,6 +278,12 @@ class TelemetryManager(QObject):
             return
 
         msg_type = msg.get_type()
+        
+        # Handle mission upload protocol messages
+        if msg_type in ['MISSION_REQUEST', 'MISSION_REQUEST_INT', 'MISSION_ACK']:
+            if uav_id in self.active_mission_uploads:
+                self._handle_mission_upload_message(uav_id, msg)
+            return  # Don't process mission messages further
 
         if msg_type == "GLOBAL_POSITION_INT":
             # vx: North velocity (cm/s), vy: East velocity (cm/s), vz: Down velocity (cm/s) in NED frame
@@ -684,34 +694,40 @@ class TelemetryManager(QObject):
                             waypoints.append(waypoint)
                             
             else:
-                # ArduPilot .waypoints format or generic format
+                # ArduPilot .waypoints format (QGC WPL format)
                 for i, line in enumerate(lines):
                     line = line.strip()
+                    
+                    # Skip empty lines and comments
                     if not line or line.startswith('#'):
                         continue
                         
-                    # Skip header line in ArduPilot format
+                    # Skip header line in QGC WPL format
                     if i == 0 and line.startswith('QGC'):
+                        self.logger.debug(f"Detected QGC WPL format: {line}")
                         continue
                         
                     parts = line.split('\t')
                     if len(parts) >= 12:
-                        # Standard waypoint format: seq current frame command param1 param2 param3 param4 x y z autocontinue
-                        waypoint = {
-                            'seq': int(parts[0]),
-                            'current': int(parts[1]),
-                            'frame': int(parts[2]),
-                            'command': int(parts[3]),
-                            'param1': float(parts[4]),
-                            'param2': float(parts[5]),
-                            'param3': float(parts[6]),
-                            'param4': float(parts[7]),
-                            'x': float(parts[8]),     # latitude
-                            'y': float(parts[9]),     # longitude
-                            'z': float(parts[10]),    # altitude
-                            'autocontinue': int(parts[11])
-                        }
-                        waypoints.append(waypoint)
+                        try:
+                            # Standard waypoint format: seq current frame command param1 param2 param3 param4 x y z autocontinue
+                            waypoint = {
+                                'seq': int(parts[0]),
+                                'current': int(parts[1]),
+                                'frame': int(parts[2]),
+                                'command': int(parts[3]),
+                                'param1': float(parts[4]),
+                                'param2': float(parts[5]),
+                                'param3': float(parts[6]),
+                                'param4': float(parts[7]),
+                                'x': float(parts[8]),     # latitude
+                                'y': float(parts[9]),     # longitude
+                                'z': float(parts[10]),    # altitude
+                                'autocontinue': int(parts[11])
+                            }
+                            waypoints.append(waypoint)
+                        except (ValueError, IndexError) as e:
+                            self.logger.warning(f"Failed to parse waypoint line {i+1}: {e}")
                         
         except Exception as e:
             self.logger.error(f"Error parsing mission file {mission_file_path}: {e}")
@@ -720,14 +736,144 @@ class TelemetryManager(QObject):
         self.logger.debug(f"Parsed {len(waypoints)} waypoints from {mission_file_path}")
         return waypoints
 
+    def _handle_mission_upload_message(self, uav_id, msg):
+        """Handle mission upload protocol messages in the main loop.
+        
+        This is called from _process_mavlink_message when an active upload is in progress.
+        """
+        if uav_id not in self.active_mission_uploads:
+            return
+            
+        upload_state = self.active_mission_uploads[uav_id]
+        system_id = int(uav_id.split('_')[1]) if '_' in uav_id else 1
+        msg_type = msg.get_type()
+        
+        # Verify message is from the correct system
+        if msg.get_srcSystem() != system_id:
+            return
+        
+        if msg_type in ['MISSION_REQUEST', 'MISSION_REQUEST_INT']:
+            # UAV is requesting a specific waypoint
+            seq = msg.seq
+            self.logger.debug(f"Received {msg_type} for waypoint {seq} from {uav_id}")
+            
+            waypoints = upload_state['waypoints']
+            if seq < len(waypoints):
+                # Check for duplicate requests
+                if seq in upload_state['requests_received']:
+                    self.logger.warning(f"Duplicate request for waypoint {seq} from {uav_id}")
+                
+                upload_state['requests_received'].add(seq)
+                waypoint = waypoints[seq]
+                
+                # Send the requested waypoint
+                self.logger.debug(f"Sending waypoint {seq+1}/{len(waypoints)} to {uav_id}")
+                
+                # Respond with appropriate message type based on request type
+                if msg_type == 'MISSION_REQUEST_INT':
+                    self.telem1_connection.mav.mission_item_int_send(
+                        system_id,  # target_system
+                        1,  # target_component
+                        seq,  # seq (sequence number)
+                        waypoint.get('frame', mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT),
+                        waypoint.get('command', mavutil.mavlink.MAV_CMD_NAV_WAYPOINT),
+                        waypoint.get('current', 0),  # Use value from file
+                        waypoint.get('autocontinue', 1),  # autocontinue
+                        waypoint.get('param1', 0),  # param1
+                        waypoint.get('param2', 0),  # param2  
+                        waypoint.get('param3', 0),  # param3
+                        waypoint.get('param4', 0),  # param4
+                        int(waypoint.get('x', 0) * 1e7),  # x (latitude * 1e7)
+                        int(waypoint.get('y', 0) * 1e7),  # y (longitude * 1e7)
+                        waypoint.get('z', 0),  # z (altitude)
+                        mavutil.mavlink.MAV_MISSION_TYPE_MISSION  # mission_type
+                    )
+                else:
+                    # MISSION_REQUEST uses float format
+                    self.telem1_connection.mav.mission_item_send(
+                        system_id,  # target_system
+                        1,  # target_component
+                        seq,  # seq (sequence number)
+                        waypoint.get('frame', mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT),
+                        waypoint.get('command', mavutil.mavlink.MAV_CMD_NAV_WAYPOINT),
+                        waypoint.get('current', 0),  # Use value from file
+                        waypoint.get('autocontinue', 1),  # autocontinue
+                        waypoint.get('param1', 0),  # param1
+                        waypoint.get('param2', 0),  # param2  
+                        waypoint.get('param3', 0),  # param3
+                        waypoint.get('param4', 0),  # param4
+                        waypoint.get('x', 0),  # x (latitude)
+                        waypoint.get('y', 0),  # y (longitude)
+                        waypoint.get('z', 0),  # z (altitude)
+                        mavutil.mavlink.MAV_MISSION_TYPE_MISSION  # mission_type
+                    )
+                
+                upload_state['waypoints_sent'] += 1
+                
+                # Check if all waypoints have been requested
+                if len(upload_state['requests_received']) >= len(waypoints):
+                    upload_state['phase'] = 'waiting_ack'
+                    self.logger.debug(f"All waypoints sent to {uav_id}, waiting for ACK")
+                    
+            else:
+                self.logger.error(f"UAV {uav_id} requested invalid waypoint {seq} (max: {len(waypoints)-1})")
+                upload_state['error'] = f"Invalid waypoint request {seq}"
+                upload_state['phase'] = 'error'
+                
+        elif msg_type == 'MISSION_ACK':
+            # UAV is acknowledging mission upload
+            ack_type = msg.type
+            self.logger.debug(f"Received MISSION_ACK from {uav_id}: type={ack_type}")
+            
+            if ack_type == mavutil.mavlink.MAV_MISSION_ACCEPTED:
+                upload_state['ack_received'] = True
+                upload_state['phase'] = 'complete'
+                upload_state['success'] = True
+                self.logger.info(f"Mission upload successful for {uav_id}")
+            else:
+                # Mission upload failed
+                error_msgs = {
+                    1: "Generic error (MAV_MISSION_ERROR)",
+                    2: "Unsupported coordinate frame",
+                    3: "Unsupported mission command",
+                    4: "No space left on device",
+                    5: "Invalid mission",
+                    6: "Invalid param1",
+                    7: "Invalid param2",
+                    8: "Invalid param3",
+                    9: "Invalid param4",
+                    10: "Invalid param5/X coordinate",
+                    11: "Invalid param6/Y coordinate",
+                    12: "Invalid param7/altitude",
+                    13: "Invalid sequence",
+                    14: "Mission denied",
+                    15: "Not in a mission (mission may still be loaded)",
+                    16: "No missions available",
+                    17: "Mission out of bounds",
+                    18: "Temporary failure (retry later)",
+                }
+                error_msg = error_msgs.get(ack_type, f"Unknown MAVLink error code {ack_type}")
+                upload_state['error'] = error_msg
+                upload_state['phase'] = 'error'
+                upload_state['success'] = False
+                self.logger.error(f"Mission upload failed for {uav_id}: {error_msg}")
+                
+                # Error 15 is often a false error - mission is usually loaded anyway
+                if ack_type == 15:
+                    self.logger.warning(f"Error 15 for {uav_id} - mission may still be loaded despite error")
+                    self.logger.warning(f"This typically occurs when autopilot is not in AUTO/GUIDED mode")
+
     def _upload_mission_to_uav(self, uav_id, waypoints):
         """Upload waypoints to UAV using MAVLink mission protocol.
         
-        Implements the full mission upload protocol:
+        Implements the full mission upload protocol using state-based approach:
         1. Send MISSION_COUNT
-        2. Wait for MISSION_REQUEST messages
+        2. MISSION_REQUEST messages handled in main loop via _handle_mission_upload_message
         3. Send MISSION_ITEM_INT for each requested waypoint
-        4. Wait for MISSION_ACK confirmation
+        4. MISSION_ACK handled in main loop
+        
+        Returns True if upload initiated successfully, False otherwise.
+        The actual success/failure is determined asynchronously.
         """
         if not waypoints:
             return False
@@ -740,132 +886,65 @@ class TelemetryManager(QObject):
                 self.logger.error(f"Cannot upload mission to {uav_id} - Telem1 required for mission upload")
                 return False
             
-            # Mission upload state tracking
+            # Initialize mission upload state (will be handled by main loop)
             upload_state = {
                 'phase': 'count_sent',
+                'waypoints': waypoints,  # Store waypoints for handler
                 'waypoints_sent': 0,
                 'waypoints_total': len(waypoints),
                 'timeout_start': time.time(),
-                'timeout_duration': 30.0,  # 30 second timeout
+                'timeout_duration': self.mission_upload_timeout,  # From config file
                 'requests_received': set(),
-                'ack_received': False
+                'ack_received': False,
+                'success': False,
+                'error': None
             }
             
-            # Step 1: Send mission count
-            self.logger.debug(f"Sending MISSION_COUNT: {len(waypoints)} waypoints to {uav_id}")
+            # Register active upload
+            self.active_mission_uploads[uav_id] = upload_state
+            
+            # Send MISSION_COUNT to initiate upload
+            self.logger.info(f"Sending MISSION_COUNT: {len(waypoints)} waypoints to {uav_id}")
             self.telem1_connection.mav.mission_count_send(
                 system_id,  # target_system
                 1,  # target_component (autopilot)
                 len(waypoints),  # count
-                0  # mission_type (0 = mission waypoints)
+                mavutil.mavlink.MAV_MISSION_TYPE_MISSION  # mission_type
             )
             
-            # Step 2-4: Handle mission request/response protocol
-            while upload_state['phase'] != 'complete' and not upload_state['ack_received']:
-                current_time = time.time()
+            # Now wait for completion in a non-blocking way
+            timeout_time = time.time() + self.mission_upload_timeout
+            while upload_state['phase'] not in ['complete', 'error'] and time.time() < timeout_time:
+                time.sleep(0.01)  # Small sleep to avoid busy-waiting
                 
-                # Check for timeout
-                if current_time - upload_state['timeout_start'] > upload_state['timeout_duration']:
-                    self.logger.error(f"Mission upload timeout for {uav_id} after {upload_state['timeout_duration']}s")
-                    return False
+                # Check if phase changed
+                if upload_state['phase'] == 'complete':
+                    break
+                elif upload_state['phase'] == 'error':
+                    break
+            
+            # Clean up active upload state
+            success = upload_state.get('success', False)
+            error = upload_state.get('error', 'Unknown error')
+            del self.active_mission_uploads[uav_id]
+            
+            # Check timeout
+            if time.time() >= timeout_time and upload_state['phase'] not in ['complete', 'error']:
+                self.logger.error(f"Mission upload timeout for {uav_id} after {self.mission_upload_timeout}s")
+                return False
+            
+            if success:
+                self.logger.info(f"Mission successfully uploaded to {uav_id}")
+                return True
+            else:
+                self.logger.error(f"Mission upload failed for {uav_id}: {error}")
+                return False
                 
-                # Listen for mission protocol messages
-                try:
-                    msg = self.telem1_connection.recv_match(
-                        type=['MISSION_REQUEST', 'MISSION_REQUEST_INT', 'MISSION_ACK'],
-                        blocking=False,
-                        timeout=0.1
-                    )
-                    
-                    if msg and msg.get_srcSystem() == system_id:
-                        msg_type = msg.get_type()
-                        
-                        if msg_type == 'MISSION_REQUEST' or msg_type == 'MISSION_REQUEST_INT':
-                            # UAV is requesting a specific waypoint
-                            seq = msg.seq
-                            self.logger.debug(f"Received {msg_type} for waypoint {seq} from {uav_id}")
-                            
-                            if seq < len(waypoints):
-                                upload_state['requests_received'].add(seq)
-                                waypoint = waypoints[seq]
-                                
-                                # Send the requested waypoint
-                                self.logger.debug(f"Sending waypoint {seq+1}/{len(waypoints)} to {uav_id}")
-                                
-                                self.telem1_connection.mav.mission_item_int_send(
-                                    system_id,  # target_system
-                                    1,  # target_component
-                                    seq,  # seq (sequence number)
-                                    waypoint.get('frame', mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT),
-                                    waypoint.get('command', mavutil.mavlink.MAV_CMD_NAV_WAYPOINT),
-                                    1 if seq == 0 else 0,  # current (1 for first waypoint, 0 for others)
-                                    waypoint.get('autocontinue', 1),  # autocontinue
-                                    waypoint.get('param1', 0),  # param1
-                                    waypoint.get('param2', 0),  # param2  
-                                    waypoint.get('param3', 0),  # param3
-                                    waypoint.get('param4', 0),  # param4
-                                    int(waypoint.get('x', 0) * 1e7),  # x (latitude * 1e7)
-                                    int(waypoint.get('y', 0) * 1e7),  # y (longitude * 1e7)
-                                    waypoint.get('z', 0),  # z (altitude)
-                                    0  # mission_type
-                                )
-                                
-                                upload_state['waypoints_sent'] += 1
-                                
-                                # Check if all waypoints have been requested
-                                if len(upload_state['requests_received']) >= len(waypoints):
-                                    upload_state['phase'] = 'waiting_ack'
-                                    self.logger.debug(f"All waypoints sent to {uav_id}, waiting for ACK")
-                                    
-                            else:
-                                self.logger.error(f"UAV {uav_id} requested invalid waypoint {seq} (max: {len(waypoints)-1})")
-                                return False
-                                
-                        elif msg_type == 'MISSION_ACK':
-                            # UAV is acknowledging mission upload
-                            ack_type = msg.type
-                            self.logger.debug(f"Received MISSION_ACK from {uav_id}: type={ack_type}")
-                            
-                            if ack_type == mavutil.mavlink.MAV_MISSION_ACCEPTED:
-                                upload_state['ack_received'] = True
-                                upload_state['phase'] = 'complete'
-                                self.logger.info(f"Mission upload successful for {uav_id}")
-                                return True
-                            else:
-                                # Mission upload failed
-                                error_msgs = {
-                                    mavutil.mavlink.MAV_MISSION_ERROR: "Generic error",
-                                    mavutil.mavlink.MAV_MISSION_UNSUPPORTED_FRAME: "Unsupported coordinate frame",
-                                    mavutil.mavlink.MAV_MISSION_UNSUPPORTED: "Unsupported mission command",
-                                    mavutil.mavlink.MAV_MISSION_NO_SPACE: "No space left on device",
-                                    mavutil.mavlink.MAV_MISSION_INVALID: "Invalid mission",
-                                    mavutil.mavlink.MAV_MISSION_INVALID_PARAM1: "Invalid param1",
-                                    mavutil.mavlink.MAV_MISSION_INVALID_PARAM2: "Invalid param2",
-                                    mavutil.mavlink.MAV_MISSION_INVALID_PARAM3: "Invalid param3",
-                                    mavutil.mavlink.MAV_MISSION_INVALID_PARAM4: "Invalid param4",
-                                    mavutil.mavlink.MAV_MISSION_INVALID_PARAM5_X: "Invalid param5/X",
-                                    mavutil.mavlink.MAV_MISSION_INVALID_PARAM6_Y: "Invalid param6/Y",
-                                    mavutil.mavlink.MAV_MISSION_INVALID_PARAM7: "Invalid param7",
-                                    mavutil.mavlink.MAV_MISSION_INVALID_SEQUENCE: "Invalid sequence",
-                                    mavutil.mavlink.MAV_MISSION_DENIED: "Mission denied"
-                                }
-                                error_msg = error_msgs.get(ack_type, f"Unknown error {ack_type}")
-                                self.logger.error(f"Mission upload failed for {uav_id}: {error_msg}")
-                                return False
-                                
-                except Exception as e:
-                    # Continue on receive errors, but log them
-                    self.logger.debug(f"Error receiving mission protocol message: {e}")
-                    
-                # Small delay to prevent CPU hogging
-                time.sleep(0.01)
-            
-            # If we get here, something went wrong
-            self.logger.error(f"Mission upload incomplete for {uav_id}: phase={upload_state['phase']}, ack={upload_state['ack_received']}")
-            return False
-            
         except Exception as e:
-            self.logger.error(f"Error uploading mission to {uav_id}: {e}")
+            # Clean up on exception
+            if uav_id in self.active_mission_uploads:
+                del self.active_mission_uploads[uav_id]
+            self.logger.error(f"Exception during mission upload to {uav_id}: {e}")
             return False
 
     def start_mission(self, uav_id):
@@ -1008,34 +1087,40 @@ class TelemetryManager(QObject):
             self.logger.error(f"Cannot clear mission for unknown UAV: {uav_id}")
             return False
             
+        if not self.telem1_connection:
+            self.logger.error(f"No Telem1 connection available to clear mission for {uav_id}")
+            return False
+            
         try:
             system_id = int(uav_id.split('_')[1]) if '_' in uav_id else 1
             
-            # Use the intelligent channel selection
-            if self._is_telem1_available() and self.is_connected(uav_id):
-                # Send via Telem1
-                self.telem1_connection.mav.mission_clear_all_send(
-                    system_id,  # target_system
-                    1  # target_component (autopilot)
+            # Send mission clear command
+            self.telem1_connection.mav.mission_clear_all_send(
+                system_id,  # target_system
+                1,  # target_component (autopilot)
+                mavutil.mavlink.MAV_MISSION_TYPE_MISSION
+            )
+            self.logger.debug(f"Sent MISSION_CLEAR_ALL to {uav_id}")
+            
+            # Wait for ACK
+            timeout_time = time.time() + 5
+            while time.time() < timeout_time:
+                msg = self.telem1_connection.recv_match(
+                    type='MISSION_ACK',
+                    blocking=False,
+                    timeout=0.1
                 )
-                self.logger.info(f"Mission cleared for {uav_id} via Telem1")
-                return True
                 
-            elif self.should_use_telem2(uav_id):
-                # Send via Telem2 with redundancy
-                for i in range(3):
-                    self.telem2_connection.mav.mission_clear_all_send(
-                        system_id,  # target_system
-                        1  # target_component (autopilot)
-                    )
-                    time.sleep(0.025)  # Delay for SiK radio timing
-                    
-                self.logger.info(f"Mission cleared for {uav_id} via Telem2")
-                return True
-                
-            else:
-                self.logger.error(f"Cannot clear mission for {uav_id} - no telemetry channels available")
-                return False
+                if msg and msg.get_srcSystem() == system_id:
+                    if msg.type == mavutil.mavlink.MAV_MISSION_ACCEPTED:
+                        self.logger.info(f"Mission cleared successfully for {uav_id}")
+                        return True
+                    else:
+                        self.logger.warning(f"Mission clear returned error {msg.type} for {uav_id}, proceeding anyway")
+                        return True  # Proceed even with error
+                        
+            self.logger.warning(f"Timeout waiting for mission clear ACK from {uav_id}, proceeding anyway")
+            return True  # Proceed even without ACK
                 
         except Exception as e:
             self.logger.error(f"Error clearing mission for {uav_id}: {e}")

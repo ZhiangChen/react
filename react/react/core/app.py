@@ -13,6 +13,8 @@ class App(QObject):
     telemetry_changed = Signal(str, 'QVariant')  # uav_id, telemetry_data
     # Signal to notify QML when GCS home position changes
     gcs_home_changed = Signal(float, float, float)  # latitude, longitude, altitude
+    # Signal to notify QML of mission upload results
+    mission_upload_result = Signal(str, bool, str)  # uav_id, success, message
     
     def __init__(self, config):
         super().__init__()
@@ -51,6 +53,9 @@ class App(QObject):
         
         # Connect MissionManager upload requests to TelemetryManager
         self.mission_manager.mission_upload_requested.connect(self._handle_mission_upload_request)
+        
+        # Connect MissionManager upload results to QML
+        self.mission_manager.mission_upload_result.connect(self._handle_mission_upload_result)
         
         # Connect mission execution commands from MissionManager to TelemetryManager
         self.mission_manager.mission_started.connect(self._handle_mission_started)
@@ -116,11 +121,19 @@ class App(QObject):
         success = self.telemetry_manager.load_mission(uav_id, waypoint_file_path)
         
         if success:
-            # TODO: Get actual waypoint count from telemetry manager
-            # For now, we'll let the mission manager handle this through other signals
-            self.logger.info(f"Mission upload initiated for {uav_id}")
+            self.logger.info(f"Mission upload successful for {uav_id}")
+            # Emit success signal to QML
+            self.mission_upload_result.emit(uav_id, True, "Mission uploaded successfully")
         else:
+            self.logger.error(f"Mission upload failed for {uav_id}")
+            # Emit failure signal to QML
+            self.mission_upload_result.emit(uav_id, False, "Upload failed")
             self.mission_manager.mission_upload_failed(uav_id, "Upload failed")
+    
+    def _handle_mission_upload_result(self, uav_id, success, waypoints, message):
+        """Forward mission upload results to QML."""
+        self.logger.debug(f"Mission upload result for {uav_id}: success={success}, waypoints={waypoints}, message={message}")
+        self.mission_upload_result.emit(uav_id, success, message)
 
     def _handle_mission_started(self, uav_id, mission_id):
         """Handle mission start requests."""

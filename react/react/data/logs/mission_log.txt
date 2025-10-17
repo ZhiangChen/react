@@ -1,568 +1,273 @@
-2025-10-16 16:43:30,303 - REACT.Launcher - INFO - ==================================================
-2025-10-16 16:43:30,304 - REACT.Launcher - INFO - REACT Ground Control Station Launcher
-2025-10-16 16:43:30,304 - REACT.Launcher - INFO - ==================================================
-2025-10-16 16:43:30,304 - REACT.Launcher - INFO - Installing dependencies...
-2025-10-16 16:43:30,304 - REACT.Launcher.Dependencies - INFO - Installing tile server dependencies...
-2025-10-16 16:43:31,246 - REACT.Launcher.Dependencies - INFO - Dependencies installed successfully
-2025-10-16 16:43:31,246 - REACT.Launcher - INFO - Starting tile server...
-2025-10-16 16:43:31,255 - REACT.Launcher - INFO - Tile server started (PID: 6448)
-2025-10-16 16:43:31,255 - REACT.Launcher - INFO - Waiting for tile server to be ready...
-2025-10-16 16:43:32,284 - REACT.Launcher - INFO - Tile server is ready!
-2025-10-16 16:43:32,284 - REACT.Launcher - INFO - Starting REACT application...
-2025-10-16 16:43:32,284 - REACT.Launcher - INFO - Waiting for tile server to be ready...
-2025-10-16 16:43:32,286 - REACT.Launcher - INFO - Tile server is ready!
-2025-10-16 16:43:32,291 - REACT.Launcher - INFO - REACT application started (PID: 13888)
-2025-10-16 16:43:32,292 - REACT.Launcher - INFO - ==================================================
-2025-10-16 16:43:32,292 - REACT.Launcher - INFO - REACT is running!
-2025-10-16 16:43:32,292 - REACT.Launcher - INFO - - Tile server: http://127.0.0.1:8081
-2025-10-16 16:43:32,292 - REACT.Launcher - INFO - - Main application: Running
-2025-10-16 16:43:32,292 - REACT.Launcher - INFO - Press Ctrl+C to stop all services
-2025-10-16 16:43:32,292 - REACT.Launcher - INFO - ==================================================
-2025-10-16 16:43:32,981 - REACT.Main - INFO - REACT Application logging initialized
-2025-10-16 16:43:32,981 - REACT.Main - INFO - Log file: C:\Users\chenz\Documents\react\react\react\data/logs/mission_log.txt
-2025-10-16 16:43:32,981 - REACT.Main - INFO - Starting REACT Ground Control Station...
-2025-10-16 16:43:32,981 - REACT.Main - INFO - Initializing backend...
-2025-10-16 16:43:32,981 - REACT.App - INFO - REACT Application starting...
-2025-10-16 16:43:32,983 - REACT.UAVController - INFO - UAV Controller initialized
-2025-10-16 16:43:32,983 - REACT.MissionManager - INFO - Mission Manager initialized
-2025-10-16 16:43:32,983 - REACT.SafetyMonitor - INFO - Safety Monitor initialized
-2025-10-16 16:43:32,983 - REACT.App - INFO - Setting up component connections...
-2025-10-16 16:43:32,984 - REACT.App - INFO - Component connections established
-2025-10-16 16:43:32,984 - REACT.App - INFO - All managers initialized successfully
-2025-10-16 16:43:32,984 - REACT.App - INFO - Starting REACT application...
-2025-10-16 16:43:32,985 - REACT.TelemetryManager - INFO - Telem1 connected to: udp:127.0.0.1:14552
-2025-10-16 16:43:32,985 - REACT.TelemetryManager - INFO - Telem1 UAV discovery will happen continuously as messages arrive
-2025-10-16 16:43:32,991 - REACT.TelemetryManager - ERROR - Telem2 failed to connect: could not open port '/dev/ttyUSB1': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3)
-2025-10-16 16:43:32,991 - REACT.MissionManager - INFO - Mission monitoring started
-2025-10-16 16:43:32,992 - REACT.SafetyMonitor - INFO - Safety monitoring started
-2025-10-16 16:43:32,992 - REACT.App - INFO - All services started successfully!
-2025-10-16 16:43:32,992 - REACT.Main - INFO - Initializing QML frontend...
-2025-10-16 16:43:33,048 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_1 (System ID: 1)
-2025-10-16 16:43:33,205 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_2 (System ID: 2)
-2025-10-16 16:43:33,211 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_3 (System ID: 3)
-2025-10-16 16:43:33,245 - REACT.Main - INFO - Frontend started successfully
-2025-10-16 16:43:33,246 - REACT.Main - INFO - Starting application event loop...
-2025-10-16 16:43:34,017 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 16:43:34,019 - REACT.App - CRITICAL - Emergency land triggered for UAV_3: Critical battery level: 0%
-2025-10-16 16:43:34,019 - REACT.MissionManager - WARNING - No active mission for UAV UAV_3
-2025-10-16 16:43:34,019 - REACT.UAVController - INFO - Requesting LAND mode for UAV UAV_3
-2025-10-16 16:43:34,019 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: LAND (9)
-2025-10-16 16:43:34,020 - REACT.SafetyMonitor - INFO - Emergency action EMERGENCY_LAND taken for UAV_3 at 1760658214.017919
-2025-10-16 16:43:53,887 - REACT.UAVController - INFO - Requesting mode change for UAV UAV_1 to LOITER
-2025-10-16 16:43:53,887 - REACT.TelemetryManager - INFO - Sending mode change to UAV_1: LOITER (5)
-2025-10-16 16:43:53,888 - REACT.UAVController - INFO - Requesting mode change for UAV UAV_2 to LOITER
-2025-10-16 16:43:53,888 - REACT.TelemetryManager - INFO - Sending mode change to UAV_2: LOITER (5)
-2025-10-16 16:43:53,888 - REACT.UAVController - INFO - Requesting mode change for UAV UAV_3 to LOITER
-2025-10-16 16:43:53,888 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: LOITER (5)
-2025-10-16 16:43:53,888 - REACT.UAVController - WARNING - Cannot set mode for unknown UAV: UAV_4
-2025-10-16 16:43:53,889 - REACT.UAVController - WARNING - Cannot set mode for unknown UAV: UAV_5
-2025-10-16 16:43:53,889 - REACT.UAVController - WARNING - Cannot set mode for unknown UAV: UAV_6
-2025-10-16 16:43:53,889 - REACT.UAVController - WARNING - Cannot set mode for unknown UAV: UAV_7
-2025-10-16 16:43:53,889 - REACT.UAVController - WARNING - Cannot set mode for unknown UAV: UAV_8
-2025-10-16 16:43:53,889 - REACT.UAVController - WARNING - Cannot set mode for unknown UAV: UAV_9
-2025-10-16 16:43:53,889 - REACT.UAVController - WARNING - Cannot set mode for unknown UAV: UAV_10
-2025-10-16 16:44:00,960 - REACT.UAVController - INFO - Requesting BRAKE mode for UAV UAV_1
-2025-10-16 16:44:00,961 - REACT.TelemetryManager - INFO - Sending mode change to UAV_1: BRAKE (17)
-2025-10-16 16:44:00,961 - REACT.UAVController - INFO - Requesting BRAKE mode for UAV UAV_2
-2025-10-16 16:44:00,961 - REACT.TelemetryManager - INFO - Sending mode change to UAV_2: BRAKE (17)
-2025-10-16 16:44:00,961 - REACT.UAVController - INFO - Requesting BRAKE mode for UAV UAV_3
-2025-10-16 16:44:00,961 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: BRAKE (17)
-2025-10-16 16:44:00,962 - REACT.UAVController - WARNING - Cannot brake unknown UAV: UAV_4
-2025-10-16 16:44:00,962 - REACT.UAVController - WARNING - Cannot brake unknown UAV: UAV_5
-2025-10-16 16:44:00,962 - REACT.UAVController - WARNING - Cannot brake unknown UAV: UAV_6
-2025-10-16 16:44:00,962 - REACT.UAVController - WARNING - Cannot brake unknown UAV: UAV_7
-2025-10-16 16:44:00,962 - REACT.UAVController - WARNING - Cannot brake unknown UAV: UAV_8
-2025-10-16 16:44:00,962 - REACT.UAVController - WARNING - Cannot brake unknown UAV: UAV_9
-2025-10-16 16:44:00,962 - REACT.UAVController - WARNING - Cannot brake unknown UAV: UAV_10
-2025-10-16 16:44:03,073 - REACT.UAVController - INFO - Requesting mode change for UAV UAV_1 to LOITER
-2025-10-16 16:44:03,074 - REACT.TelemetryManager - INFO - Sending mode change to UAV_1: LOITER (5)
-2025-10-16 16:44:03,077 - REACT.UAVController - INFO - Requesting mode change for UAV UAV_2 to LOITER
-2025-10-16 16:44:03,078 - REACT.TelemetryManager - INFO - Sending mode change to UAV_2: LOITER (5)
-2025-10-16 16:44:03,080 - REACT.UAVController - INFO - Requesting mode change for UAV UAV_3 to LOITER
-2025-10-16 16:44:03,081 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: LOITER (5)
-2025-10-16 16:44:03,083 - REACT.UAVController - WARNING - Cannot set mode for unknown UAV: UAV_4
-2025-10-16 16:44:03,085 - REACT.UAVController - WARNING - Cannot set mode for unknown UAV: UAV_5
-2025-10-16 16:44:03,088 - REACT.UAVController - WARNING - Cannot set mode for unknown UAV: UAV_6
-2025-10-16 16:44:03,089 - REACT.UAVController - WARNING - Cannot set mode for unknown UAV: UAV_7
-2025-10-16 16:44:03,090 - REACT.UAVController - WARNING - Cannot set mode for unknown UAV: UAV_8
-2025-10-16 16:44:03,090 - REACT.UAVController - WARNING - Cannot set mode for unknown UAV: UAV_9
-2025-10-16 16:44:03,091 - REACT.UAVController - WARNING - Cannot set mode for unknown UAV: UAV_10
-2025-10-16 16:44:04,055 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 16:44:09,841 - REACT.UAVController - INFO - Setting AUTO mode for UAV UAV_3 before starting mission
-2025-10-16 16:44:09,841 - REACT.UAVController - INFO - Requesting mode change for UAV UAV_3 to AUTO
-2025-10-16 16:44:09,842 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: AUTO (3)
-2025-10-16 16:44:09,842 - REACT.UAVController - INFO - Requesting MISSION_START for UAV UAV_3
-2025-10-16 16:44:09,842 - REACT.TelemetryManager - INFO - Sending command_long to UAV_3: CMD_300
-2025-10-16 16:44:14,754 - REACT.UAVController - INFO - Requesting arm command for UAV UAV_3
-2025-10-16 16:44:14,754 - REACT.TelemetryManager - INFO - Sending command_long to UAV_3: CMD_400
-2025-10-16 16:44:14,963 - REACT.TelemetryManager - WARNING - UAV_3 ARM/DISARM command rejected: Command failed
-2025-10-16 16:44:15,071 - REACT.SafetyMonitor - WARNING - WARNING - UAV_3: Altitude too low: 0.0m AGL
-2025-10-16 16:44:17,795 - REACT.UAVController - INFO - Setting AUTO mode for UAV UAV_3 before starting mission
-2025-10-16 16:44:17,795 - REACT.UAVController - INFO - Requesting mode change for UAV UAV_3 to AUTO
-2025-10-16 16:44:17,796 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: AUTO (3)
-2025-10-16 16:44:17,796 - REACT.UAVController - INFO - Requesting MISSION_START for UAV UAV_3
-2025-10-16 16:44:17,796 - REACT.TelemetryManager - INFO - Sending command_long to UAV_3: CMD_300
-2025-10-16 16:44:34,132 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 16:44:38,054 - REACT.UAVController - INFO - Requesting arm command for UAV UAV_3
-2025-10-16 16:44:38,054 - REACT.TelemetryManager - INFO - Sending command_long to UAV_3: CMD_400
-2025-10-16 16:44:38,337 - REACT.TelemetryManager - WARNING - UAV_3 ARM/DISARM command rejected: Command failed
-2025-10-16 16:44:42,064 - REACT.UAVController - INFO - Setting AUTO mode for UAV UAV_3 before starting mission
-2025-10-16 16:44:42,064 - REACT.UAVController - INFO - Requesting mode change for UAV UAV_3 to AUTO
-2025-10-16 16:44:42,064 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: AUTO (3)
-2025-10-16 16:44:42,065 - REACT.UAVController - INFO - Requesting MISSION_START for UAV UAV_3
-2025-10-16 16:44:42,065 - REACT.TelemetryManager - INFO - Sending command_long to UAV_3: CMD_300
-2025-10-16 16:44:50,002 - REACT.UAVController - INFO - Requesting mode change for UAV UAV_3 to LOITER
-2025-10-16 16:44:50,002 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: LOITER (5)
-2025-10-16 16:44:52,766 - REACT.UAVController - INFO - Requesting arm command for UAV UAV_3
-2025-10-16 16:44:52,766 - REACT.TelemetryManager - INFO - Sending command_long to UAV_3: CMD_400
-2025-10-16 16:44:52,956 - REACT.TelemetryManager - INFO - UAV_3 ARM/DISARM command accepted
-2025-10-16 16:44:53,148 - REACT.SafetyMonitor - WARNING - WARNING - UAV_3: Altitude too low: 0.0m AGL
-2025-10-16 16:44:55,471 - REACT.UAVController - INFO - Setting AUTO mode for UAV UAV_3 before starting mission
-2025-10-16 16:44:55,471 - REACT.UAVController - INFO - Requesting mode change for UAV UAV_3 to AUTO
-2025-10-16 16:44:55,471 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: AUTO (3)
-2025-10-16 16:44:55,471 - REACT.UAVController - INFO - Requesting MISSION_START for UAV UAV_3
-2025-10-16 16:44:55,471 - REACT.TelemetryManager - INFO - Sending command_long to UAV_3: CMD_300
-2025-10-16 16:45:04,174 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 16:45:34,175 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 16:46:04,227 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 16:46:34,274 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 16:47:04,336 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 16:47:34,352 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 16:48:04,403 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 16:48:34,416 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 16:48:44,913 - REACT.UAVController - INFO - Requesting RTL mode for UAV UAV_3
-2025-10-16 16:48:44,915 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: RTL (6)
-2025-10-16 16:49:04,445 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 16:49:23,446 - REACT.SafetyMonitor - WARNING - WARNING - UAV_3: Altitude too low: 4.6m AGL
-2025-10-16 16:49:34,461 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 16:50:04,462 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 16:50:34,493 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 16:51:04,494 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 16:51:15,622 - REACT.Main - INFO - Shutting down...
-2025-10-16 16:51:15,623 - REACT.App - INFO - Stopping REACT application...
-2025-10-16 16:51:15,623 - REACT.SafetyMonitor - INFO - Safety monitoring stopped
-2025-10-16 16:51:15,623 - REACT.MissionManager - INFO - Mission monitoring stopped
-2025-10-16 16:51:15,625 - REACT.App - INFO - All services stopped.
-2025-10-16 16:51:16,465 - REACT.Launcher - INFO - Main application exited
-2025-10-16 16:51:16,465 - REACT.Launcher - INFO - Shutting down REACT...
-2025-10-16 16:51:16,465 - REACT.Launcher - INFO - Stopping main application...
-2025-10-16 16:51:16,465 - REACT.Launcher - INFO - Main application stopped
-2025-10-16 16:51:16,465 - REACT.Launcher - INFO - Stopping tile server...
-2025-10-16 16:51:16,472 - REACT.Launcher - INFO - Tile server stopped
-2025-10-16 16:58:15,294 - REACT.Launcher - INFO - ==================================================
-2025-10-16 16:58:15,294 - REACT.Launcher - INFO - REACT Ground Control Station Launcher
-2025-10-16 16:58:15,295 - REACT.Launcher - INFO - ==================================================
-2025-10-16 16:58:15,295 - REACT.Launcher - INFO - Installing dependencies...
-2025-10-16 16:58:15,295 - REACT.Launcher.Dependencies - INFO - Installing tile server dependencies...
-2025-10-16 16:58:16,274 - REACT.Launcher.Dependencies - INFO - Dependencies installed successfully
-2025-10-16 16:58:16,274 - REACT.Launcher - INFO - Starting tile server...
-2025-10-16 16:58:16,279 - REACT.Launcher - INFO - Tile server started (PID: 18020)
-2025-10-16 16:58:16,279 - REACT.Launcher - INFO - Waiting for tile server to be ready...
-2025-10-16 16:58:17,304 - REACT.Launcher - INFO - Tile server is ready!
-2025-10-16 16:58:17,304 - REACT.Launcher - INFO - Starting REACT application...
-2025-10-16 16:58:17,304 - REACT.Launcher - INFO - Waiting for tile server to be ready...
-2025-10-16 16:58:17,306 - REACT.Launcher - INFO - Tile server is ready!
-2025-10-16 16:58:17,311 - REACT.Launcher - INFO - REACT application started (PID: 19752)
-2025-10-16 16:58:17,311 - REACT.Launcher - INFO - ==================================================
-2025-10-16 16:58:17,311 - REACT.Launcher - INFO - REACT is running!
-2025-10-16 16:58:17,312 - REACT.Launcher - INFO - - Tile server: http://127.0.0.1:8081
-2025-10-16 16:58:17,312 - REACT.Launcher - INFO - - Main application: Running
-2025-10-16 16:58:17,312 - REACT.Launcher - INFO - Press Ctrl+C to stop all services
-2025-10-16 16:58:17,312 - REACT.Launcher - INFO - ==================================================
-2025-10-16 16:58:18,034 - REACT.Main - INFO - REACT Application logging initialized
-2025-10-16 16:58:18,034 - REACT.Main - INFO - Log file: C:\Users\chenz\Documents\react\react\react\data/logs/mission_log.txt
-2025-10-16 16:58:18,034 - REACT.Main - INFO - Starting REACT Ground Control Station...
-2025-10-16 16:58:18,034 - REACT.Main - INFO - Initializing backend...
-2025-10-16 16:58:18,035 - REACT.App - INFO - REACT Application starting...
-2025-10-16 16:58:18,035 - REACT.UAVController - INFO - UAV Controller initialized
-2025-10-16 16:58:18,035 - REACT.MissionManager - INFO - Mission Manager initialized
-2025-10-16 16:58:18,036 - REACT.SafetyMonitor - INFO - Safety Monitor initialized
-2025-10-16 16:58:18,036 - REACT.App - INFO - Setting up component connections...
-2025-10-16 16:58:18,036 - REACT.App - INFO - Component connections established
-2025-10-16 16:58:18,036 - REACT.App - INFO - All managers initialized successfully
-2025-10-16 16:58:18,036 - REACT.App - INFO - Starting REACT application...
-2025-10-16 16:58:18,037 - REACT.TelemetryManager - INFO - Telem1 connected to: udp:127.0.0.1:14552
-2025-10-16 16:58:18,037 - REACT.TelemetryManager - INFO - Telem1 UAV discovery will happen continuously as messages arrive
-2025-10-16 16:58:18,041 - REACT.TelemetryManager - ERROR - Telem2 failed to connect: could not open port '/dev/ttyUSB1': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3)
-2025-10-16 16:58:18,042 - REACT.MissionManager - INFO - Mission monitoring started
-2025-10-16 16:58:18,042 - REACT.SafetyMonitor - INFO - Safety monitoring started
-2025-10-16 16:58:18,042 - REACT.App - INFO - All services started successfully!
-2025-10-16 16:58:18,042 - REACT.Main - INFO - Initializing QML frontend...
-2025-10-16 16:58:18,067 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_1 (System ID: 1)
-2025-10-16 16:58:18,239 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_2 (System ID: 2)
-2025-10-16 16:58:18,333 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_3 (System ID: 3)
-2025-10-16 16:58:18,374 - REACT.Main - INFO - Frontend started successfully
-2025-10-16 16:58:18,375 - REACT.Main - INFO - Starting application event loop...
-2025-10-16 16:58:19,044 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 16:58:19,044 - REACT.App - CRITICAL - Emergency land triggered for UAV_3: Critical battery level: 0%
-2025-10-16 16:58:19,044 - REACT.MissionManager - WARNING - No active mission for UAV UAV_3
-2025-10-16 16:58:19,044 - REACT.UAVController - INFO - Requesting LAND mode for UAV UAV_3
-2025-10-16 16:58:19,046 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: LAND (9)
-2025-10-16 16:58:19,046 - REACT.SafetyMonitor - INFO - Emergency action EMERGENCY_LAND taken for UAV_3 at 1760659099.044517
-2025-10-16 16:58:45,516 - REACT.UAVController - INFO - Requesting mode change for UAV UAV_3 to LOITER
-2025-10-16 16:58:45,516 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: LOITER (5)
-2025-10-16 16:58:48,084 - REACT.UAVController - INFO - Requesting arm command for UAV UAV_3
-2025-10-16 16:58:48,084 - REACT.TelemetryManager - INFO - Sending command_long to UAV_3: CMD_400
-2025-10-16 16:58:48,146 - REACT.SafetyMonitor - WARNING - WARNING - UAV_3: Altitude too low: 0.0m AGL
-2025-10-16 16:58:48,323 - REACT.TelemetryManager - INFO - UAV_3 ARM/DISARM command accepted
-2025-10-16 16:58:49,149 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 16:58:50,280 - REACT.UAVController - INFO - Setting AUTO mode for UAV UAV_3 before starting mission
-2025-10-16 16:58:50,280 - REACT.UAVController - INFO - Requesting mode change for UAV UAV_3 to AUTO
-2025-10-16 16:58:50,281 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: AUTO (3)
-2025-10-16 16:58:50,281 - REACT.UAVController - INFO - Requesting MISSION_START for UAV UAV_3
-2025-10-16 16:58:50,281 - REACT.TelemetryManager - INFO - Sending command_long to UAV_3: CMD_300
-2025-10-16 16:58:50,417 - REACT.TelemetryManager - INFO - UAV_3: Mission timer started (mode: AUTO)
-2025-10-16 16:59:07,027 - REACT.UAVController - INFO - Requesting RTL mode for UAV UAV_3
-2025-10-16 16:59:07,027 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: RTL (6)
-2025-10-16 16:59:19,166 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 16:59:39,166 - REACT.SafetyMonitor - WARNING - WARNING - UAV_3: Altitude too low: 4.7m AGL
-2025-10-16 16:59:49,167 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 16:59:50,683 - REACT.TelemetryManager - INFO - UAV_3: Mission timer stopped (disarmed)
-2025-10-16 16:59:57,596 - REACT.UAVController - INFO - Requesting mode change for UAV UAV_3 to LOITER
-2025-10-16 16:59:57,596 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: LOITER (5)
-2025-10-16 17:00:01,593 - REACT.UAVController - INFO - Requesting arm command for UAV UAV_3
-2025-10-16 17:00:01,593 - REACT.TelemetryManager - INFO - Sending command_long to UAV_3: CMD_400
-2025-10-16 17:00:01,760 - REACT.TelemetryManager - INFO - UAV_3 ARM/DISARM command accepted
-2025-10-16 17:00:03,411 - REACT.UAVController - INFO - Setting AUTO mode for UAV UAV_3 before starting mission
-2025-10-16 17:00:03,412 - REACT.UAVController - INFO - Requesting mode change for UAV UAV_3 to AUTO
-2025-10-16 17:00:03,412 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: AUTO (3)
-2025-10-16 17:00:03,412 - REACT.UAVController - INFO - Requesting MISSION_START for UAV UAV_3
-2025-10-16 17:00:03,412 - REACT.TelemetryManager - INFO - Sending command_long to UAV_3: CMD_300
-2025-10-16 17:00:03,661 - REACT.TelemetryManager - INFO - UAV_3: Mission timer started (mode: AUTO)
-2025-10-16 17:00:09,214 - REACT.SafetyMonitor - WARNING - WARNING - UAV_3: Altitude too low: 0.0m AGL
-2025-10-16 17:00:13,149 - REACT.UAVController - INFO - Requesting LAND mode for UAV UAV_3
-2025-10-16 17:00:13,149 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: LAND (9)
-2025-10-16 17:00:13,305 - REACT.TelemetryManager - INFO - UAV_3: Mission timer stopped (landing)
-2025-10-16 17:00:19,233 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 17:00:49,391 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 17:00:49,421 - REACT.UAVController - INFO - Requesting mode change for UAV UAV_3 to LOITER
-2025-10-16 17:00:49,422 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: LOITER (5)
-2025-10-16 17:00:57,794 - REACT.UAVController - INFO - Setting AUTO mode for UAV UAV_3 before starting mission
-2025-10-16 17:00:57,794 - REACT.UAVController - INFO - Requesting mode change for UAV UAV_3 to AUTO
-2025-10-16 17:00:57,794 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: AUTO (3)
-2025-10-16 17:00:57,795 - REACT.UAVController - INFO - Requesting MISSION_START for UAV UAV_3
-2025-10-16 17:00:57,795 - REACT.TelemetryManager - INFO - Sending command_long to UAV_3: CMD_300
-2025-10-16 17:01:08,921 - REACT.UAVController - INFO - Requesting mode change for UAV UAV_3 to LOITER
-2025-10-16 17:01:08,921 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: LOITER (5)
-2025-10-16 17:01:11,173 - REACT.UAVController - INFO - Requesting arm command for UAV UAV_3
-2025-10-16 17:01:11,173 - REACT.TelemetryManager - INFO - Sending command_long to UAV_3: CMD_400
-2025-10-16 17:01:11,299 - REACT.TelemetryManager - INFO - UAV_3 ARM/DISARM command accepted
-2025-10-16 17:01:11,444 - REACT.SafetyMonitor - WARNING - WARNING - UAV_3: Altitude too low: 0.0m AGL
-2025-10-16 17:01:13,599 - REACT.UAVController - INFO - Setting AUTO mode for UAV UAV_3 before starting mission
-2025-10-16 17:01:13,599 - REACT.UAVController - INFO - Requesting mode change for UAV UAV_3 to AUTO
-2025-10-16 17:01:13,600 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: AUTO (3)
-2025-10-16 17:01:13,600 - REACT.UAVController - INFO - Requesting MISSION_START for UAV UAV_3
-2025-10-16 17:01:13,600 - REACT.TelemetryManager - INFO - Sending command_long to UAV_3: CMD_300
-2025-10-16 17:01:13,738 - REACT.TelemetryManager - INFO - UAV_3: Mission timer started (mode: AUTO)
-2025-10-16 17:01:19,448 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 17:01:28,310 - REACT.UAVController - INFO - Requesting BRAKE mode for UAV UAV_3
-2025-10-16 17:01:28,310 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: BRAKE (17)
-2025-10-16 17:01:39,599 - REACT.UAVController - INFO - Requesting RTL mode for UAV UAV_3
-2025-10-16 17:01:39,599 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: RTL (6)
-2025-10-16 17:01:45,277 - REACT.UAVController - INFO - Requesting BRAKE mode for UAV UAV_3
-2025-10-16 17:01:45,278 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: BRAKE (17)
-2025-10-16 17:01:49,496 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 17:01:53,029 - REACT.UAVController - INFO - Requesting mode change for UAV UAV_3 to AUTO
-2025-10-16 17:01:53,031 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: AUTO (3)
-2025-10-16 17:02:12,198 - REACT.UAVController - INFO - Requesting LAND mode for UAV UAV_3
-2025-10-16 17:02:12,198 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: LAND (9)
-2025-10-16 17:02:12,318 - REACT.TelemetryManager - INFO - UAV_3: Mission timer stopped (landing)
-2025-10-16 17:02:19,511 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 17:02:25,854 - REACT.UAVController - INFO - Requesting BRAKE mode for UAV UAV_3
-2025-10-16 17:02:25,856 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: BRAKE (17)
-2025-10-16 17:02:36,042 - REACT.UAVController - INFO - Requesting mode change for UAV UAV_3 to AUTO
-2025-10-16 17:02:36,042 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: AUTO (3)
-2025-10-16 17:02:36,162 - REACT.TelemetryManager - INFO - UAV_3: Mission timer started (mode: AUTO)
-2025-10-16 17:02:45,511 - REACT.UAVController - INFO - Requesting RTL mode for UAV UAV_3
-2025-10-16 17:02:45,512 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: RTL (6)
-2025-10-16 17:02:49,512 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 17:03:20,512 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 17:03:23,507 - REACT.SafetyMonitor - WARNING - WARNING - UAV_3: Altitude too low: 4.7m AGL
-2025-10-16 17:03:34,688 - REACT.TelemetryManager - INFO - UAV_3: Mission timer stopped (disarmed)
-2025-10-16 17:03:50,558 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 17:04:21,558 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 17:04:34,219 - REACT.Main - INFO - Shutting down...
-2025-10-16 17:04:34,245 - REACT.App - INFO - Stopping REACT application...
-2025-10-16 17:04:34,247 - REACT.SafetyMonitor - INFO - Safety monitoring stopped
-2025-10-16 17:04:34,247 - REACT.MissionManager - INFO - Mission monitoring stopped
-2025-10-16 17:04:34,253 - REACT.App - INFO - All services stopped.
-2025-10-16 17:04:35,469 - REACT.Launcher - INFO - Main application exited
-2025-10-16 17:04:35,469 - REACT.Launcher - INFO - Shutting down REACT...
-2025-10-16 17:04:35,469 - REACT.Launcher - INFO - Stopping main application...
-2025-10-16 17:04:35,470 - REACT.Launcher - INFO - Main application stopped
-2025-10-16 17:04:35,470 - REACT.Launcher - INFO - Stopping tile server...
-2025-10-16 17:04:35,477 - REACT.Launcher - INFO - Tile server stopped
-2025-10-16 17:04:36,920 - REACT.Launcher - INFO - ==================================================
-2025-10-16 17:04:36,921 - REACT.Launcher - INFO - REACT Ground Control Station Launcher
-2025-10-16 17:04:36,921 - REACT.Launcher - INFO - ==================================================
-2025-10-16 17:04:36,921 - REACT.Launcher - INFO - Installing dependencies...
-2025-10-16 17:04:36,921 - REACT.Launcher.Dependencies - INFO - Installing tile server dependencies...
-2025-10-16 17:04:37,920 - REACT.Launcher.Dependencies - INFO - Dependencies installed successfully
-2025-10-16 17:04:37,920 - REACT.Launcher - INFO - Starting tile server...
-2025-10-16 17:04:37,925 - REACT.Launcher - INFO - Tile server started (PID: 11796)
-2025-10-16 17:04:37,925 - REACT.Launcher - INFO - Waiting for tile server to be ready...
-2025-10-16 17:04:38,957 - REACT.Launcher - INFO - Tile server is ready!
-2025-10-16 17:04:38,957 - REACT.Launcher - INFO - Starting REACT application...
-2025-10-16 17:04:38,957 - REACT.Launcher - INFO - Waiting for tile server to be ready...
-2025-10-16 17:04:38,973 - REACT.Launcher - INFO - Tile server is ready!
-2025-10-16 17:04:38,979 - REACT.Launcher - INFO - REACT application started (PID: 13184)
-2025-10-16 17:04:38,979 - REACT.Launcher - INFO - ==================================================
-2025-10-16 17:04:38,979 - REACT.Launcher - INFO - REACT is running!
-2025-10-16 17:04:38,979 - REACT.Launcher - INFO - - Tile server: http://127.0.0.1:8081
-2025-10-16 17:04:38,979 - REACT.Launcher - INFO - - Main application: Running
-2025-10-16 17:04:38,980 - REACT.Launcher - INFO - Press Ctrl+C to stop all services
-2025-10-16 17:04:38,980 - REACT.Launcher - INFO - ==================================================
-2025-10-16 17:04:39,844 - REACT.Main - INFO - REACT Application logging initialized
-2025-10-16 17:04:39,845 - REACT.Main - INFO - Log file: C:\Users\chenz\Documents\react\react\react\data/logs/mission_log.txt
-2025-10-16 17:04:39,845 - REACT.Main - INFO - Starting REACT Ground Control Station...
-2025-10-16 17:04:39,845 - REACT.Main - INFO - Initializing backend...
-2025-10-16 17:04:39,845 - REACT.App - INFO - REACT Application starting...
-2025-10-16 17:04:39,845 - REACT.UAVController - INFO - UAV Controller initialized
-2025-10-16 17:04:39,845 - REACT.MissionManager - INFO - Mission Manager initialized
-2025-10-16 17:04:39,846 - REACT.SafetyMonitor - INFO - Safety Monitor initialized
-2025-10-16 17:04:39,846 - REACT.App - INFO - Setting up component connections...
-2025-10-16 17:04:39,846 - REACT.App - INFO - Component connections established
-2025-10-16 17:04:39,846 - REACT.App - INFO - All managers initialized successfully
-2025-10-16 17:04:39,846 - REACT.App - INFO - Starting REACT application...
-2025-10-16 17:04:39,847 - REACT.TelemetryManager - INFO - Telem1 connected to: udp:127.0.0.1:14552
-2025-10-16 17:04:39,847 - REACT.TelemetryManager - INFO - Telem1 UAV discovery will happen continuously as messages arrive
-2025-10-16 17:04:39,851 - REACT.TelemetryManager - ERROR - Telem2 failed to connect: could not open port '/dev/ttyUSB1': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3)
-2025-10-16 17:04:39,852 - REACT.MissionManager - INFO - Mission monitoring started
-2025-10-16 17:04:39,853 - REACT.SafetyMonitor - INFO - Safety monitoring started
-2025-10-16 17:04:39,853 - REACT.App - INFO - All services started successfully!
-2025-10-16 17:04:39,853 - REACT.Main - INFO - Initializing QML frontend...
-2025-10-16 17:04:39,885 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_3 (System ID: 3)
-2025-10-16 17:04:39,909 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_2 (System ID: 2)
-2025-10-16 17:04:40,057 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_1 (System ID: 1)
-2025-10-16 17:04:40,184 - REACT.Main - INFO - Frontend started successfully
-2025-10-16 17:04:40,185 - REACT.Main - INFO - Starting application event loop...
-2025-10-16 17:04:40,855 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 17:04:40,856 - REACT.App - CRITICAL - Emergency land triggered for UAV_3: Critical battery level: 0%
-2025-10-16 17:04:40,856 - REACT.MissionManager - WARNING - No active mission for UAV UAV_3
-2025-10-16 17:04:40,856 - REACT.UAVController - INFO - Requesting LAND mode for UAV UAV_3
-2025-10-16 17:04:40,856 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: LAND (9)
-2025-10-16 17:04:40,857 - REACT.SafetyMonitor - INFO - Emergency action EMERGENCY_LAND taken for UAV_3 at 1760659480.8552184
-2025-10-16 17:04:40,857 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_3: GPS fix lost (type: 0)
-2025-10-16 17:04:46,614 - REACT.Main - INFO - Shutting down...
-2025-10-16 17:04:46,614 - REACT.App - INFO - Stopping REACT application...
-2025-10-16 17:04:46,615 - REACT.SafetyMonitor - INFO - Safety monitoring stopped
-2025-10-16 17:04:46,615 - REACT.MissionManager - INFO - Mission monitoring stopped
-2025-10-16 17:04:46,616 - REACT.App - INFO - All services stopped.
-2025-10-16 17:04:46,982 - REACT.Launcher - INFO - Main application exited
-2025-10-16 17:04:46,982 - REACT.Launcher - INFO - Shutting down REACT...
-2025-10-16 17:04:46,982 - REACT.Launcher - INFO - Stopping main application...
-2025-10-16 17:04:46,982 - REACT.Launcher - INFO - Main application stopped
-2025-10-16 17:04:46,982 - REACT.Launcher - INFO - Stopping tile server...
-2025-10-16 17:04:46,992 - REACT.Launcher - INFO - Tile server stopped
-2025-10-16 17:04:56,929 - REACT.Launcher - INFO - ==================================================
-2025-10-16 17:04:56,929 - REACT.Launcher - INFO - REACT Ground Control Station Launcher
-2025-10-16 17:04:56,929 - REACT.Launcher - INFO - ==================================================
-2025-10-16 17:04:56,929 - REACT.Launcher - INFO - Installing dependencies...
-2025-10-16 17:04:56,929 - REACT.Launcher.Dependencies - INFO - Installing tile server dependencies...
-2025-10-16 17:04:57,830 - REACT.Launcher.Dependencies - INFO - Dependencies installed successfully
-2025-10-16 17:04:57,831 - REACT.Launcher - INFO - Starting tile server...
-2025-10-16 17:04:57,836 - REACT.Launcher - INFO - Tile server started (PID: 27204)
-2025-10-16 17:04:57,836 - REACT.Launcher - INFO - Waiting for tile server to be ready...
-2025-10-16 17:04:58,868 - REACT.Launcher - INFO - Tile server is ready!
-2025-10-16 17:04:58,868 - REACT.Launcher - INFO - Starting REACT application...
-2025-10-16 17:04:58,868 - REACT.Launcher - INFO - Waiting for tile server to be ready...
-2025-10-16 17:04:58,869 - REACT.Launcher - INFO - Tile server is ready!
-2025-10-16 17:04:58,874 - REACT.Launcher - INFO - REACT application started (PID: 4440)
-2025-10-16 17:04:58,874 - REACT.Launcher - INFO - ==================================================
-2025-10-16 17:04:58,874 - REACT.Launcher - INFO - REACT is running!
-2025-10-16 17:04:58,874 - REACT.Launcher - INFO - - Tile server: http://127.0.0.1:8081
-2025-10-16 17:04:58,875 - REACT.Launcher - INFO - - Main application: Running
-2025-10-16 17:04:58,875 - REACT.Launcher - INFO - Press Ctrl+C to stop all services
-2025-10-16 17:04:58,875 - REACT.Launcher - INFO - ==================================================
-2025-10-16 17:04:59,603 - REACT.Main - INFO - REACT Application logging initialized
-2025-10-16 17:04:59,604 - REACT.Main - INFO - Log file: C:\Users\chenz\Documents\react\react\react\data/logs/mission_log.txt
-2025-10-16 17:04:59,604 - REACT.Main - INFO - Starting REACT Ground Control Station...
-2025-10-16 17:04:59,604 - REACT.Main - INFO - Initializing backend...
-2025-10-16 17:04:59,604 - REACT.App - INFO - REACT Application starting...
-2025-10-16 17:04:59,604 - REACT.UAVController - INFO - UAV Controller initialized
-2025-10-16 17:04:59,604 - REACT.MissionManager - INFO - Mission Manager initialized
-2025-10-16 17:04:59,605 - REACT.SafetyMonitor - INFO - Safety Monitor initialized
-2025-10-16 17:04:59,605 - REACT.App - INFO - Setting up component connections...
-2025-10-16 17:04:59,605 - REACT.App - INFO - Component connections established
-2025-10-16 17:04:59,605 - REACT.App - INFO - All managers initialized successfully
-2025-10-16 17:04:59,605 - REACT.App - INFO - Starting REACT application...
-2025-10-16 17:04:59,606 - REACT.TelemetryManager - INFO - Telem1 connected to: udp:127.0.0.1:14552
-2025-10-16 17:04:59,607 - REACT.TelemetryManager - INFO - Telem1 UAV discovery will happen continuously as messages arrive
-2025-10-16 17:04:59,610 - REACT.TelemetryManager - ERROR - Telem2 failed to connect: could not open port '/dev/ttyUSB1': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3)
-2025-10-16 17:04:59,611 - REACT.MissionManager - INFO - Mission monitoring started
-2025-10-16 17:04:59,612 - REACT.SafetyMonitor - INFO - Safety monitoring started
-2025-10-16 17:04:59,612 - REACT.App - INFO - All services started successfully!
-2025-10-16 17:04:59,612 - REACT.Main - INFO - Initializing QML frontend...
-2025-10-16 17:04:59,664 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_3 (System ID: 3)
-2025-10-16 17:04:59,751 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_2 (System ID: 2)
-2025-10-16 17:05:00,017 - REACT.Main - INFO - Frontend started successfully
-2025-10-16 17:05:00,018 - REACT.Main - INFO - Starting application event loop...
-2025-10-16 17:05:00,073 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_1 (System ID: 1)
-2025-10-16 17:05:00,600 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 17:05:00,600 - REACT.App - CRITICAL - Emergency land triggered for UAV_3: Critical battery level: 0%
-2025-10-16 17:05:00,601 - REACT.MissionManager - WARNING - No active mission for UAV UAV_3
-2025-10-16 17:05:00,601 - REACT.UAVController - INFO - Requesting LAND mode for UAV UAV_3
-2025-10-16 17:05:00,601 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: LAND (9)
-2025-10-16 17:05:00,601 - REACT.SafetyMonitor - INFO - Emergency action EMERGENCY_LAND taken for UAV_3 at 1760659500.6003237
-2025-10-16 17:05:00,601 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_2: GPS fix lost (type: 0)
-2025-10-16 17:05:25,545 - REACT.UAVController - INFO - Requesting mode change for UAV UAV_3 to LOITER
-2025-10-16 17:05:25,545 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: LOITER (5)
-2025-10-16 17:05:27,971 - REACT.UAVController - INFO - Requesting arm command for UAV UAV_3
-2025-10-16 17:05:27,971 - REACT.TelemetryManager - INFO - Sending command_long to UAV_3: CMD_400
-2025-10-16 17:05:28,140 - REACT.TelemetryManager - INFO - UAV_3 ARM/DISARM command accepted
-2025-10-16 17:05:28,600 - REACT.SafetyMonitor - WARNING - WARNING - UAV_3: Altitude too low: 0.0m AGL
-2025-10-16 17:05:30,603 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 17:05:31,542 - REACT.UAVController - INFO - Setting AUTO mode for UAV UAV_3 before starting mission
-2025-10-16 17:05:31,542 - REACT.UAVController - INFO - Requesting mode change for UAV UAV_3 to AUTO
-2025-10-16 17:05:31,543 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: AUTO (3)
-2025-10-16 17:05:31,543 - REACT.UAVController - INFO - Requesting MISSION_START for UAV UAV_3
-2025-10-16 17:05:31,543 - REACT.TelemetryManager - INFO - Sending command_long to UAV_3: CMD_300
-2025-10-16 17:05:31,702 - REACT.TelemetryManager - INFO - UAV_3: Mission timer started (mode: AUTO)
-2025-10-16 17:06:00,349 - REACT.UAVController - INFO - Requesting RTL mode for UAV UAV_3
-2025-10-16 17:06:00,350 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: RTL (6)
-2025-10-16 17:06:01,601 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 17:06:31,605 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 17:06:40,603 - REACT.SafetyMonitor - WARNING - WARNING - UAV_3: Altitude too low: 4.6m AGL
-2025-10-16 17:06:51,676 - REACT.TelemetryManager - INFO - UAV_3: Mission timer stopped (disarmed)
-2025-10-16 17:07:02,604 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 17:07:09,865 - REACT.Main - INFO - Shutting down...
-2025-10-16 17:07:09,865 - REACT.App - INFO - Stopping REACT application...
-2025-10-16 17:07:09,866 - REACT.SafetyMonitor - INFO - Safety monitoring stopped
-2025-10-16 17:07:09,866 - REACT.MissionManager - INFO - Mission monitoring stopped
-2025-10-16 17:07:09,867 - REACT.App - INFO - All services stopped.
-2025-10-16 17:07:10,924 - REACT.Launcher - INFO - Main application exited
-2025-10-16 17:07:10,925 - REACT.Launcher - INFO - Shutting down REACT...
-2025-10-16 17:07:10,926 - REACT.Launcher - INFO - Stopping main application...
-2025-10-16 17:07:10,926 - REACT.Launcher - INFO - Main application stopped
-2025-10-16 17:07:10,926 - REACT.Launcher - INFO - Stopping tile server...
-2025-10-16 17:07:10,933 - REACT.Launcher - INFO - Tile server stopped
-2025-10-16 17:07:28,151 - REACT.Launcher - INFO - ==================================================
-2025-10-16 17:07:28,151 - REACT.Launcher - INFO - REACT Ground Control Station Launcher
-2025-10-16 17:07:28,151 - REACT.Launcher - INFO - ==================================================
-2025-10-16 17:07:28,152 - REACT.Launcher - INFO - Installing dependencies...
-2025-10-16 17:07:28,152 - REACT.Launcher.Dependencies - INFO - Installing tile server dependencies...
-2025-10-16 17:07:29,056 - REACT.Launcher.Dependencies - INFO - Dependencies installed successfully
-2025-10-16 17:07:29,056 - REACT.Launcher - INFO - Starting tile server...
-2025-10-16 17:07:29,061 - REACT.Launcher - INFO - Tile server started (PID: 29684)
-2025-10-16 17:07:29,061 - REACT.Launcher - INFO - Waiting for tile server to be ready...
-2025-10-16 17:07:29,587 - REACT.Launcher - INFO - Tile server is ready!
-2025-10-16 17:07:29,587 - REACT.Launcher - INFO - Starting REACT application...
-2025-10-16 17:07:29,588 - REACT.Launcher - INFO - Waiting for tile server to be ready...
-2025-10-16 17:07:29,603 - REACT.Launcher - INFO - Tile server is ready!
-2025-10-16 17:07:29,608 - REACT.Launcher - INFO - REACT application started (PID: 1852)
-2025-10-16 17:07:29,608 - REACT.Launcher - INFO - ==================================================
-2025-10-16 17:07:29,610 - REACT.Launcher - INFO - REACT is running!
-2025-10-16 17:07:29,610 - REACT.Launcher - INFO - - Tile server: http://127.0.0.1:8081
-2025-10-16 17:07:29,610 - REACT.Launcher - INFO - - Main application: Running
-2025-10-16 17:07:29,610 - REACT.Launcher - INFO - Press Ctrl+C to stop all services
-2025-10-16 17:07:29,610 - REACT.Launcher - INFO - ==================================================
-2025-10-16 17:07:30,351 - REACT.Main - INFO - REACT Application logging initialized
-2025-10-16 17:07:30,351 - REACT.Main - INFO - Log file: C:\Users\chenz\Documents\react\react\react\data/logs/mission_log.txt
-2025-10-16 17:07:30,351 - REACT.Main - INFO - Starting REACT Ground Control Station...
-2025-10-16 17:07:30,351 - REACT.Main - INFO - Initializing backend...
-2025-10-16 17:07:30,351 - REACT.App - INFO - REACT Application starting...
-2025-10-16 17:07:30,352 - REACT.UAVController - INFO - UAV Controller initialized
-2025-10-16 17:07:30,352 - REACT.MissionManager - INFO - Mission Manager initialized
-2025-10-16 17:07:30,353 - REACT.SafetyMonitor - INFO - Safety Monitor initialized
-2025-10-16 17:07:30,354 - REACT.App - INFO - Setting up component connections...
-2025-10-16 17:07:30,354 - REACT.App - INFO - Component connections established
-2025-10-16 17:07:30,354 - REACT.App - INFO - All managers initialized successfully
-2025-10-16 17:07:30,354 - REACT.App - INFO - Starting REACT application...
-2025-10-16 17:07:30,355 - REACT.TelemetryManager - INFO - Telem1 connected to: udp:127.0.0.1:14552
-2025-10-16 17:07:30,355 - REACT.TelemetryManager - INFO - Telem1 UAV discovery will happen continuously as messages arrive
-2025-10-16 17:07:30,361 - REACT.TelemetryManager - ERROR - Telem2 failed to connect: could not open port '/dev/ttyUSB1': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3)
-2025-10-16 17:07:30,362 - REACT.MissionManager - INFO - Mission monitoring started
-2025-10-16 17:07:30,363 - REACT.SafetyMonitor - INFO - Safety monitoring started
-2025-10-16 17:07:30,363 - REACT.App - INFO - All services started successfully!
-2025-10-16 17:07:30,363 - REACT.Main - INFO - Initializing QML frontend...
-2025-10-16 17:07:30,401 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_1 (System ID: 1)
-2025-10-16 17:07:30,531 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_2 (System ID: 2)
-2025-10-16 17:07:30,620 - REACT.Main - INFO - Frontend started successfully
-2025-10-16 17:07:30,620 - REACT.Main - INFO - Starting application event loop...
-2025-10-16 17:07:30,690 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_3 (System ID: 3)
-2025-10-16 17:07:31,357 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 17:07:31,358 - REACT.App - CRITICAL - Emergency land triggered for UAV_3: Critical battery level: 0%
-2025-10-16 17:07:31,358 - REACT.MissionManager - WARNING - No active mission for UAV UAV_3
-2025-10-16 17:07:31,358 - REACT.UAVController - INFO - Requesting LAND mode for UAV UAV_3
-2025-10-16 17:07:31,358 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: LAND (9)
-2025-10-16 17:07:31,358 - REACT.SafetyMonitor - INFO - Emergency action EMERGENCY_LAND taken for UAV_3 at 1760659651.3574378
-2025-10-16 17:07:42,722 - REACT.App - INFO - Setting GCS home position to: 34.16383668791155, -118.07476634511916, 0.0
-2025-10-16 17:07:42,723 - REACT.App - INFO - GCS home position updated and signal emitted
-2025-10-16 17:08:01,413 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 17:08:13,344 - REACT.UAVController - INFO - Requesting mode change for UAV UAV_1 to LOITER
-2025-10-16 17:08:13,344 - REACT.TelemetryManager - INFO - Sending mode change to UAV_1: LOITER (5)
-2025-10-16 17:08:13,345 - REACT.UAVController - INFO - Requesting mode change for UAV UAV_2 to LOITER
-2025-10-16 17:08:13,345 - REACT.TelemetryManager - INFO - Sending mode change to UAV_2: LOITER (5)
-2025-10-16 17:08:13,345 - REACT.UAVController - INFO - Requesting mode change for UAV UAV_3 to LOITER
-2025-10-16 17:08:13,345 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: LOITER (5)
-2025-10-16 17:08:14,875 - REACT.UAVController - INFO - Requesting arm command for UAV UAV_1
-2025-10-16 17:08:14,876 - REACT.TelemetryManager - INFO - Sending command_long to UAV_1: CMD_400
-2025-10-16 17:08:14,877 - REACT.UAVController - INFO - Requesting arm command for UAV UAV_2
-2025-10-16 17:08:14,877 - REACT.TelemetryManager - INFO - Sending command_long to UAV_2: CMD_400
-2025-10-16 17:08:14,878 - REACT.UAVController - INFO - Requesting arm command for UAV UAV_3
-2025-10-16 17:08:14,878 - REACT.TelemetryManager - INFO - Sending command_long to UAV_3: CMD_400
-2025-10-16 17:08:15,108 - REACT.TelemetryManager - INFO - UAV_1 ARM/DISARM command accepted
-2025-10-16 17:08:15,140 - REACT.TelemetryManager - INFO - UAV_2 ARM/DISARM command accepted
-2025-10-16 17:08:15,174 - REACT.TelemetryManager - INFO - UAV_3 ARM/DISARM command accepted
-2025-10-16 17:08:15,413 - REACT.SafetyMonitor - WARNING - WARNING - UAV_1: Altitude too low: 0.0m AGL
-2025-10-16 17:08:15,413 - REACT.SafetyMonitor - WARNING - WARNING - UAV_2: Altitude too low: 0.0m AGL
-2025-10-16 17:08:15,413 - REACT.SafetyMonitor - WARNING - WARNING - UAV_3: Altitude too low: 0.0m AGL
-2025-10-16 17:08:18,752 - REACT.UAVController - INFO - Setting GUIDED mode for UAV UAV_1 before takeoff
-2025-10-16 17:08:18,752 - REACT.UAVController - INFO - Requesting mode change for UAV UAV_1 to GUIDED
-2025-10-16 17:08:18,752 - REACT.TelemetryManager - INFO - Sending mode change to UAV_1: GUIDED (4)
-2025-10-16 17:08:18,752 - REACT.UAVController - INFO - Requesting takeoff to 1.0m for UAV UAV_1
-2025-10-16 17:08:18,752 - REACT.TelemetryManager - INFO - Sending command_long to UAV_1: CMD_22
-2025-10-16 17:08:18,753 - REACT.UAVController - INFO - Setting GUIDED mode for UAV UAV_2 before takeoff
-2025-10-16 17:08:18,753 - REACT.UAVController - INFO - Requesting mode change for UAV UAV_2 to GUIDED
-2025-10-16 17:08:18,753 - REACT.TelemetryManager - INFO - Sending mode change to UAV_2: GUIDED (4)
-2025-10-16 17:08:18,753 - REACT.UAVController - INFO - Requesting takeoff to 1.0m for UAV UAV_2
-2025-10-16 17:08:18,753 - REACT.TelemetryManager - INFO - Sending command_long to UAV_2: CMD_22
-2025-10-16 17:08:18,753 - REACT.UAVController - INFO - Setting GUIDED mode for UAV UAV_3 before takeoff
-2025-10-16 17:08:18,753 - REACT.UAVController - INFO - Requesting mode change for UAV UAV_3 to GUIDED
-2025-10-16 17:08:18,753 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: GUIDED (4)
-2025-10-16 17:08:18,754 - REACT.UAVController - INFO - Requesting takeoff to 1.0m for UAV UAV_3
-2025-10-16 17:08:18,754 - REACT.TelemetryManager - INFO - Sending command_long to UAV_3: CMD_22
-2025-10-16 17:08:18,930 - REACT.TelemetryManager - INFO - UAV_1: Mission timer started (mode: GUIDED)
-2025-10-16 17:08:18,963 - REACT.TelemetryManager - INFO - UAV_2: Mission timer started (mode: GUIDED)
-2025-10-16 17:08:18,974 - REACT.TelemetryManager - INFO - UAV_3: Mission timer started (mode: GUIDED)
-2025-10-16 17:08:31,431 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 17:08:36,701 - REACT.UAVController - INFO - Setting AUTO mode for UAV UAV_3 before starting mission
-2025-10-16 17:08:36,701 - REACT.UAVController - INFO - Requesting mode change for UAV UAV_3 to AUTO
-2025-10-16 17:08:36,701 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: AUTO (3)
-2025-10-16 17:08:36,702 - REACT.UAVController - INFO - Requesting MISSION_START for UAV UAV_3
-2025-10-16 17:08:36,702 - REACT.TelemetryManager - INFO - Sending command_long to UAV_3: CMD_300
-2025-10-16 17:08:45,430 - REACT.SafetyMonitor - WARNING - WARNING - UAV_1: Altitude too low: 1.0m AGL
-2025-10-16 17:08:45,431 - REACT.SafetyMonitor - WARNING - WARNING - UAV_2: Altitude too low: 1.0m AGL
-2025-10-16 17:09:01,885 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 17:09:16,429 - REACT.SafetyMonitor - WARNING - WARNING - UAV_1: Altitude too low: 1.0m AGL
-2025-10-16 17:09:16,429 - REACT.SafetyMonitor - WARNING - WARNING - UAV_2: Altitude too low: 1.0m AGL
-2025-10-16 17:09:32,464 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 17:09:46,464 - REACT.SafetyMonitor - WARNING - WARNING - UAV_1: Altitude too low: 1.0m AGL
-2025-10-16 17:09:46,465 - REACT.SafetyMonitor - WARNING - WARNING - UAV_2: Altitude too low: 1.0m AGL
-2025-10-16 17:09:58,213 - REACT.UAVController - INFO - Requesting RTL mode for UAV UAV_1
-2025-10-16 17:09:58,213 - REACT.TelemetryManager - INFO - Sending mode change to UAV_1: RTL (6)
-2025-10-16 17:09:58,214 - REACT.UAVController - INFO - Requesting RTL mode for UAV UAV_2
-2025-10-16 17:09:58,214 - REACT.TelemetryManager - INFO - Sending mode change to UAV_2: RTL (6)
-2025-10-16 17:09:58,214 - REACT.UAVController - INFO - Requesting RTL mode for UAV UAV_3
-2025-10-16 17:09:58,214 - REACT.TelemetryManager - INFO - Sending mode change to UAV_3: RTL (6)
-2025-10-16 17:09:58,214 - REACT.UAVController - WARNING - Cannot RTL unknown UAV: UAV_4
-2025-10-16 17:09:58,215 - REACT.UAVController - WARNING - Cannot RTL unknown UAV: UAV_5
-2025-10-16 17:09:58,215 - REACT.UAVController - WARNING - Cannot RTL unknown UAV: UAV_6
-2025-10-16 17:09:58,215 - REACT.UAVController - WARNING - Cannot RTL unknown UAV: UAV_7
-2025-10-16 17:09:58,215 - REACT.UAVController - WARNING - Cannot RTL unknown UAV: UAV_8
-2025-10-16 17:09:58,215 - REACT.UAVController - WARNING - Cannot RTL unknown UAV: UAV_9
-2025-10-16 17:09:58,215 - REACT.UAVController - WARNING - Cannot RTL unknown UAV: UAV_10
-2025-10-16 17:10:02,493 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_3: CRITICAL battery: 0%
-2025-10-16 17:10:09,223 - REACT.TelemetryManager - INFO - UAV_1: Mission timer stopped (disarmed)
-2025-10-16 17:10:09,537 - REACT.TelemetryManager - INFO - UAV_2: Mission timer stopped (disarmed)
-2025-10-16 17:10:13,908 - REACT.Main - INFO - Shutting down...
-2025-10-16 17:10:13,908 - REACT.App - INFO - Stopping REACT application...
-2025-10-16 17:10:13,908 - REACT.SafetyMonitor - INFO - Safety monitoring stopped
-2025-10-16 17:10:13,909 - REACT.MissionManager - INFO - Mission monitoring stopped
-2025-10-16 17:10:13,911 - REACT.App - INFO - All services stopped.
-2025-10-16 17:10:14,669 - REACT.Launcher - INFO - Main application exited
-2025-10-16 17:10:14,669 - REACT.Launcher - INFO - Shutting down REACT...
-2025-10-16 17:10:14,669 - REACT.Launcher - INFO - Stopping main application...
-2025-10-16 17:10:14,669 - REACT.Launcher - INFO - Main application stopped
-2025-10-16 17:10:14,669 - REACT.Launcher - INFO - Stopping tile server...
-2025-10-16 17:10:14,678 - REACT.Launcher - INFO - Tile server stopped
+2025-10-16 19:38:31,796 - REACT.Launcher - INFO - ==================================================
+2025-10-16 19:38:31,797 - REACT.Launcher - INFO - REACT Ground Control Station Launcher
+2025-10-16 19:38:31,797 - REACT.Launcher - INFO - ==================================================
+2025-10-16 19:38:31,797 - REACT.Launcher - INFO - Installing dependencies...
+2025-10-16 19:38:31,797 - REACT.Launcher.Dependencies - INFO - Installing tile server dependencies...
+2025-10-16 19:38:32,706 - REACT.Launcher.Dependencies - INFO - Dependencies installed successfully
+2025-10-16 19:38:32,707 - REACT.Launcher - INFO - Starting tile server...
+2025-10-16 19:38:32,708 - REACT.Launcher - INFO - Tile server started (PID: 17948)
+2025-10-16 19:38:32,708 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-16 19:38:33,743 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-16 19:38:33,744 - REACT.Launcher - INFO - Starting REACT application...
+2025-10-16 19:38:33,744 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-16 19:38:33,760 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-16 19:38:33,765 - REACT.Launcher - INFO - REACT application started (PID: 3536)
+2025-10-16 19:38:33,765 - REACT.Launcher - INFO - ==================================================
+2025-10-16 19:38:33,765 - REACT.Launcher - INFO - REACT is running!
+2025-10-16 19:38:33,765 - REACT.Launcher - INFO - - Tile server: http://127.0.0.1:8081
+2025-10-16 19:38:33,766 - REACT.Launcher - INFO - - Main application: Running
+2025-10-16 19:38:33,766 - REACT.Launcher - INFO - Press Ctrl+C to stop all services
+2025-10-16 19:38:33,766 - REACT.Launcher - INFO - ==================================================
+2025-10-16 19:38:34,497 - REACT.Main - INFO - REACT Application logging initialized
+2025-10-16 19:38:34,497 - REACT.Main - INFO - Log file: C:\Users\chenz\Documents\react\react\react\data/logs/mission_log.txt
+2025-10-16 19:38:34,497 - REACT.Main - INFO - Starting REACT Ground Control Station...
+2025-10-16 19:38:34,498 - REACT.Main - INFO - Initializing backend...
+2025-10-16 19:38:34,498 - REACT.App - INFO - REACT Application starting...
+2025-10-16 19:38:34,498 - REACT.UAVController - INFO - UAV Controller initialized
+2025-10-16 19:38:34,498 - REACT.MissionManager - INFO - Mission Manager initialized
+2025-10-16 19:38:34,498 - REACT.SafetyMonitor - INFO - Safety Monitor initialized
+2025-10-16 19:38:34,498 - REACT.App - INFO - Setting up component connections...
+2025-10-16 19:38:34,499 - REACT.App - INFO - Component connections established
+2025-10-16 19:38:34,499 - REACT.App - INFO - All managers initialized successfully
+2025-10-16 19:38:34,499 - REACT.App - INFO - Starting REACT application...
+2025-10-16 19:38:34,500 - REACT.TelemetryManager - INFO - Telem1 connected to: udp:127.0.0.1:14552
+2025-10-16 19:38:34,501 - REACT.TelemetryManager - INFO - Telem1 UAV discovery will happen continuously as messages arrive
+2025-10-16 19:38:34,508 - REACT.TelemetryManager - ERROR - Telem2 failed to connect: could not open port '/dev/ttyUSB1': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3)
+2025-10-16 19:38:34,508 - REACT.MissionManager - INFO - Mission monitoring started
+2025-10-16 19:38:34,509 - REACT.SafetyMonitor - INFO - Safety monitoring started
+2025-10-16 19:38:34,509 - REACT.App - INFO - All services started successfully!
+2025-10-16 19:38:34,509 - REACT.Main - INFO - Initializing QML frontend...
+2025-10-16 19:38:34,862 - REACT.Main - INFO - Frontend started successfully
+2025-10-16 19:38:34,863 - REACT.Main - INFO - Starting application event loop...
+2025-10-16 19:38:34,880 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_2 (System ID: 2)
+2025-10-16 19:38:34,903 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_1 (System ID: 1)
+2025-10-16 19:38:40,285 - REACT.Main - INFO - Shutting down...
+2025-10-16 19:38:40,285 - REACT.App - INFO - Stopping REACT application...
+2025-10-16 19:38:40,285 - REACT.SafetyMonitor - INFO - Safety monitoring stopped
+2025-10-16 19:38:40,285 - REACT.MissionManager - INFO - Mission monitoring stopped
+2025-10-16 19:38:40,290 - REACT.App - INFO - All services stopped.
+2025-10-16 19:38:40,770 - REACT.Launcher - INFO - Main application exited
+2025-10-16 19:38:40,770 - REACT.Launcher - INFO - Shutting down REACT...
+2025-10-16 19:38:40,770 - REACT.Launcher - INFO - Stopping main application...
+2025-10-16 19:38:40,770 - REACT.Launcher - INFO - Main application stopped
+2025-10-16 19:38:40,770 - REACT.Launcher - INFO - Stopping tile server...
+2025-10-16 19:38:40,779 - REACT.Launcher - INFO - Tile server stopped
+2025-10-16 19:38:54,675 - REACT.Launcher - INFO - ==================================================
+2025-10-16 19:38:54,675 - REACT.Launcher - INFO - REACT Ground Control Station Launcher
+2025-10-16 19:38:54,675 - REACT.Launcher - INFO - ==================================================
+2025-10-16 19:38:54,675 - REACT.Launcher - INFO - Installing dependencies...
+2025-10-16 19:38:54,675 - REACT.Launcher.Dependencies - INFO - Installing tile server dependencies...
+2025-10-16 19:38:55,610 - REACT.Launcher.Dependencies - INFO - Dependencies installed successfully
+2025-10-16 19:38:55,610 - REACT.Launcher - INFO - Starting tile server...
+2025-10-16 19:38:55,610 - REACT.Launcher - INFO - Tile server started (PID: 28376)
+2025-10-16 19:38:55,610 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-16 19:38:56,652 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-16 19:38:56,652 - REACT.Launcher - INFO - Starting REACT application...
+2025-10-16 19:38:56,653 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-16 19:38:56,655 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-16 19:38:56,661 - REACT.Launcher - INFO - REACT application started (PID: 27008)
+2025-10-16 19:38:56,662 - REACT.Launcher - INFO - ==================================================
+2025-10-16 19:38:56,662 - REACT.Launcher - INFO - REACT is running!
+2025-10-16 19:38:56,662 - REACT.Launcher - INFO - - Tile server: http://127.0.0.1:8081
+2025-10-16 19:38:56,663 - REACT.Launcher - INFO - - Main application: Running
+2025-10-16 19:38:56,663 - REACT.Launcher - INFO - Press Ctrl+C to stop all services
+2025-10-16 19:38:56,664 - REACT.Launcher - INFO - ==================================================
+2025-10-16 19:38:57,951 - REACT.Main - INFO - REACT Application logging initialized
+2025-10-16 19:38:57,951 - REACT.Main - INFO - Log file: C:\Users\chenz\Documents\react\react\react\data/logs/mission_log.txt
+2025-10-16 19:38:57,951 - REACT.Main - INFO - Starting REACT Ground Control Station...
+2025-10-16 19:38:57,951 - REACT.Main - INFO - Initializing backend...
+2025-10-16 19:38:57,951 - REACT.App - INFO - REACT Application starting...
+2025-10-16 19:38:57,951 - REACT.UAVController - INFO - UAV Controller initialized
+2025-10-16 19:38:57,951 - REACT.MissionManager - INFO - Mission Manager initialized
+2025-10-16 19:38:57,951 - REACT.SafetyMonitor - INFO - Safety Monitor initialized
+2025-10-16 19:38:57,951 - REACT.App - INFO - Setting up component connections...
+2025-10-16 19:38:57,956 - REACT.App - INFO - Component connections established
+2025-10-16 19:38:57,956 - REACT.App - INFO - All managers initialized successfully
+2025-10-16 19:38:57,956 - REACT.App - INFO - Starting REACT application...
+2025-10-16 19:38:57,956 - REACT.TelemetryManager - INFO - Telem1 connected to: udp:127.0.0.1:14552
+2025-10-16 19:38:57,958 - REACT.TelemetryManager - INFO - Telem1 UAV discovery will happen continuously as messages arrive
+2025-10-16 19:38:57,963 - REACT.TelemetryManager - ERROR - Telem2 failed to connect: could not open port '/dev/ttyUSB1': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3)
+2025-10-16 19:38:57,963 - REACT.MissionManager - INFO - Mission monitoring started
+2025-10-16 19:38:57,964 - REACT.SafetyMonitor - INFO - Safety monitoring started
+2025-10-16 19:38:57,964 - REACT.App - INFO - All services started successfully!
+2025-10-16 19:38:57,964 - REACT.Main - INFO - Initializing QML frontend...
+2025-10-16 19:38:58,294 - REACT.Main - INFO - Frontend started successfully
+2025-10-16 19:38:58,294 - REACT.Main - INFO - Starting application event loop...
+2025-10-16 19:38:58,341 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_2 (System ID: 2)
+2025-10-16 19:38:58,505 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_1 (System ID: 1)
+2025-10-16 19:38:58,962 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_1: GPS fix lost (type: 0)
+2025-10-16 19:39:03,637 - REACT.Main - INFO - Shutting down...
+2025-10-16 19:39:03,638 - REACT.App - INFO - Stopping REACT application...
+2025-10-16 19:39:03,639 - REACT.SafetyMonitor - INFO - Safety monitoring stopped
+2025-10-16 19:39:03,644 - REACT.MissionManager - INFO - Mission monitoring stopped
+2025-10-16 19:39:03,648 - REACT.App - INFO - All services stopped.
+2025-10-16 19:39:04,669 - REACT.Launcher - INFO - Main application exited
+2025-10-16 19:39:04,669 - REACT.Launcher - INFO - Shutting down REACT...
+2025-10-16 19:39:04,669 - REACT.Launcher - INFO - Stopping main application...
+2025-10-16 19:39:04,669 - REACT.Launcher - INFO - Main application stopped
+2025-10-16 19:39:04,670 - REACT.Launcher - INFO - Stopping tile server...
+2025-10-16 19:39:04,677 - REACT.Launcher - INFO - Tile server stopped
+2025-10-16 19:39:13,421 - REACT.Launcher - INFO - ==================================================
+2025-10-16 19:39:13,421 - REACT.Launcher - INFO - REACT Ground Control Station Launcher
+2025-10-16 19:39:13,421 - REACT.Launcher - INFO - ==================================================
+2025-10-16 19:39:13,421 - REACT.Launcher - INFO - Installing dependencies...
+2025-10-16 19:39:13,421 - REACT.Launcher.Dependencies - INFO - Installing tile server dependencies...
+2025-10-16 19:39:14,323 - REACT.Launcher.Dependencies - INFO - Dependencies installed successfully
+2025-10-16 19:39:14,323 - REACT.Launcher - INFO - Starting tile server...
+2025-10-16 19:39:14,328 - REACT.Launcher - INFO - Tile server started (PID: 19396)
+2025-10-16 19:39:14,328 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-16 19:39:14,848 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-16 19:39:14,848 - REACT.Launcher - INFO - Starting REACT application...
+2025-10-16 19:39:14,849 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-16 19:39:14,865 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-16 19:39:14,870 - REACT.Launcher - INFO - REACT application started (PID: 26380)
+2025-10-16 19:39:14,870 - REACT.Launcher - INFO - ==================================================
+2025-10-16 19:39:14,870 - REACT.Launcher - INFO - REACT is running!
+2025-10-16 19:39:14,870 - REACT.Launcher - INFO - - Tile server: http://127.0.0.1:8081
+2025-10-16 19:39:14,870 - REACT.Launcher - INFO - - Main application: Running
+2025-10-16 19:39:14,870 - REACT.Launcher - INFO - Press Ctrl+C to stop all services
+2025-10-16 19:39:14,871 - REACT.Launcher - INFO - ==================================================
+2025-10-16 19:39:15,541 - REACT.Main - INFO - REACT Application logging initialized
+2025-10-16 19:39:15,541 - REACT.Main - INFO - Log file: C:\Users\chenz\Documents\react\react\react\data/logs/mission_log.txt
+2025-10-16 19:39:15,542 - REACT.Main - INFO - Starting REACT Ground Control Station...
+2025-10-16 19:39:15,542 - REACT.Main - INFO - Initializing backend...
+2025-10-16 19:39:15,542 - REACT.App - INFO - REACT Application starting...
+2025-10-16 19:39:15,542 - REACT.UAVController - INFO - UAV Controller initialized
+2025-10-16 19:39:15,542 - REACT.MissionManager - INFO - Mission Manager initialized
+2025-10-16 19:39:15,542 - REACT.SafetyMonitor - INFO - Safety Monitor initialized
+2025-10-16 19:39:15,542 - REACT.App - INFO - Setting up component connections...
+2025-10-16 19:39:15,543 - REACT.App - INFO - Component connections established
+2025-10-16 19:39:15,543 - REACT.App - INFO - All managers initialized successfully
+2025-10-16 19:39:15,543 - REACT.App - INFO - Starting REACT application...
+2025-10-16 19:39:15,544 - REACT.TelemetryManager - INFO - Telem1 connected to: udp:127.0.0.1:14552
+2025-10-16 19:39:15,544 - REACT.TelemetryManager - INFO - Telem1 UAV discovery will happen continuously as messages arrive
+2025-10-16 19:39:15,549 - REACT.TelemetryManager - ERROR - Telem2 failed to connect: could not open port '/dev/ttyUSB1': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3)
+2025-10-16 19:39:15,550 - REACT.MissionManager - INFO - Mission monitoring started
+2025-10-16 19:39:15,550 - REACT.SafetyMonitor - INFO - Safety monitoring started
+2025-10-16 19:39:15,550 - REACT.App - INFO - All services started successfully!
+2025-10-16 19:39:15,550 - REACT.Main - INFO - Initializing QML frontend...
+2025-10-16 19:39:15,795 - REACT.Main - INFO - Frontend started successfully
+2025-10-16 19:39:15,797 - REACT.Main - INFO - Starting application event loop...
+2025-10-16 19:39:15,845 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_2 (System ID: 2)
+2025-10-16 19:39:15,869 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_1 (System ID: 1)
+2025-10-16 19:39:24,576 - REACT.App - INFO - Setting GCS home position to: 34.1637778750075, -118.07471448070648, 0.0
+2025-10-16 19:39:24,577 - REACT.App - INFO - GCS home position updated and signal emitted
+2025-10-16 19:39:32,133 - REACT.Main - INFO - Shutting down...
+2025-10-16 19:39:32,133 - REACT.App - INFO - Stopping REACT application...
+2025-10-16 19:39:32,134 - REACT.SafetyMonitor - INFO - Safety monitoring stopped
+2025-10-16 19:39:32,134 - REACT.MissionManager - INFO - Mission monitoring stopped
+2025-10-16 19:39:32,136 - REACT.App - INFO - All services stopped.
+2025-10-16 19:39:32,878 - REACT.Launcher - INFO - Main application exited
+2025-10-16 19:39:32,878 - REACT.Launcher - INFO - Shutting down REACT...
+2025-10-16 19:39:32,878 - REACT.Launcher - INFO - Stopping main application...
+2025-10-16 19:39:32,878 - REACT.Launcher - INFO - Main application stopped
+2025-10-16 19:39:32,878 - REACT.Launcher - INFO - Stopping tile server...
+2025-10-16 19:39:32,886 - REACT.Launcher - INFO - Tile server stopped
+2025-10-16 19:40:22,038 - REACT.Launcher - INFO - ==================================================
+2025-10-16 19:40:22,039 - REACT.Launcher - INFO - REACT Ground Control Station Launcher
+2025-10-16 19:40:22,039 - REACT.Launcher - INFO - ==================================================
+2025-10-16 19:40:22,039 - REACT.Launcher - INFO - Installing dependencies...
+2025-10-16 19:40:22,039 - REACT.Launcher.Dependencies - INFO - Installing tile server dependencies...
+2025-10-16 19:40:22,920 - REACT.Launcher.Dependencies - INFO - Dependencies installed successfully
+2025-10-16 19:40:22,920 - REACT.Launcher - INFO - Starting tile server...
+2025-10-16 19:40:22,926 - REACT.Launcher - INFO - Tile server started (PID: 20512)
+2025-10-16 19:40:22,926 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-16 19:40:23,461 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-16 19:40:23,461 - REACT.Launcher - INFO - Starting REACT application...
+2025-10-16 19:40:23,461 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-16 19:40:23,463 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-16 19:40:23,465 - REACT.Launcher - INFO - REACT application started (PID: 22624)
+2025-10-16 19:40:23,465 - REACT.Launcher - INFO - ==================================================
+2025-10-16 19:40:23,465 - REACT.Launcher - INFO - REACT is running!
+2025-10-16 19:40:23,465 - REACT.Launcher - INFO - - Tile server: http://127.0.0.1:8081
+2025-10-16 19:40:23,465 - REACT.Launcher - INFO - - Main application: Running
+2025-10-16 19:40:23,465 - REACT.Launcher - INFO - Press Ctrl+C to stop all services
+2025-10-16 19:40:23,465 - REACT.Launcher - INFO - ==================================================
+2025-10-16 19:40:24,144 - REACT.Main - INFO - REACT Application logging initialized
+2025-10-16 19:40:24,144 - REACT.Main - INFO - Log file: C:\Users\chenz\Documents\react\react\react\data/logs/mission_log.txt
+2025-10-16 19:40:24,144 - REACT.Main - INFO - Starting REACT Ground Control Station...
+2025-10-16 19:40:24,144 - REACT.Main - INFO - Initializing backend...
+2025-10-16 19:40:24,144 - REACT.App - INFO - REACT Application starting...
+2025-10-16 19:40:24,144 - REACT.UAVController - INFO - UAV Controller initialized
+2025-10-16 19:40:24,144 - REACT.MissionManager - INFO - Mission Manager initialized
+2025-10-16 19:40:24,144 - REACT.SafetyMonitor - INFO - Safety Monitor initialized
+2025-10-16 19:40:24,144 - REACT.App - INFO - Setting up component connections...
+2025-10-16 19:40:24,144 - REACT.App - INFO - Component connections established
+2025-10-16 19:40:24,144 - REACT.App - INFO - All managers initialized successfully
+2025-10-16 19:40:24,144 - REACT.App - INFO - Starting REACT application...
+2025-10-16 19:40:24,149 - REACT.TelemetryManager - INFO - Telem1 connected to: udp:127.0.0.1:14552
+2025-10-16 19:40:24,149 - REACT.TelemetryManager - INFO - Telem1 UAV discovery will happen continuously as messages arrive
+2025-10-16 19:40:24,155 - REACT.TelemetryManager - ERROR - Telem2 failed to connect: could not open port '/dev/ttyUSB1': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3)
+2025-10-16 19:40:24,156 - REACT.MissionManager - INFO - Mission monitoring started
+2025-10-16 19:40:24,156 - REACT.SafetyMonitor - INFO - Safety monitoring started
+2025-10-16 19:40:24,157 - REACT.App - INFO - All services started successfully!
+2025-10-16 19:40:24,157 - REACT.Main - INFO - Initializing QML frontend...
+2025-10-16 19:40:24,334 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_2 (System ID: 2)
+2025-10-16 19:40:24,479 - REACT.Main - INFO - Frontend started successfully
+2025-10-16 19:40:24,479 - REACT.Main - INFO - Starting application event loop...
+2025-10-16 19:40:24,510 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_1 (System ID: 1)
+2025-10-16 19:40:31,747 - REACT.Main - INFO - Shutting down...
+2025-10-16 19:40:31,750 - REACT.App - INFO - Stopping REACT application...
+2025-10-16 19:40:31,752 - REACT.SafetyMonitor - INFO - Safety monitoring stopped
+2025-10-16 19:40:31,753 - REACT.MissionManager - INFO - Mission monitoring stopped
+2025-10-16 19:40:31,757 - REACT.App - INFO - All services stopped.
+2025-10-16 19:40:32,474 - REACT.Launcher - INFO - Main application exited
+2025-10-16 19:40:32,474 - REACT.Launcher - INFO - Shutting down REACT...
+2025-10-16 19:40:32,474 - REACT.Launcher - INFO - Stopping main application...
+2025-10-16 19:40:32,474 - REACT.Launcher - INFO - Main application stopped
+2025-10-16 19:40:32,474 - REACT.Launcher - INFO - Stopping tile server...
+2025-10-16 19:40:32,482 - REACT.Launcher - INFO - Tile server stopped
+2025-10-16 19:40:33,794 - REACT.Launcher - INFO - ==================================================
+2025-10-16 19:40:33,794 - REACT.Launcher - INFO - REACT Ground Control Station Launcher
+2025-10-16 19:40:33,794 - REACT.Launcher - INFO - ==================================================
+2025-10-16 19:40:33,794 - REACT.Launcher - INFO - Installing dependencies...
+2025-10-16 19:40:33,794 - REACT.Launcher.Dependencies - INFO - Installing tile server dependencies...
+2025-10-16 19:40:34,673 - REACT.Launcher.Dependencies - INFO - Dependencies installed successfully
+2025-10-16 19:40:34,673 - REACT.Launcher - INFO - Starting tile server...
+2025-10-16 19:40:34,678 - REACT.Launcher - INFO - Tile server started (PID: 22504)
+2025-10-16 19:40:34,678 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-16 19:40:35,208 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-16 19:40:35,208 - REACT.Launcher - INFO - Starting REACT application...
+2025-10-16 19:40:35,208 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-16 19:40:35,224 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-16 19:40:35,228 - REACT.Launcher - INFO - REACT application started (PID: 20808)
+2025-10-16 19:40:35,229 - REACT.Launcher - INFO - ==================================================
+2025-10-16 19:40:35,229 - REACT.Launcher - INFO - REACT is running!
+2025-10-16 19:40:35,229 - REACT.Launcher - INFO - - Tile server: http://127.0.0.1:8081
+2025-10-16 19:40:35,229 - REACT.Launcher - INFO - - Main application: Running
+2025-10-16 19:40:35,229 - REACT.Launcher - INFO - Press Ctrl+C to stop all services
+2025-10-16 19:40:35,230 - REACT.Launcher - INFO - ==================================================
+2025-10-16 19:40:35,882 - REACT.Main - INFO - REACT Application logging initialized
+2025-10-16 19:40:35,882 - REACT.Main - INFO - Log file: C:\Users\chenz\Documents\react\react\react\data/logs/mission_log.txt
+2025-10-16 19:40:35,882 - REACT.Main - INFO - Starting REACT Ground Control Station...
+2025-10-16 19:40:35,882 - REACT.Main - INFO - Initializing backend...
+2025-10-16 19:40:35,882 - REACT.App - INFO - REACT Application starting...
+2025-10-16 19:40:35,882 - REACT.UAVController - INFO - UAV Controller initialized
+2025-10-16 19:40:35,882 - REACT.MissionManager - INFO - Mission Manager initialized
+2025-10-16 19:40:35,882 - REACT.SafetyMonitor - INFO - Safety Monitor initialized
+2025-10-16 19:40:35,882 - REACT.App - INFO - Setting up component connections...
+2025-10-16 19:40:35,882 - REACT.App - INFO - Component connections established
+2025-10-16 19:40:35,886 - REACT.App - INFO - All managers initialized successfully
+2025-10-16 19:40:35,886 - REACT.App - INFO - Starting REACT application...
+2025-10-16 19:40:35,886 - REACT.TelemetryManager - INFO - Telem1 connected to: udp:127.0.0.1:14552
+2025-10-16 19:40:35,886 - REACT.TelemetryManager - INFO - Telem1 UAV discovery will happen continuously as messages arrive
+2025-10-16 19:40:35,886 - REACT.TelemetryManager - ERROR - Telem2 failed to connect: could not open port '/dev/ttyUSB1': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3)
+2025-10-16 19:40:35,886 - REACT.MissionManager - INFO - Mission monitoring started
+2025-10-16 19:40:35,894 - REACT.SafetyMonitor - INFO - Safety monitoring started
+2025-10-16 19:40:35,895 - REACT.App - INFO - All services started successfully!
+2025-10-16 19:40:35,895 - REACT.Main - INFO - Initializing QML frontend...
+2025-10-16 19:40:35,987 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_1 (System ID: 1)
+2025-10-16 19:40:36,173 - REACT.Main - INFO - Frontend started successfully
+2025-10-16 19:40:36,174 - REACT.Main - INFO - Starting application event loop...
+2025-10-16 19:40:36,338 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_2 (System ID: 2)
+2025-10-16 19:40:39,084 - REACT.Main - INFO - Shutting down...
+2025-10-16 19:40:39,084 - REACT.App - INFO - Stopping REACT application...
+2025-10-16 19:40:39,084 - REACT.SafetyMonitor - INFO - Safety monitoring stopped
+2025-10-16 19:40:39,084 - REACT.MissionManager - INFO - Mission monitoring stopped
+2025-10-16 19:40:39,086 - REACT.App - INFO - All services stopped.
+2025-10-16 19:40:40,232 - REACT.Launcher - INFO - Main application exited
+2025-10-16 19:40:40,232 - REACT.Launcher - INFO - Shutting down REACT...
+2025-10-16 19:40:40,232 - REACT.Launcher - INFO - Stopping main application...
+2025-10-16 19:40:40,232 - REACT.Launcher - INFO - Main application stopped
+2025-10-16 19:40:40,232 - REACT.Launcher - INFO - Stopping tile server...
+2025-10-16 19:40:40,238 - REACT.Launcher - INFO - Tile server stopped

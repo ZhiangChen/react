@@ -357,7 +357,70 @@ ApplicationWindow {
                                     height: parent.height
                                 }
                                 onClicked: {
-                                    missionFileDialog.open()
+                                    // First, check which UAVs to process based on control mode
+                                    var uavsToCheck = uavList.controlAllUAVs ? getAllUAVs() : uavList.selectedUAVs
+                                    
+                                    console.log("Upload Mission: Checking", uavsToCheck.length, "UAV(s)...")
+                                    
+                                    // Collect UAVs that need uploading
+                                    var uavsToUpload = []
+                                    var skippedNoTelem1 = 0
+                                    var skippedNoMission = 0
+                                    
+                                    for (var i = 0; i < uavsToCheck.length; i++) {
+                                        var uavId = uavsToCheck[i]
+                                        
+                                        // Check if UAV has telem1 connection
+                                        var hasTelem1 = uavList.getTelem1Status(uavId)
+                                        if (!hasTelem1) {
+                                            console.log("  Skipping", uavId, "- no telem1 connection")
+                                            skippedNoTelem1++
+                                            continue
+                                        }
+                                        
+                                        // Check if mission file is selected (use full path function)
+                                        var missionFileFullPath = uavList.getMissionFileFullPath(uavId)
+                                        if (!missionFileFullPath) {
+                                            console.log("  Skipping", uavId, "- no mission file selected")
+                                            skippedNoMission++
+                                            continue
+                                        }
+                                        
+                                        // Add to upload list
+                                        uavsToUpload.push({
+                                            uavId: uavId,
+                                            missionFile: missionFileFullPath
+                                        })
+                                    }
+                                    
+                                    // If nothing to upload, show error message and return
+                                    if (uavsToUpload.length === 0) {
+                                        var message = "No missions uploaded."
+                                        if (skippedNoTelem1 > 0) {
+                                            message += "\n\n" + skippedNoTelem1 + " UAV(s) skipped (no telem1 connection)."
+                                        }
+                                        if (skippedNoMission > 0) {
+                                            message += "\n" + skippedNoMission + " UAV(s) skipped (no mission file selected)."
+                                        }
+                                        uploadMissionResultDialog.message = message
+                                        uploadMissionResultDialog.open()
+                                        return
+                                    }
+                                    
+                                    // Show progress dialog and start uploading
+                                    uploadMissionProgressDialog.totalUAVs = uavsToUpload.length
+                                    uploadMissionProgressDialog.completedUAVs = 0
+                                    uploadMissionProgressDialog.currentUAVId = ""
+                                    uploadMissionProgressDialog.uploadQueue = uavsToUpload
+                                    uploadMissionProgressDialog.skippedNoTelem1 = skippedNoTelem1
+                                    uploadMissionProgressDialog.skippedNoMission = skippedNoMission
+                                    uploadMissionProgressDialog.uploadResults = {}
+                                    uploadMissionProgressDialog.successCount = 0
+                                    uploadMissionProgressDialog.failureCount = 0
+                                    uploadMissionProgressDialog.open()
+                                    
+                                    // Start uploading after a delay to allow dialog to render
+                                    uploadMissionProgressDialog.startUpload()
                                 }
                             }
 
@@ -1030,6 +1093,24 @@ ApplicationWindow {
             return "No active mission"
         } catch(e) {
             return "No mission"
+        }
+    }
+    
+    function getAllUAVs() {
+        // Get list of all UAV IDs from backend
+        if (!backend) return []
+        try {
+            var uavList = backend.getAllUAVs()
+            var uavIds = []
+            for (var i = 0; i < uavList.length; i++) {
+                if (uavList[i] && uavList[i].uav_id) {
+                    uavIds.push(uavList[i].uav_id)
+                }
+            }
+            return uavIds
+        } catch(e) {
+            console.log("Error getting UAV list:", e)
+            return []
         }
     }
 
@@ -1740,7 +1821,7 @@ ApplicationWindow {
         id: startMissionDialog
         title: "Confirm Start Mission"
         width: 400
-        height: 180
+        height: 220
         modal: true
         x: (parent.width - width) / 2
         y: (parent.height - height) / 2
@@ -1834,5 +1915,252 @@ ApplicationWindow {
             }
         }
     }
+    
+    // Upload Mission Progress Dialog
+    Dialog {
+        id: uploadMissionProgressDialog
+        title: "Uploading Missions"
+        width: 450
+        height: 280
+        modal: true
+        anchors.centerIn: parent
+        closePolicy: Dialog.NoAutoClose  // Prevent closing during upload
+        
+        property int totalUAVs: 0
+        property int completedUAVs: 0
+        property string currentUAVId: ""
+        property var uploadQueue: []
+        property int skippedNoTelem1: 0
+        property int skippedNoMission: 0
+        property var uploadResults: ({})  // Track upload success/failure for each UAV
+        property int successCount: 0
+        property int failureCount: 0
+        
+        background: Rectangle {
+            color: "white"
+            border.color: "#cccccc"
+            border.width: 1
+            radius: 0  // Rectangular corners
+        }
+        
+        Timer {
+            id: startTimer
+            interval: 200  // Delay to allow dialog to render
+            repeat: false
+            onTriggered: uploadMissionProgressDialog.processNextUpload()
+        }
+        
+        Timer {
+            id: uploadTimer
+            interval: 500  // 500ms delay between uploads for better UI visibility
+            repeat: false
+            onTriggered: uploadMissionProgressDialog.processNextUpload()
+        }
+        
+        Timer {
+            id: summaryTimer
+            interval: 2000  // Wait 2 seconds for all backend results to arrive
+            repeat: false
+            onTriggered: uploadMissionProgressDialog.showSummary()
+        }
+        
+        function startUpload() {
+            // Use timer to ensure dialog is fully rendered before starting upload
+            startTimer.start()
+        }
+        
+        function showSummary() {
+            var message = "Mission Upload Summary\n\n"
+            message += "✓ Success: " + successCount + " UAV(s)\n"
+            message += "✗ Failed: " + failureCount + " UAV(s)"
+            
+            if (skippedNoTelem1 > 0) {
+                message += "\n\n⊘ " + skippedNoTelem1 + " UAV(s) skipped (no telem1 connection)"
+            }
+            if (skippedNoMission > 0) {
+                message += "\n⊘ " + skippedNoMission + " UAV(s) skipped (no mission file selected)"
+            }
+            
+            uploadMissionResultDialog.message = message
+            uploadMissionProgressDialog.close()
+            uploadMissionResultDialog.open()
+        }
+        
+        function processNextUpload() {
+            if (uploadQueue.length === 0) {
+                // All uploads complete, wait for backend results then show summary
+                uploadTimer.stop()
+                console.log("All uploads requested, waiting for results...")
+                console.log("Current counts - Success:", successCount, "Failed:", failureCount)
+                // Wait 2 seconds for backend results to arrive
+                summaryTimer.start()
+                return
+            }
+            
+            // Get next UAV to upload
+            var uploadItem = uploadQueue.shift()
+            currentUAVId = uploadItem.uavId
+            
+            console.log("  Uploading mission to", uploadItem.uavId, ":", uploadItem.missionFile)
+            
+            // Upload mission
+            if (backend) {
+                backend.load_mission(uploadItem.uavId, uploadItem.missionFile)
+            }
+            
+            completedUAVs++
+            
+            // Schedule next upload
+            uploadTimer.start()
+        }
+        
+        // Listen to mission upload results from backend
+        Connections {
+            target: backend
+            function onMission_upload_result(uavId, success, message) {
+                console.log("✓ Upload result received for", uavId, ":", success, "-", message)
+                uploadMissionProgressDialog.uploadResults[uavId] = {success: success, message: message}
+                if (success) {
+                    uploadMissionProgressDialog.successCount++
+                    console.log("  Success count now:", uploadMissionProgressDialog.successCount)
+                } else {
+                    uploadMissionProgressDialog.failureCount++
+                    console.log("  Failure count now:", uploadMissionProgressDialog.failureCount)
+                }
+            }
+        }
+        
+        Item {
+            anchors.fill: parent
+            
+            Column {
+                anchors.fill: parent
+                anchors.margins: 20
+                spacing: 15
+                
+                Text {
+                    text: "Uploading mission files to UAVs..."
+                    font.pointSize: 10
+                    font.bold: true
+                }
+                
+                Text {
+                    text: uploadMissionProgressDialog.currentUAVId 
+                          ? "Currently uploading to: " + uploadMissionProgressDialog.currentUAVId
+                          : "Preparing upload..."
+                    font.pointSize: 9
+                    color: "#666666"
+                }
+                
+                Text {
+                    text: "Progress: " + uploadMissionProgressDialog.completedUAVs + " / " + uploadMissionProgressDialog.totalUAVs
+                    font.pointSize: 11
+                    font.bold: true
+                    color: "#0078d4"
+                }
+                
+                Text {
+                    text: "✓ Success: " + uploadMissionProgressDialog.successCount + "   ✗ Failed: " + uploadMissionProgressDialog.failureCount
+                    font.pointSize: 9
+                    color: "#666666"
+                }
+                
+                // Progress bar
+                Rectangle {
+                    width: parent.width
+                    height: 30
+                    color: "#f0f0f0"
+                    border.color: "#cccccc"
+                    border.width: 1
+                    radius: 0
+                    
+                    Rectangle {
+                        width: uploadMissionProgressDialog.totalUAVs > 0 
+                               ? (parent.width * uploadMissionProgressDialog.completedUAVs / uploadMissionProgressDialog.totalUAVs)
+                               : 0
+                        height: parent.height
+                        color: "#0078d4"
+                        radius: 0
+                    }
+                    
+                    Text {
+                        anchors.centerIn: parent
+                        text: uploadMissionProgressDialog.totalUAVs > 0 
+                              ? Math.round(100 * uploadMissionProgressDialog.completedUAVs / uploadMissionProgressDialog.totalUAVs) + "%"
+                              : "0%"
+                        font.pointSize: 9
+                        color: uploadMissionProgressDialog.completedUAVs > uploadMissionProgressDialog.totalUAVs / 2 ? "white" : "#333333"
+                    }
+                }
+            }
+        }
+    }
+    
+    // Upload Mission Result Dialog
+    Dialog {
+        id: uploadMissionResultDialog
+        title: "Upload Mission"
+        width: 450
+        height: 250
+        modal: true
+        anchors.centerIn: parent
+        
+        property string message: ""
+        
+        background: Rectangle {
+            color: "white"
+            border.color: "#cccccc"
+            border.width: 1
+            radius: 0  // Rectangular corners
+        }
+        
+        Item {
+            anchors.fill: parent
+            focus: true
+            
+            Keys.onReturnPressed: uploadMissionResultDialog.accept()
+            Keys.onEnterPressed: uploadMissionResultDialog.accept()
+            Keys.onEscapePressed: uploadMissionResultDialog.reject()
+            
+            Column {
+                anchors.fill: parent
+                anchors.margins: 10
+                spacing: 20
+                
+                Text {
+                    text: uploadMissionResultDialog.message
+                    font.pointSize: 10
+                    width: parent.width - 20
+                    wrapMode: Text.WordWrap
+                }
+                
+                Row {
+                    spacing: 10
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    
+                    Button {
+                        text: "OK"
+                        width: 100
+                        height: 35
+                        background: Rectangle {
+                            color: parent.pressed ? "#005a9e" : (parent.hovered ? "#0078d4" : "#0078d4")
+                            border.color: "#707070"
+                            border.width: 1
+                            radius: 0  // Rectangular
+                        }
+                        contentItem: Text {
+                            text: parent.text
+                            font: parent.font
+                            color: "white"
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                        onClicked: uploadMissionResultDialog.accept()
+                    }
+                }
+            }
+        }
+    }
 }
+
 

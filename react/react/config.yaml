@@ -73,6 +73,7 @@ safety:
   
   # Mission safety
   mission_timeout: 1800    # Maximum mission duration (seconds = 30 minutes)
+  mission_upload_timeout: 60  # Mission upload timeout (seconds) - increased for reliability
   
   # Alert management
   alert_cooldown: 30       # Seconds between repeated alerts of same type
