@@ -974,4 +974,68 @@ Rectangle {
             }
         }
     }
+    
+    // UAV Selection Helper Functions (for keyboard shortcuts)
+    function toggleUAVSelection(uavId) {
+        var index = selectedUAVs.indexOf(uavId)
+        var newSelectedUAVs = selectedUAVs.slice()  // Create a copy
+        if (index !== -1) {
+            // UAV is already selected, remove it
+            newSelectedUAVs.splice(index, 1)
+            console.log("Deselected UAV:", uavId)
+        } else {
+            // UAV is not selected, add it
+            newSelectedUAVs.push(uavId)
+            console.log("Selected UAV:", uavId)
+        }
+        selectedUAVs = newSelectedUAVs  // Assign the new array to trigger binding update
+        selectionUpdateCounter++  // Force UI update
+        console.log("Currently selected UAVs:", selectedUAVs.join(", "))
+        
+        // Update currentUAV to the last selected UAV for control panel
+        if (selectedUAVs.length > 0) {
+            currentUAV = selectedUAVs[selectedUAVs.length - 1]
+        }
+    }
+    
+    function toggleSelectedUAVs() {
+        // Switch the state of currently selected UAVs
+        controlAllUAVs = false  // Ensure we're in selected mode
+        console.log("Toggled to SELECTED UAVs mode, currently selected:", selectedUAVs.join(", "))
+    }
+    
+    function toggleAllUAVs() {
+        // Switch to "All UAVs" mode
+        controlAllUAVs = true
+        console.log("Switched to ALL UAVs mode")
+    }
+    
+    function unselectAllUAVs() {
+        selectedUAVs = [];
+        selectionUpdateCounter++;
+        console.log("All UAVs unselected.");
+    }
+    
+    function reverseUAVSelection() {
+        // Reverse selection: unselect selected UAVs and select unselected UAVs
+        var allUAVs = ["UAV_1", "UAV_2", "UAV_3", "UAV_4", "UAV_5", "UAV_6", "UAV_7", "UAV_8", "UAV_9", "UAV_10"];
+        var newSelectedUAVs = [];
+        
+        for (var i = 0; i < allUAVs.length; i++) {
+            var uavId = allUAVs[i];
+            if (selectedUAVs.indexOf(uavId) === -1) {
+                // UAV is not selected, so select it
+                newSelectedUAVs.push(uavId);
+            }
+        }
+        
+        selectedUAVs = newSelectedUAVs;
+        selectionUpdateCounter++;
+        console.log("Reversed UAV selection. Currently selected UAVs:", selectedUAVs.join(", "));
+        
+        // Update currentUAV to the last selected UAV for control panel
+        if (selectedUAVs.length > 0) {
+            currentUAV = selectedUAVs[selectedUAVs.length - 1];
+        }
+    }
 }

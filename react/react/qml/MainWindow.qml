@@ -904,7 +904,7 @@ ApplicationWindow {
         id: hotkeysDialog
         title: "Keyboard Shortcuts"
         width: 450
-        height: 350
+        height: 560
         modal: true
         anchors.centerIn: parent
         
@@ -919,13 +919,6 @@ ApplicationWindow {
             anchors.fill: parent
             anchors.margins: 20
             spacing: 15
-            
-            Text {
-                text: "Keyboard Shortcuts"
-                font.bold: true
-                font.pointSize: 16
-                anchors.horizontalCenter: parent.horizontalCenter
-            }
             
             Rectangle {
                 width: parent.width
@@ -991,6 +984,83 @@ ApplicationWindow {
                         font.family: "Courier New"
                     }
                     Text { text: "Emergency STOP" }
+                }
+            }
+            
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: "#ccc"
+            }
+            
+            Text {
+                text: "UAV Selection Shortcuts:"
+                font.bold: true
+                font.pointSize: 12
+            }
+            
+            Column {
+                spacing: 8
+                width: parent.width
+                
+                Row {
+                    spacing: 20
+                    Text { 
+                        text: "<b>Ctrl+Alt+1-9</b>"
+                        width: 140
+                        font.family: "Courier New"
+                    }
+                    Text { text: "Toggle selection of UAV 1-9" }
+                }
+                
+                Row {
+                    spacing: 20
+                    Text { 
+                        text: "<b>Ctrl+Alt+0</b>"
+                        width: 140
+                        font.family: "Courier New"
+                    }
+                    Text { text: "Toggle selection of UAV 10" }
+                }
+                
+                Row {
+                    spacing: 20
+                    Text { 
+                        text: "<b>Ctrl+Alt+C</b>"
+                        width: 140
+                        font.family: "Courier New"
+                    }
+                    Text { text: "Unselect all UAVs" }
+                }
+                
+                Row {
+                    spacing: 20
+                    Text { 
+                        text: "<b>Ctrl+Alt+A</b>"
+                        width: 140
+                        font.family: "Courier New"
+                    }
+                    Text { text: "Switch to All UAVs mode" }
+                }
+                
+                Row {
+                    spacing: 20
+                    Text { 
+                        text: "<b>Ctrl+Alt+S</b>"
+                        width: 140
+                        font.family: "Courier New"
+                    }
+                    Text { text: "Switch to Selected UAVs mode" }
+                }
+                
+                Row {
+                    spacing: 20
+                    Text { 
+                        text: "<b>Ctrl+Alt+R</b>"
+                        width: 140
+                        font.family: "Courier New"
+                    }
+                    Text { text: "Reverse UAV selection" }
                 }
             }
             
@@ -1272,6 +1342,133 @@ ApplicationWindow {
             
             // Trigger STOP button
             uavList.emergencyStop()
+        }
+    }
+
+    // UAV Selection Shortcuts (Ctrl+Alt+Number)
+    // UAV 1
+    Shortcut {
+        sequence: "Ctrl+Alt+1"
+        onActivated: {
+            console.log("UAV 1 shortcut activated: Ctrl+Alt+1")
+            uavList.toggleUAVSelection("UAV_1")
+        }
+    }
+    
+    // UAV 2
+    Shortcut {
+        sequence: "Ctrl+Alt+2"
+        onActivated: {
+            console.log("UAV 2 shortcut activated: Ctrl+Alt+2")
+            uavList.toggleUAVSelection("UAV_2")
+        }
+    }
+    
+    // UAV 3
+    Shortcut {
+        sequence: "Ctrl+Alt+3"
+        onActivated: {
+            console.log("UAV 3 shortcut activated: Ctrl+Alt+3")
+            uavList.toggleUAVSelection("UAV_3")
+        }
+    }
+    
+    // UAV 4
+    Shortcut {
+        sequence: "Ctrl+Alt+4"
+        onActivated: {
+            console.log("UAV 4 shortcut activated: Ctrl+Alt+4")
+            uavList.toggleUAVSelection("UAV_4")
+        }
+    }
+    
+    // UAV 5
+    Shortcut {
+        sequence: "Ctrl+Alt+5"
+        onActivated: {
+            console.log("UAV 5 shortcut activated: Ctrl+Alt+5")
+            uavList.toggleUAVSelection("UAV_5")
+        }
+    }
+    
+    // UAV 6
+    Shortcut {
+        sequence: "Ctrl+Alt+6"
+        onActivated: {
+            console.log("UAV 6 shortcut activated: Ctrl+Alt+6")
+            uavList.toggleUAVSelection("UAV_6")
+        }
+    }
+    
+    // UAV 7
+    Shortcut {
+        sequence: "Ctrl+Alt+7"
+        onActivated: {
+            console.log("UAV 7 shortcut activated: Ctrl+Alt+7")
+            uavList.toggleUAVSelection("UAV_7")
+        }
+    }
+    
+    // UAV 8
+    Shortcut {
+        sequence: "Ctrl+Alt+8"
+        onActivated: {
+            console.log("UAV 8 shortcut activated: Ctrl+Alt+8")
+            uavList.toggleUAVSelection("UAV_8")
+        }
+    }
+    
+    // UAV 9
+    Shortcut {
+        sequence: "Ctrl+Alt+9"
+        onActivated: {
+            console.log("UAV 9 shortcut activated: Ctrl+Alt+9")
+            uavList.toggleUAVSelection("UAV_9")
+        }
+    }
+    
+    // UAV 10 - Using Ctrl+Alt+0
+    Shortcut {
+        sequence: "Ctrl+Alt+0"
+        onActivated: {
+            console.log("UAV 10 shortcut activated: Ctrl+Alt+0")
+            uavList.toggleUAVSelection("UAV_10")
+        }
+    }
+
+    // Unselect all UAVs hotkey
+    Shortcut {
+        sequence: "Ctrl+Alt+C"
+        onActivated: {
+            console.log("Unselect all UAVs shortcut activated: Ctrl+Alt+C")
+            uavList.unselectAllUAVs()
+        }
+    }
+    
+    // Toggle between All UAVs and Selected UAVs mode
+    Shortcut {
+        sequence: "Ctrl+Alt+A"
+        onActivated: {
+            console.log("Toggle UAV control mode shortcut activated: Ctrl+Alt+A")
+            uavList.toggleAllUAVs()
+        }
+    }
+    
+    // Switch to Selected UAVs mode
+    Shortcut {
+        sequence: "Ctrl+Alt+S"
+        onActivated: {
+            console.log("Switch to Selected UAVs mode shortcut activated: Ctrl+Alt+S")
+            uavList.toggleSelectedUAVs()
+        }
+    }
+    
+    // Reverse UAV selection
+    Shortcut {
+        sequence: "Ctrl+Alt+R"
+        onActivated: {
+            console.log("Reverse UAV selection shortcut activated: Ctrl+Alt+R")
+            uavList.reverseUAVSelection()
         }
     }
 
