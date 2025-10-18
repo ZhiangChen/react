@@ -178,7 +178,12 @@ Rectangle {
                                 width: parent.width * 0.65  // Even narrower
                                 height: 20  // Even smaller height
                                 radius: 10  // Adjusted for smaller height
-                                color: (uavStatus && uavStatus.flight_status && uavStatus.flight_status.armed) ? "#4CAF50" : "#F44336"  // Green for armed, red for disarmed
+                                color: {
+                                    // Check if Telem1 is disconnected - show RED (alarming!)
+                                    if (uavStatus && uavStatus.connections && !uavStatus.connections.telem1_connected) return "#F44336"
+                                    // Show green for armed, red for disarmed
+                                    return (uavStatus && uavStatus.flight_status && uavStatus.flight_status.armed) ? "#4CAF50" : "#F44336"
+                                }
                                 
                                 anchors.horizontalCenter: parent.horizontalCenter  // Center the light
                                 
@@ -410,7 +415,11 @@ Rectangle {
                                     return "Time: " + getMissionTime(uavId)
                                 }
                                 font.pointSize: 9
-                                color: "#666666"
+                                color: {
+                                    // Check if Telem1 is disconnected - show gray
+                                    if (uavStatus && uavStatus.connections && !uavStatus.connections.telem1_connected) return "gray"
+                                    return "#666666"
+                                }
                                 width: parent.width
                                 elide: Text.ElideRight
                             }

@@ -442,6 +442,46 @@ ApplicationWindow {
                                     height: parent.height
                                 }
                                 onClicked: {
+                                    // Determine which UAVs to start
+                                    var uavsToCheck = uavList.controlAllUAVs ? getAllUAVs() : uavList.selectedUAVs
+                                    
+                                    console.log("Start Mission: Checking", uavsToCheck.length, "UAV(s)...")
+                                    
+                                    // Collect UAVs with mission files and waypoint info
+                                    var uavsToStart = []
+                                    
+                                    for (var i = 0; i < uavsToCheck.length; i++) {
+                                        var uavId = uavsToCheck[i]
+                                        
+                                        // Get mission file
+                                        var missionFile = uavList.getMissionFileFullPath(uavId)
+                                        if (!missionFile) {
+                                            console.log("  Skipping", uavId, "- no mission file selected")
+                                            continue
+                                        }
+                                        
+                                        // Get UAV status for waypoint info
+                                        var status = backend.get_uav_status(uavId)
+                                        var originalWaypointIndices = []
+                                        if (status && status.mission && status.mission.original_waypoint_indices) {
+                                            originalWaypointIndices = status.mission.original_waypoint_indices
+                                        }
+                                        
+                                        // Add to start list with waypoint info
+                                        uavsToStart.push({
+                                            uavId: uavId,
+                                            missionFile: missionFile,
+                                            originalWaypointIndices: originalWaypointIndices
+                                        })
+                                    }
+                                    
+                                    if (uavsToStart.length === 0) {
+                                        console.log("  No UAVs with mission files to start")
+                                        return
+                                    }
+                                    
+                                    // Store UAVs to start and show dialog
+                                    startMissionDialog.uavsToStart = uavsToStart
                                     startMissionDialog.open()
                                 }
                             }
@@ -1879,18 +1919,29 @@ ApplicationWindow {
     // Start Mission Confirmation Dialog
     Dialog {
         id: startMissionDialog
-        title: "Confirm Start Mission"
-        width: 400
-        height: 220
+        title: "Start Mission"
+        width: 500
+        height: 320
         modal: true
         x: (parent.width - width) / 2
         y: (parent.height - height) / 2
+        
+        property var uavsToStart: []
+        property string validationError: ""
         
         background: Rectangle {
             color: "white"
             border.color: "#cccccc"
             border.width: 1
-            radius: 0  // Rectangular corners
+            radius: 0
+        }
+        
+        onOpened: {
+            // Reset input field to default (0) when dialog opens
+            startWaypointInput.text = "0"
+            validationError = ""
+            startWaypointInput.forceActiveFocus()
+            startWaypointInput.selectAll()
         }
         
         Item {
@@ -1901,76 +1952,206 @@ ApplicationWindow {
             Keys.onEnterPressed: startMissionDialog.accept()
             Keys.onEscapePressed: startMissionDialog.reject()
         
-        Column {
-            anchors.fill: parent
-            spacing: 20
-            
-            Text {
-                text: uavList.controlAllUAVs ? 
-                    "Start mission for all UAVs?\n\n• Sets AUTO mode\n• Sends MISSION_START command" : 
-                    "Start mission for " + uavList.selectedUAVs.length + " selected UAV(s)?\n\n• Sets AUTO mode\n• Sends MISSION_START command"
-                font.pointSize: 10
-                color: "#333333"
-                wrapMode: Text.WordWrap
-                width: parent.width
-            }
-            
-            Row {
-                spacing: 10
-                anchors.horizontalCenter: parent.horizontalCenter
+            Column {
+                anchors.fill: parent
+                spacing: 15
                 
-                Button {
-                    text: "Cancel"
-                    width: 100
-                    onClicked: startMissionDialog.reject()
+                // Info text
+                Text {
+                    text: {
+                        if (startMissionDialog.uavsToStart.length === 0) return ""
+                        
+                        var msg = "Start mission for " + 
+                                  startMissionDialog.uavsToStart.length + " UAV(s)\n\n"
+                        
+                        // Show info for each UAV
+                        for (var i = 0; i < Math.min(3, startMissionDialog.uavsToStart.length); i++) {
+                            var uav = startMissionDialog.uavsToStart[i]
+                            var totalWaypoints = uav.originalWaypointIndices ? uav.originalWaypointIndices.length : 0
+                            msg += "• " + uav.uavId + ": " + totalWaypoints + " waypoints\n"
+                        }
+                        
+                        if (startMissionDialog.uavsToStart.length > 3) {
+                            msg += "• ... and " + (startMissionDialog.uavsToStart.length - 3) + " more\n"
+                        }
+                        
+                        return msg
+                    }
+                    font.pointSize: 10
+                    color: "#333333"
+                    wrapMode: Text.WordWrap
+                    width: parent.width
+                }
+                
+                // Waypoint input section
+                Column {
+                    width: parent.width
+                    spacing: 8
                     
-                    background: Rectangle {
-                        color: parent.pressed ? "#d0d0d0" : (parent.hovered ? "#e0e0e0" : "#f0f0f0")
-                        border.color: "#707070"
-                        border.width: 1
-                        radius: 0
+                    Text {
+                        text: "Start from waypoint (0 = start from beginning):"
+                        font.pointSize: 10
+                        font.bold: true
+                        color: "#333333"
                     }
                     
-                    contentItem: Text {
-                        text: parent.text
-                        font: parent.font
-                        color: "#000000"
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
+                    Row {
+                        spacing: 10
+                        
+                        TextField {
+                            id: startWaypointInput
+                            width: 100
+                            placeholderText: ""
+                            font.pointSize: 10
+                            validator: IntValidator { bottom: 0; top: 9999 }
+                            
+                            background: Rectangle {
+                                color: "white"
+                                border.color: startMissionDialog.validationError !== "" ? "#d32f2f" : "#cccccc"
+                                border.width: 2
+                                radius: 0
+                            }
+                            
+                            onTextChanged: {
+                                startMissionDialog.validationError = ""
+                            }
+                        }
+                        
+                        Text {
+                            text: "(Default: 0)"
+                            font.pointSize: 9
+                            color: "#666666"
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+                    }
+                    
+                    // Validation error message
+                    Text {
+                        text: startMissionDialog.validationError
+                        font.pointSize: 9
+                        color: "#d32f2f"
+                        visible: startMissionDialog.validationError !== ""
+                        wrapMode: Text.WordWrap
+                        width: parent.width
                     }
                 }
                 
-                Button {
-                    text: "Start Mission"
-                    width: 120
-                    highlighted: true
-                    onClicked: startMissionDialog.accept()
+                // Buttons
+                Row {
+                    spacing: 10
+                    anchors.horizontalCenter: parent.horizontalCenter
                     
-                    background: Rectangle {
-                        color: parent.pressed ? "#0050a0" : (parent.hovered ? "#0060c0" : "#0078d4")
-                        border.color: "#003d80"
-                        border.width: 1
-                        radius: 0
+                    Button {
+                        text: "Cancel"
+                        width: 100
+                        onClicked: startMissionDialog.reject()
+                        
+                        background: Rectangle {
+                            color: parent.pressed ? "#d0d0d0" : (parent.hovered ? "#e0e0e0" : "#f0f0f0")
+                            border.color: "#707070"
+                            border.width: 1
+                            radius: 0
+                        }
+                        
+                        contentItem: Text {
+                            text: parent.text
+                            font: parent.font
+                            color: "#000000"
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
                     }
                     
-                    contentItem: Text {
-                        text: parent.text
-                        font: parent.font
-                        color: "#ffffff"
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
+                    Button {
+                        text: "Start Mission"
+                        width: 120
+                        highlighted: true
+                        onClicked: startMissionDialog.accept()
+                        
+                        background: Rectangle {
+                            color: parent.pressed ? "#0050a0" : (parent.hovered ? "#0060c0" : "#0078d4")
+                            border.color: "#003d80"
+                            border.width: 1
+                            radius: 0
+                        }
+                        
+                        contentItem: Text {
+                            text: parent.text
+                            font: parent.font
+                            color: "#ffffff"
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
                     }
                 }
             }
         }
-        }  // End Item wrapper
         
         onAccepted: {
-            if (uavList.controlAllUAVs) {
-                uavList.startMissionAll()
-            } else {
-                for (var i = 0; i < uavList.selectedUAVs.length; i++) {
-                    uavList.startMission(uavList.selectedUAVs[i])
+            // Validate input waypoint
+            var inputText = startWaypointInput.text.trim()
+            if (inputText === "") {
+                validationError = "Please enter a waypoint number (0 for start)"
+                open()
+                return
+            }
+            
+            var startFromWaypoint = parseInt(inputText)
+            if (isNaN(startFromWaypoint)) {
+                validationError = "Invalid waypoint number"
+                open()
+                return
+            }
+            
+            // If waypoint is 0, just start normally without modifying mission
+            if (startFromWaypoint === 0) {
+                console.log("Start Mission: Starting from waypoint 0 (normal start)")
+                if (uavList.controlAllUAVs) {
+                    uavList.startMissionAll()
+                } else {
+                    for (var i = 0; i < uavList.selectedUAVs.length; i++) {
+                        uavList.startMission(uavList.selectedUAVs[i])
+                    }
+                }
+                return
+            }
+            
+            // If waypoint is not 0, validate and upload modified mission
+            if (uavsToStart.length > 0) {
+                var uav = uavsToStart[0]
+                var originalIndices = uav.originalWaypointIndices
+                var isValid = false
+                
+                for (var j = 0; j < originalIndices.length; j++) {
+                    if (originalIndices[j] === startFromWaypoint) {
+                        isValid = true
+                        break
+                    }
+                }
+                
+                if (!isValid) {
+                    validationError = "Waypoint " + startFromWaypoint + " is not in the original mission. Valid waypoints: " + originalIndices.join(", ")
+                    open()
+                    return
+                }
+            }
+            
+            console.log("Start Mission: Starting from waypoint", startFromWaypoint, "for", uavsToStart.length, "UAV(s)")
+            
+            // Show upload window (pass true to indicate this is a resume operation for auto-start)
+            missionUploadWindow.reset(uavsToStart.length, true)
+            missionUploadWindow.show()
+            
+            // Call backend resume_mission_from_waypoint for each UAV with custom waypoint
+            for (var i = 0; i < uavsToStart.length; i++) {
+                var uav = uavsToStart[i]
+                console.log("  Starting mission for", uav.uavId, "from waypoint", startFromWaypoint)
+                missionUploadWindow.addUAV(uav.uavId)
+                
+                // Call backend.resume_mission_from_waypoint with custom waypoint
+                var success = backend.resume_mission_from_waypoint(uav.uavId, uav.missionFile, startFromWaypoint)
+                if (!success) {
+                    console.error("Failed to start mission for", uav.uavId)
                 }
             }
         }

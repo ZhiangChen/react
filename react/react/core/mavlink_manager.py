@@ -197,6 +197,16 @@ class MAVLinkManager(QObject):
                         
                         # Emit signal for UI updates
                         self.telemetry_updated.emit(uav_id, self.uav_states[uav_id].get_telemetry())
+                        self.logger.info(f"Telemetry signal emitted for disconnected {uav_id}")
+                else:
+                    # Connection is good - mark as connected if not already
+                    if not self.uav_states[uav_id].is_connected():
+                        self.uav_states[uav_id].set_connected(True)
+                        self.logger.info(f"UAV {uav_id} Telem1 connection restored")
+                        
+                        # Emit signal for UI updates
+                        self.telemetry_updated.emit(uav_id, self.uav_states[uav_id].get_telemetry())
+                        self.logger.info(f"Telemetry signal emitted for reconnected {uav_id}")
 
     def _check_telem2_connection(self):
         """Send periodic parameter updates via Telem2 to check connection status."""

@@ -152,6 +152,18 @@ class UAVState:
         The UI will check connection status to gray out indicators while keeping
         the last known telemetry values visible for operator reference.
         """
+        import logging
+        logger = logging.getLogger("REACT.UAVState")
+        
+        # Log connection status changes
+        if self.telem1_status != connected:
+            logger.warning(f"{self.uav_id} connection status changed: {self.telem1_status} -> {connected}")
+            
+            # Stop mission timer when connection is lost
+            if not connected and self.mission_running:
+                self.stop_mission_timer()
+                logger.warning(f"{self.uav_id} mission timer stopped due to connection loss")
+        
         self.telem1_status = connected
         
         # Note: We intentionally DO NOT reset any telemetry values (GPS, battery, position, etc.)
@@ -261,10 +273,8 @@ class UAVState:
                 'battery_status': self.battery_status,
                 'remaining_percent': self.battery_status,  # Alias for compatibility
                 'remaining_battery_time': self.remaining_battery_time,
-                'average_power_consumption': self.average_power_consumption,
-            'mission_elapsed_time': self.get_mission_elapsed_time(),
-            'mission_running': self.mission_running
-        },
+                'average_power_consumption': self.average_power_consumption
+            },
             'mission': {
                 'current_waypoint': self.current_waypoint,
                 'total_waypoints': self.total_waypoints,
