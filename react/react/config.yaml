@@ -13,6 +13,15 @@ telemetry1:
     protocol: "udp"
     udp_address: "127.0.0.1"
     udp_port: 14552
+  # Mission upload bandwidth management
+  max_concurrent_uploads: 2  # Limit concurrent uploads to prevent bandwidth saturation
+                             # Recommended: 2-3 for SiK radio (57.6k), 6+ for WiFi/4G
+  waypoint_delay_ms: 50      # Delay between waypoint sends (ms) - throttles upload rate
+                             # Recommended: 50ms for SiK radio, 0 for high-bandwidth links
+  # Simulation settings
+  simulated_upload_delay_s: 0  # Simulate slow upload for testing (seconds)
+                                # Set to 0 for real hardware, 15-30 for realistic simulation
+                                # This delays the entire upload to mimic real radio conditions
 
 telemetry2:
   protocol: "serial"

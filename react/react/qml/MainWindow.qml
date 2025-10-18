@@ -402,25 +402,22 @@ ApplicationWindow {
                                         if (skippedNoMission > 0) {
                                             message += "\n" + skippedNoMission + " UAV(s) skipped (no mission file selected)."
                                         }
-                                        uploadMissionResultDialog.message = message
-                                        uploadMissionResultDialog.open()
+                                        console.warn(message)
                                         return
                                     }
                                     
-                                    // Show progress dialog and start uploading
-                                    uploadMissionProgressDialog.totalUAVs = uavsToUpload.length
-                                    uploadMissionProgressDialog.completedUAVs = 0
-                                    uploadMissionProgressDialog.currentUAVId = ""
-                                    uploadMissionProgressDialog.uploadQueue = uavsToUpload
-                                    uploadMissionProgressDialog.skippedNoTelem1 = skippedNoTelem1
-                                    uploadMissionProgressDialog.skippedNoMission = skippedNoMission
-                                    uploadMissionProgressDialog.uploadResults = {}
-                                    uploadMissionProgressDialog.successCount = 0
-                                    uploadMissionProgressDialog.failureCount = 0
-                                    uploadMissionProgressDialog.open()
+                                    // Show upload window and start uploading
+                                    missionUploadWindow.reset(uavsToUpload.length)
+                                    missionUploadWindow.show()
                                     
-                                    // Start uploading after a delay to allow dialog to render
-                                    uploadMissionProgressDialog.startUpload()
+                                    // Start uploading each UAV
+                                    console.log("Starting uploads for", uavsToUpload.length, "UAV(s)...")
+                                    for (var i = 0; i < uavsToUpload.length; i++) {
+                                        var uavData = uavsToUpload[i]
+                                        missionUploadWindow.addUAV(uavData.uavId)
+                                        console.log("  Uploading mission to", uavData.uavId, ":", uavData.missionFile)
+                                        backend.load_mission(uavData.uavId, uavData.missionFile)
+                                    }
                                 }
                             }
 
@@ -1916,6 +1913,7 @@ ApplicationWindow {
         }
     }
     
+    /* OLD UPLOAD PROGRESS DIALOG - REPLACED BY MissionUploadSummaryDialog
     // Upload Mission Progress Dialog
     Dialog {
         id: uploadMissionProgressDialog
@@ -2095,7 +2093,9 @@ ApplicationWindow {
             }
         }
     }
+    END OF OLD UPLOAD PROGRESS DIALOG */
     
+    /* OLD UPLOAD RESULT DIALOG - REPLACED BY MissionUploadSummaryDialog
     // Upload Mission Result Dialog
     Dialog {
         id: uploadMissionResultDialog
@@ -2161,6 +2161,32 @@ ApplicationWindow {
             }
         }
     }
+    END OF OLD UPLOAD RESULT DIALOG */
+    
+    // Mission Upload Window
+    MissionUpload {
+        id: missionUploadWindow
+    }
+    
+    // Listen for upload progress updates
+    Connections {
+        target: backend
+        function onMission_upload_progress(uavId, statusMessage, progressPercent) {
+            console.log("Upload progress for", uavId, ":", statusMessage, "-", progressPercent + "%")
+            missionUploadWindow.updateProgress(uavId, statusMessage, progressPercent)
+        }
+    }
+    
+    // Listen for upload completion
+    Connections {
+        target: backend
+        function onMission_upload_result(uavId, success, message) {
+            console.log("✓ Upload completed for", uavId, ":", success, "-", message)
+            missionUploadWindow.setComplete(uavId, success, message)
+        }
+    }
 }
+
+
 
 

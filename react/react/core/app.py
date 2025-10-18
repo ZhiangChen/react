@@ -1,8 +1,7 @@
 # core/app.py
 from PySide6.QtCore import QObject, Slot, Signal, Property
-from core.telemetry_manager import TelemetryManager
-from core.uav_controller import UAVController
-from core.mission_manager import MissionManager
+from core.mavlink_manager import MAVLinkManager
+from core.command_interface import CommandInterface
 from core.safety_monitor import SafetyMonitor
 from core.uav_state import UAVState
 from pymavlink import mavutil
@@ -15,6 +14,8 @@ class App(QObject):
     gcs_home_changed = Signal(float, float, float)  # latitude, longitude, altitude
     # Signal to notify QML of mission upload results
     mission_upload_result = Signal(str, bool, str)  # uav_id, success, message
+    # Signal to notify QML of mission upload progress
+    mission_upload_progress = Signal(str, str, float)  # uav_id, status_message, progress_percent
     
     def __init__(self, config):
         super().__init__()
@@ -26,9 +27,8 @@ class App(QObject):
         self.logger.info("REACT Application starting...")
 
         # Initialize managers in dependency order
-        self.telemetry_manager = TelemetryManager(self.uav_states, self.config)
-        self._uav_controller = UAVController(self.uav_states, self.config)
-        self.mission_manager = MissionManager(self.uav_states, self.config)
+        self.mavlink_manager = MAVLinkManager(self.uav_states, self.config)
+        self._command_interface = CommandInterface(self.uav_states, self.config)
         self.safety_monitor = SafetyMonitor(self.uav_states, self.config)
 
         # Set up component connections
@@ -36,34 +36,27 @@ class App(QObject):
 
         self.logger.info("All managers initialized successfully")
 
-    # QML Property to expose UAV controller
+    # QML Property to expose UAV command interface
     @Property(QObject, constant=True)
     def uav_controller(self):
-        return self._uav_controller
+        """Expose command interface to QML (keeps 'uav_controller' name for QML compatibility)."""
+        return self._command_interface
 
     def _setup_connections(self):
         """Set up signal connections between components."""
         self.logger.info("Setting up component connections...")
         
         # Connect telemetry updates
-        self.telemetry_manager.telemetry_updated.connect(self.on_telemetry_updated)
+        self.mavlink_manager.telemetry_updated.connect(self.on_telemetry_updated)
         
-        # Connect UAVController commands to TelemetryManager
-        self._uav_controller.command_requested.connect(self._handle_command_request)
+        # Connect mission upload progress and completion signals
+        self.mavlink_manager.mission_upload_progress.connect(self._handle_upload_progress)
+        self.mavlink_manager.mission_upload_completed.connect(self._handle_upload_completed)
         
-        # Connect MissionManager upload requests to TelemetryManager
-        self.mission_manager.mission_upload_requested.connect(self._handle_mission_upload_request)
+        # Connect CommandInterface commands to MAVLinkManager
+        self._command_interface.command_requested.connect(self._handle_command_request)
         
-        # Connect MissionManager upload results to QML
-        self.mission_manager.mission_upload_result.connect(self._handle_mission_upload_result)
-        
-        # Connect mission execution commands from MissionManager to TelemetryManager
-        self.mission_manager.mission_started.connect(self._handle_mission_started)
-        self.mission_manager.mission_paused.connect(self._handle_mission_paused)
-        self.mission_manager.mission_resumed.connect(self._handle_mission_resumed)
-        self.mission_manager.mission_aborted.connect(self._handle_mission_aborted)
-        
-        # Connect SafetyMonitor emergency signals to TelemetryManager
+        # Connect SafetyMonitor emergency signals
         self.safety_monitor.emergency_rtl_triggered.connect(self._handle_emergency_rtl)
         self.safety_monitor.emergency_land_triggered.connect(self._handle_emergency_land)
         self.safety_monitor.emergency_disarm_triggered.connect(self._handle_emergency_disarm)
@@ -74,11 +67,8 @@ class App(QObject):
         """Start all managers and services."""
         self.logger.info("Starting REACT application...")
         
-        # Start telemetry manager first (this will start the background thread)
-        self.telemetry_manager.start()
-        
-        # Start mission manager monitoring
-        self.mission_manager.start()
+        # Start MAVLink manager first (this will start the background thread)
+        self.mavlink_manager.start()
         
         # Start safety monitor
         self.safety_monitor.start()
@@ -91,95 +81,62 @@ class App(QObject):
         
         # Stop in reverse order
         self.safety_monitor.stop()
-        self.mission_manager.stop()
-        self.telemetry_manager.stop()
+        self.mavlink_manager.stop()
         
         self.logger.info("All services stopped.")
 
     # Signal handlers for component integration
     
     def _handle_command_request(self, uav_id, command):
-        """Handle command requests from UAVController."""
+        """Handle command requests from CommandInterface."""
         self.logger.debug(f"Processing command request for {uav_id}: {command.get('type', 'unknown')}")
-        success = self.telemetry_manager.send_command(uav_id, command)
+        success = self.mavlink_manager.send_command(uav_id, command)
         
         # For ARM/DISARM commands, emit telemetry update to reflect optimistic GUI updates
         if command.get('command_id') == mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM:
             if uav_id in self.uav_states:
                 self.telemetry_changed.emit(uav_id, self.uav_states[uav_id].get_telemetry())
         
-        # Emit command result signal back to UAVController
-        self._uav_controller.command_sent.emit(uav_id, command.get('type', 'unknown'))
+        # Emit command result signal back to CommandInterface
+        self._command_interface.command_sent.emit(uav_id, command.get('type', 'unknown'))
         
         if not success:
             self.logger.warning(f"Command failed for {uav_id}: {command}")
 
-    def _handle_mission_upload_request(self, uav_id, waypoint_file_path):
-        """Handle mission upload requests from MissionManager."""
-        self.logger.info(f"Processing mission upload request for {uav_id}: {waypoint_file_path}")
-        
-        success = self.telemetry_manager.load_mission(uav_id, waypoint_file_path)
-        
-        if success:
-            self.logger.info(f"Mission upload successful for {uav_id}")
-            # Emit success signal to QML
-            self.mission_upload_result.emit(uav_id, True, "Mission uploaded successfully")
-        else:
-            self.logger.error(f"Mission upload failed for {uav_id}")
-            # Emit failure signal to QML
-            self.mission_upload_result.emit(uav_id, False, "Upload failed")
-            self.mission_manager.mission_upload_failed(uav_id, "Upload failed")
+    def _handle_upload_progress(self, uav_id, status_message, progress_percent):
+        """Handle mission upload progress updates from MAVLink manager."""
+        self.logger.debug(f"Upload progress for {uav_id}: {status_message} ({progress_percent}%)")
+        # Forward to QML
+        self.mission_upload_progress.emit(uav_id, status_message, progress_percent)
     
-    def _handle_mission_upload_result(self, uav_id, success, waypoints, message):
-        """Forward mission upload results to QML."""
-        self.logger.debug(f"Mission upload result for {uav_id}: success={success}, waypoints={waypoints}, message={message}")
+    def _handle_upload_completed(self, uav_id, success, message):
+        """Handle mission upload completion from MAVLink manager."""
+        self.logger.info(f"[TIMING] Upload completed callback received for {uav_id}: success={success}, message={message}")
+        
+        # Check if this was skipped due to already in progress
+        if "already in progress" in message.lower():
+            self.logger.info(f"Upload skipped for {uav_id} - already in progress")
+            # Don't emit this as a failure result to QML - just silently skip
+            # The ongoing upload will complete normally
+            return
+        
+        # Emit final result to QML
         self.mission_upload_result.emit(uav_id, success, message)
-
-    def _handle_mission_started(self, uav_id, mission_id):
-        """Handle mission start requests."""
-        self.logger.info(f"Starting mission {mission_id} for {uav_id}")
-        success = self.telemetry_manager.start_mission(uav_id)
-        
-        if not success:
-            self.mission_manager.abort_mission(uav_id, "Failed to start mission")
-
-    def _handle_mission_paused(self, uav_id):
-        """Handle mission pause requests."""
-        self.logger.info(f"Pausing mission for {uav_id}")
-        success = self.telemetry_manager.pause_mission(uav_id)
-        
-        if not success:
-            self.logger.warning(f"Failed to pause mission for {uav_id}")
-
-    def _handle_mission_resumed(self, uav_id):
-        """Handle mission resume requests."""
-        self.logger.info(f"Resuming mission for {uav_id}")
-        success = self.telemetry_manager.resume_mission(uav_id)
-        
-        if not success:
-            self.logger.warning(f"Failed to resume mission for {uav_id}")
-
-    def _handle_mission_aborted(self, uav_id, reason):
-        """Handle mission abort requests."""
-        self.logger.warning(f"Aborting mission for {uav_id}: {reason}")
-        success = self.telemetry_manager.abort_mission_rtl(uav_id)
-        
-        if not success:
-            self.logger.error(f"Failed to abort mission for {uav_id}")
+        if success:
+            self.logger.info(f"Mission upload completed successfully for {uav_id}")
+        else:
+            self.logger.error(f"Mission upload failed for {uav_id}: {message}")
 
     def _handle_emergency_rtl(self, uav_id, reason):
         """Handle emergency RTL from SafetyMonitor."""
         self.logger.critical(f"Emergency RTL triggered for {uav_id}: {reason}")
         
         if uav_id == "ALL":
-            # Emergency abort all missions
-            self.mission_manager.emergency_abort_all()
             # Broadcast RTL to all UAVs
-            success = self.telemetry_manager.broadcast_emergency_command("RTL")
+            success = self.mavlink_manager.broadcast_emergency_command("RTL")
         else:
             # Single UAV emergency
-            self.mission_manager.abort_mission(uav_id, f"Emergency RTL: {reason}")
-            success = self.telemetry_manager.abort_mission_rtl(uav_id)
+            success = self.mavlink_manager.abort_mission_rtl(uav_id)
             
         if not success:
             self.logger.error(f"Emergency RTL command failed for {uav_id}")
@@ -189,14 +146,11 @@ class App(QObject):
         self.logger.critical(f"Emergency land triggered for {uav_id}: {reason}")
         
         if uav_id == "ALL":
-            # Emergency abort all missions
-            self.mission_manager.emergency_abort_all()
             # Broadcast LAND to all UAVs
-            success = self.telemetry_manager.broadcast_emergency_command("LAND")
+            success = self.mavlink_manager.broadcast_emergency_command("LAND")
         else:
             # Single UAV emergency
-            self.mission_manager.abort_mission(uav_id, f"Emergency land: {reason}")
-            success = self._uav_controller.land(uav_id)
+            success = self._command_interface.land(uav_id)
             
         if not success:
             self.logger.error(f"Emergency land command failed for {uav_id}")
@@ -206,14 +160,11 @@ class App(QObject):
         self.logger.critical(f"Emergency disarm triggered for {uav_id}: {reason}")
         
         if uav_id == "ALL":
-            # Emergency abort all missions
-            self.mission_manager.emergency_abort_all()
             # Broadcast DISARM to all UAVs
-            success = self.telemetry_manager.broadcast_emergency_command("DISARM")
+            success = self.mavlink_manager.broadcast_emergency_command("DISARM")
         else:
             # Single UAV emergency
-            self.mission_manager.abort_mission(uav_id, f"Emergency disarm: {reason}")
-            success = self._uav_controller.disarm_uav(uav_id)
+            success = self._command_interface.disarm_uav(uav_id)
             
         if not success:
             self.logger.error(f"Emergency disarm command failed for {uav_id}")
@@ -223,7 +174,7 @@ class App(QObject):
         self.logger.debug(f"Telemetry update for {uav_id}: {telemetry_data}")
         
         # Forward telemetry to other managers that need it
-        # SafetyMonitor and MissionManager will receive updates through shared uav_states
+        # SafetyMonitor will receive updates through shared uav_states
         
         # Emit signal to update QML immediately
         self.telemetry_changed.emit(uav_id, telemetry_data)
@@ -241,22 +192,51 @@ class App(QObject):
         return {uav_id: state.get_telemetry() for uav_id, state in self.uav_states.items()}
 
     def get_mission_status(self, uav_id):
-        """Get mission status for a UAV."""
-        return self.mission_manager.get_mission_status(uav_id)
+        """Get mission status for a UAV - returns basic mission info from telemetry."""
+        if uav_id in self.uav_states:
+            return {
+                'mission_active': self.uav_states[uav_id].mode in ['AUTO', 'GUIDED'],
+                'current_waypoint': self.uav_states[uav_id].current_waypoint,
+                'total_waypoints': self.uav_states[uav_id].total_waypoints
+            }
+        return None
 
     @Slot(str, str, result=bool)
     def load_mission(self, uav_id, waypoint_file_path):
         """Load a mission to a UAV."""
-        return self.mission_manager.load_mission_to_uav(uav_id, waypoint_file_path)
+        import time
+        start_time = time.time()
+        self.logger.info(f"[TIMING] User clicked upload mission button for {uav_id} at t=0.000s")
+        self.logger.info(f"Processing mission upload request for {uav_id}: {waypoint_file_path}")
+        
+        # Emit initial progress: upload starting
+        self.mission_upload_progress.emit(uav_id, "Starting upload...", 0.0)
+        
+        success = self.mavlink_manager.load_mission(uav_id, waypoint_file_path)
+        
+        elapsed = time.time() - start_time
+        if success:
+            self.logger.info(f"[TIMING] load_mission() returned True at t={elapsed:.3f}s (thread started, not complete!)")
+            self.logger.info(f"Mission upload thread started successfully for {uav_id} (actual upload continues in background)")
+            # Emit progress: thread started, uploading in background
+            self.mission_upload_progress.emit(uav_id, "Uploading in background...", 10.0)
+            self.logger.info(f"[TIMING] Progress signal 'Uploading in background' emitted at t={elapsed:.3f}s")
+        else:
+            self.logger.error(f"[TIMING] load_mission() returned False at t={elapsed:.3f}s")
+            self.logger.info(f"Mission upload not started for {uav_id} (may be already in progress)")
+        
+        return success
 
     @Slot(str)
     def start_mission(self, uav_id):
         """Start mission execution for a UAV."""
-        return self.mission_manager.start_mission(uav_id)
+        self.logger.info(f"Starting mission for {uav_id}")
+        return self.mavlink_manager.start_mission(uav_id)
 
     def abort_mission(self, uav_id, reason="Manual abort"):
         """Abort mission for a UAV."""
-        return self.mission_manager.abort_mission(uav_id, reason)
+        self.logger.warning(f"Aborting mission for {uav_id}: {reason}")
+        return self.mavlink_manager.abort_mission_rtl(uav_id)
 
     def emergency_stop_all(self):
         """Emergency stop all UAVs."""

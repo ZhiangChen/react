@@ -113,7 +113,7 @@ Item {
     // Connect to telemetry updates to catch home position changes immediately
     Connections {
         target: backend
-        function onTelemetryChanged(uavId, telemetryData) {
+        function onTelemetry_changed(uavId, telemetryData) {
             // Check if home position is in the telemetry data and is valid
             if (telemetryData && telemetryData.home_position) {
                 var home = telemetryData.home_position

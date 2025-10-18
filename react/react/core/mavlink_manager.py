@@ -1,4 +1,4 @@
-# core/telemetry_manager.py
+# core/mavlink_manager.py
 
 from pymavlink import mavutil
 from PySide6.QtCore import QObject, Signal, QTimer
@@ -8,8 +8,10 @@ import time
 import logging
 import os
 
-class TelemetryManager(QObject):
+class MAVLinkManager(QObject):
     telemetry_updated = Signal(str, dict)  # uav_id, telemetry data
+    mission_upload_completed = Signal(str, bool, str)  # uav_id, success, message
+    mission_upload_progress = Signal(str, str, float)  # uav_id, status_message, progress_percent
 
     def __init__(self, uav_states: dict, config: dict):
         super().__init__()
@@ -39,8 +41,22 @@ class TelemetryManager(QObject):
         # Mission upload state tracking (for handling MISSION_REQUEST in main loop)
         self.active_mission_uploads = {}  # Track active mission uploads: {uav_id: upload_state}
         
-        # Get logger using standard Python logging
-        self.logger = logging.getLogger("REACT.TelemetryManager")
+        # Threading support for mission uploads
+        self.mavlink_lock = threading.Lock()  # Protect MAVLink send operations (pymavlink NOT thread-safe)
+        self.mission_upload_events = {}  # Track upload completion events: {uav_id: threading.Event}
+        
+        # Get logger using standard Python logging (must be before using it!)
+        self.logger = logging.getLogger("REACT.MAVLinkManager")
+        
+        # Bandwidth management for mission uploads
+        max_concurrent = config.get("telemetry1", {}).get("max_concurrent_uploads", 2)
+        self.upload_semaphore = threading.Semaphore(max_concurrent)  # Limit concurrent uploads
+        self.waypoint_delay_ms = config.get("telemetry1", {}).get("waypoint_delay_ms", 50)
+        self.simulated_upload_delay_s = config.get("telemetry1", {}).get("simulated_upload_delay_s", 0)
+        
+        if self.simulated_upload_delay_s > 0:
+            self.logger.info(f"Mission upload simulation: {self.simulated_upload_delay_s}s delay enabled (for testing)")
+        self.logger.info(f"Mission upload limits: max_concurrent={max_concurrent}, waypoint_delay={self.waypoint_delay_ms}ms")
 
     def setup_telem1(self):
         """Setup Telem1 connection based on config."""
@@ -245,15 +261,16 @@ class TelemetryManager(QObject):
             system_id = int(uav_id.split('_')[1]) if '_' in uav_id else 1
             
             if self._is_telem1_available():
-                # Request immediate HEARTBEAT message
-                self.telem1_connection.mav.command_long_send(
-                    system_id,  # target_system
-                    1,  # target_component
-                    mavutil.mavlink.MAV_CMD_REQUEST_MESSAGE,  # command
-                    0,  # confirmation
-                    mavutil.mavlink.MAVLINK_MSG_ID_HEARTBEAT,  # param1: message ID
-                    0, 0, 0, 0, 0, 0  # param2-7: unused
-                )
+                # Request immediate HEARTBEAT message (with lock for thread safety)
+                with self.mavlink_lock:
+                    self.telem1_connection.mav.command_long_send(
+                        system_id,  # target_system
+                        1,  # target_component
+                        mavutil.mavlink.MAV_CMD_REQUEST_MESSAGE,  # command
+                        0,  # confirmation
+                        mavutil.mavlink.MAVLINK_MSG_ID_HEARTBEAT,  # param1: message ID
+                        0, 0, 0, 0, 0, 0  # param2-7: unused
+                    )
                 self.logger.debug(f"Requested immediate HEARTBEAT from {uav_id}")
                 
         except Exception as e:
@@ -263,15 +280,16 @@ class TelemetryManager(QObject):
         """Request HOME_POSITION message from a UAV when first discovered."""
         try:
             if self._is_telem1_available():
-                # Request HOME_POSITION message (ID 242)
-                self.telem1_connection.mav.command_long_send(
-                    system_id,  # target_system
-                    1,  # target_component (autopilot)
-                    mavutil.mavlink.MAV_CMD_REQUEST_MESSAGE,  # command
-                    0,  # confirmation
-                    242,  # param1: HOME_POSITION message ID
-                    0, 0, 0, 0, 0, 0  # param2-7: unused
-                )
+                # Request HOME_POSITION message (ID 242) (with lock for thread safety)
+                with self.mavlink_lock:
+                    self.telem1_connection.mav.command_long_send(
+                        system_id,  # target_system
+                        1,  # target_component (autopilot)
+                        mavutil.mavlink.MAV_CMD_REQUEST_MESSAGE,  # command
+                        0,  # confirmation
+                        242,  # param1: HOME_POSITION message ID
+                        0, 0, 0, 0, 0, 0  # param2-7: unused
+                    )
                 self.logger.info(f"Requested HOME_POSITION from UAV_{system_id}")
                 
         except Exception as e:
@@ -458,11 +476,12 @@ class TelemetryManager(QObject):
                 mode_number = command.get('mode_number', 0)
                 self.logger.info(f"Sending mode change to {uav_id}: {command.get('mode_name', 'UNKNOWN')} ({mode_number})")
                 
-                self.telem1_connection.mav.set_mode_send(
-                    system_id,
-                    mavutil.mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED,
-                    mode_number
-                )
+                with self.mavlink_lock:
+                    self.telem1_connection.mav.set_mode_send(
+                        system_id,
+                        mavutil.mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED,
+                        mode_number
+                    )
                 return True
                 
             elif command.get('type') == 'command_long':
@@ -471,13 +490,14 @@ class TelemetryManager(QObject):
                 
                 self.logger.info(f"Sending command_long to {uav_id}: CMD_{cmd_id}")
                 
-                self.telem1_connection.mav.command_long_send(
-                    system_id,
-                    1,  # target_component (autopilot)
-                    cmd_id,
-                    0,  # confirmation
-                    *params[:7]  # param1-7
-                )
+                with self.mavlink_lock:
+                    self.telem1_connection.mav.command_long_send(
+                        system_id,
+                        1,  # target_component (autopilot)
+                        cmd_id,
+                        0,  # confirmation
+                        *params[:7]  # param1-7
+                    )
                 return True
                 
         except Exception as e:
@@ -685,6 +705,13 @@ class TelemetryManager(QObject):
                 
             self.logger.info(f"Loading mission with {len(waypoints)} waypoints to {uav_id}")
             
+            # Check if an upload is already in progress BEFORE clearing mission
+            if uav_id in self.active_mission_uploads:
+                self.logger.warning(f"Cannot load mission to {uav_id} - upload already in progress, skipping")
+                # Emit a special completion signal indicating it was skipped
+                self.mission_upload_completion.emit(uav_id, False, "Upload already in progress - skipped")
+                return False
+            
             # Step 1: Clear existing mission (best practice)
             self.logger.info(f"Clearing existing mission from {uav_id}")
             if not self.clear_mission(uav_id):
@@ -693,13 +720,13 @@ class TelemetryManager(QObject):
                 # Small delay after clearing to ensure it's processed
                 time.sleep(0.5)
             
-            # Step 2: Upload new mission to UAV
+            # Step 2: Upload new mission to UAV (starts background thread)
             success = self._upload_mission_to_uav(uav_id, waypoints)
             
             if success:
-                self.logger.info(f"Mission successfully loaded to {uav_id} from {mission_file_path}")
+                self.logger.info(f"Mission upload thread started for {uav_id} from {mission_file_path} (upload continues in background)")
             else:
-                self.logger.error(f"Failed to upload mission to {uav_id}")
+                self.logger.error(f"Failed to start mission upload thread for {uav_id}")
                 
             return success
             
@@ -816,47 +843,52 @@ class TelemetryManager(QObject):
                 upload_state['requests_received'].add(seq)
                 waypoint = waypoints[seq]
                 
-                # Send the requested waypoint
+                # Send the requested waypoint (with lock for thread safety)
                 self.logger.debug(f"Sending waypoint {seq+1}/{len(waypoints)} to {uav_id}")
                 
                 # Respond with appropriate message type based on request type
-                if msg_type == 'MISSION_REQUEST_INT':
-                    self.telem1_connection.mav.mission_item_int_send(
-                        system_id,  # target_system
-                        1,  # target_component
-                        seq,  # seq (sequence number)
-                        waypoint.get('frame', mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT),
-                        waypoint.get('command', mavutil.mavlink.MAV_CMD_NAV_WAYPOINT),
-                        waypoint.get('current', 0),  # Use value from file
-                        waypoint.get('autocontinue', 1),  # autocontinue
-                        waypoint.get('param1', 0),  # param1
-                        waypoint.get('param2', 0),  # param2  
-                        waypoint.get('param3', 0),  # param3
-                        waypoint.get('param4', 0),  # param4
-                        int(waypoint.get('x', 0) * 1e7),  # x (latitude * 1e7)
-                        int(waypoint.get('y', 0) * 1e7),  # y (longitude * 1e7)
-                        waypoint.get('z', 0),  # z (altitude)
-                        mavutil.mavlink.MAV_MISSION_TYPE_MISSION  # mission_type
-                    )
-                else:
-                    # MISSION_REQUEST uses float format
-                    self.telem1_connection.mav.mission_item_send(
-                        system_id,  # target_system
-                        1,  # target_component
-                        seq,  # seq (sequence number)
-                        waypoint.get('frame', mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT),
-                        waypoint.get('command', mavutil.mavlink.MAV_CMD_NAV_WAYPOINT),
-                        waypoint.get('current', 0),  # Use value from file
-                        waypoint.get('autocontinue', 1),  # autocontinue
-                        waypoint.get('param1', 0),  # param1
-                        waypoint.get('param2', 0),  # param2  
-                        waypoint.get('param3', 0),  # param3
-                        waypoint.get('param4', 0),  # param4
-                        waypoint.get('x', 0),  # x (latitude)
-                        waypoint.get('y', 0),  # y (longitude)
-                        waypoint.get('z', 0),  # z (altitude)
-                        mavutil.mavlink.MAV_MISSION_TYPE_MISSION  # mission_type
-                    )
+                with self.mavlink_lock:
+                    if msg_type == 'MISSION_REQUEST_INT':
+                        self.telem1_connection.mav.mission_item_int_send(
+                            system_id,  # target_system
+                            1,  # target_component
+                            seq,  # seq (sequence number)
+                            waypoint.get('frame', mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT),
+                            waypoint.get('command', mavutil.mavlink.MAV_CMD_NAV_WAYPOINT),
+                            waypoint.get('current', 0),  # Use value from file
+                            waypoint.get('autocontinue', 1),  # autocontinue
+                            waypoint.get('param1', 0),  # param1
+                            waypoint.get('param2', 0),  # param2  
+                            waypoint.get('param3', 0),  # param3
+                            waypoint.get('param4', 0),  # param4
+                            int(waypoint.get('x', 0) * 1e7),  # x (latitude * 1e7)
+                            int(waypoint.get('y', 0) * 1e7),  # y (longitude * 1e7)
+                            waypoint.get('z', 0),  # z (altitude)
+                            mavutil.mavlink.MAV_MISSION_TYPE_MISSION  # mission_type
+                        )
+                    else:
+                        # MISSION_REQUEST uses float format
+                        self.telem1_connection.mav.mission_item_send(
+                            system_id,  # target_system
+                            1,  # target_component
+                            seq,  # seq (sequence number)
+                            waypoint.get('frame', mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT),
+                            waypoint.get('command', mavutil.mavlink.MAV_CMD_NAV_WAYPOINT),
+                            waypoint.get('current', 0),  # Use value from file
+                            waypoint.get('autocontinue', 1),  # autocontinue
+                            waypoint.get('param1', 0),  # param1
+                            waypoint.get('param2', 0),  # param2  
+                            waypoint.get('param3', 0),  # param3
+                            waypoint.get('param4', 0),  # param4
+                            waypoint.get('x', 0),  # x (latitude)
+                            waypoint.get('y', 0),  # y (longitude)
+                            waypoint.get('z', 0),  # z (altitude)
+                            mavutil.mavlink.MAV_MISSION_TYPE_MISSION  # mission_type
+                        )
+                
+                # Throttle upload to reduce bandwidth usage (prevents radio saturation)
+                if self.waypoint_delay_ms > 0:
+                    time.sleep(self.waypoint_delay_ms / 1000.0)
                 
                 upload_state['waypoints_sent'] += 1
                 
@@ -912,9 +944,13 @@ class TelemetryManager(QObject):
                 if ack_type == 15:
                     self.logger.warning(f"Error 15 for {uav_id} - mission may still be loaded despite error")
                     self.logger.warning(f"This typically occurs when autopilot is not in AUTO/GUIDED mode")
+            
+            # Signal completion to waiting thread
+            if uav_id in self.mission_upload_events:
+                self.mission_upload_events[uav_id].set()
 
     def _upload_mission_to_uav(self, uav_id, waypoints):
-        """Upload waypoints to UAV using MAVLink mission protocol.
+        """Upload waypoints to UAV using MAVLink mission protocol in a separate thread.
         
         Implements the full mission upload protocol using state-based approach:
         1. Send MISSION_COUNT
@@ -922,19 +958,65 @@ class TelemetryManager(QObject):
         3. Send MISSION_ITEM_INT for each requested waypoint
         4. MISSION_ACK handled in main loop
         
-        Returns True if upload initiated successfully, False otherwise.
-        The actual success/failure is determined asynchronously.
+        Returns True if upload thread initiated successfully, False otherwise.
+        The actual upload happens in a background thread to avoid blocking telemetry.
         """
         if not waypoints:
             return False
-            
+        
+        # Only use Telem1 for mission upload (requires bidirectional communication)
+        if not (self._is_telem1_available() and self.is_connected(uav_id)):
+            self.logger.error(f"Cannot upload mission to {uav_id} - Telem1 required for mission upload")
+            return False
+        
+        # Check if an upload is already in progress for this UAV
+        if uav_id in self.active_mission_uploads:
+            self.logger.warning(f"Mission upload already in progress for {uav_id}")
+            return False
+        
+        # Reserve this UAV for upload BEFORE starting thread (prevents race condition)
+        # The thread will populate the full state when it acquires the semaphore slot
+        self.active_mission_uploads[uav_id] = {'phase': 'pending', 'reserved': True}
+        
+        # Start upload in separate thread
+        upload_thread = threading.Thread(
+            target=self._mission_upload_thread,
+            args=(uav_id, waypoints),
+            name=f"MissionUpload_{uav_id}",
+            daemon=True
+        )
+        upload_thread.start()
+        self.logger.info(f"Started mission upload thread for {uav_id}")
+        return True
+    
+    def _mission_upload_thread(self, uav_id, waypoints):
+        """Background thread for mission upload - does not block telemetry processing.
+        
+        Uses semaphore to limit concurrent uploads and prevent bandwidth saturation.
+        """
+        thread_start_time = time.time()
+        self.logger.info(f"[TIMING] Mission upload thread started for {uav_id} at t=0.000s, waiting for available upload slot...")
+        self.mission_upload_progress.emit(uav_id, "Waiting for upload slot...", 5.0)
+        
+        # Acquire upload slot - blocks if max_concurrent_uploads already in progress
+        semaphore_acquired = self.upload_semaphore.acquire(blocking=True, timeout=120)
+        
+        if not semaphore_acquired:
+            elapsed = time.time() - thread_start_time
+            self.logger.error(f"[TIMING] Mission upload for {uav_id} timed out waiting for upload slot at t={elapsed:.3f}s (waited 120s)")
+            self.mission_upload_progress.emit(uav_id, "Timeout waiting for slot", 0.0)
+            self.mission_upload_completed.emit(uav_id, False, "Timeout waiting for upload slot")
+            return
+        
         try:
+            slot_elapsed = time.time() - thread_start_time
+            self.logger.info(f"[TIMING] Mission upload for {uav_id} - upload slot acquired at t={slot_elapsed:.3f}s, starting upload...")
+            self.mission_upload_progress.emit(uav_id, "Upload slot acquired", 15.0)
             system_id = int(uav_id.split('_')[1]) if '_' in uav_id else 1
             
-            # Only use Telem1 for mission upload (requires bidirectional communication)
-            if not (self._is_telem1_available() and self.is_connected(uav_id)):
-                self.logger.error(f"Cannot upload mission to {uav_id} - Telem1 required for mission upload")
-                return False
+            # Create completion event for this upload
+            completion_event = threading.Event()
+            self.mission_upload_events[uav_id] = completion_event
             
             # Initialize mission upload state (will be handled by main loop)
             upload_state = {
@@ -953,49 +1035,68 @@ class TelemetryManager(QObject):
             # Register active upload
             self.active_mission_uploads[uav_id] = upload_state
             
-            # Send MISSION_COUNT to initiate upload
+            # Simulate slow upload for testing (delay happens BEFORE sending data)
+            if self.simulated_upload_delay_s > 0:
+                delay_start = time.time() - thread_start_time
+                self.logger.info(f"[TIMING] Simulating upload delay of {self.simulated_upload_delay_s}s for {uav_id} at t={delay_start:.3f}s (slot is held during delay)...")
+                self.mission_upload_progress.emit(uav_id, f"Simulating radio delay ({self.simulated_upload_delay_s}s)...", 20.0)
+                time.sleep(self.simulated_upload_delay_s)
+                delay_end = time.time() - thread_start_time
+                self.logger.info(f"[TIMING] Simulated delay complete for {uav_id} at t={delay_end:.3f}s, now sending mission...")
+                self.mission_upload_progress.emit(uav_id, "Sending mission to UAV...", 50.0)
+            
+            # Send MISSION_COUNT to initiate upload (with lock for thread safety)
             self.logger.info(f"Sending MISSION_COUNT: {len(waypoints)} waypoints to {uav_id}")
-            self.telem1_connection.mav.mission_count_send(
-                system_id,  # target_system
-                1,  # target_component (autopilot)
-                len(waypoints),  # count
-                mavutil.mavlink.MAV_MISSION_TYPE_MISSION  # mission_type
-            )
+            with self.mavlink_lock:
+                self.telem1_connection.mav.mission_count_send(
+                    system_id,  # target_system
+                    1,  # target_component (autopilot)
+                    len(waypoints),  # count
+                    mavutil.mavlink.MAV_MISSION_TYPE_MISSION  # mission_type
+                )
             
-            # Now wait for completion in a non-blocking way
-            timeout_time = time.time() + self.mission_upload_timeout
-            while upload_state['phase'] not in ['complete', 'error'] and time.time() < timeout_time:
-                time.sleep(0.01)  # Small sleep to avoid busy-waiting
-                
-                # Check if phase changed
-                if upload_state['phase'] == 'complete':
-                    break
-                elif upload_state['phase'] == 'error':
-                    break
+            # Wait for completion using Event (more efficient than polling)
+            self.mission_upload_progress.emit(uav_id, "Uploading waypoints...", 70.0)
+            timeout_occurred = not completion_event.wait(timeout=self.mission_upload_timeout)
             
-            # Clean up active upload state
+            # Get results
             success = upload_state.get('success', False)
             error = upload_state.get('error', 'Unknown error')
-            del self.active_mission_uploads[uav_id]
             
-            # Check timeout
-            if time.time() >= timeout_time and upload_state['phase'] not in ['complete', 'error']:
-                self.logger.error(f"Mission upload timeout for {uav_id} after {self.mission_upload_timeout}s")
-                return False
+            # Clean up
+            if uav_id in self.active_mission_uploads:
+                del self.active_mission_uploads[uav_id]
+            if uav_id in self.mission_upload_events:
+                del self.mission_upload_events[uav_id]
             
-            if success:
-                self.logger.info(f"Mission successfully uploaded to {uav_id}")
-                return True
+            # Report results
+            final_elapsed = time.time() - thread_start_time
+            if timeout_occurred:
+                self.logger.error(f"[TIMING] Mission upload timeout for {uav_id} at t={final_elapsed:.3f}s after {self.mission_upload_timeout}s")
+                self.mission_upload_progress.emit(uav_id, "Upload timeout", 0.0)
+                self.mission_upload_completed.emit(uav_id, False, f"Upload timeout after {self.mission_upload_timeout}s")
+            elif success:
+                self.logger.info(f"[TIMING] Mission successfully uploaded to {uav_id} at t={final_elapsed:.3f}s (ACTUAL COMPLETION)")
+                self.mission_upload_progress.emit(uav_id, "Upload complete!", 100.0)
+                self.mission_upload_completed.emit(uav_id, True, "Mission uploaded successfully")
             else:
-                self.logger.error(f"Mission upload failed for {uav_id}: {error}")
-                return False
+                self.logger.error(f"[TIMING] Mission upload failed for {uav_id} at t={final_elapsed:.3f}s: {error}")
+                self.mission_upload_progress.emit(uav_id, f"Upload failed: {error}", 0.0)
+                self.mission_upload_completed.emit(uav_id, False, f"Upload failed: {error}")
                 
         except Exception as e:
             # Clean up on exception
             if uav_id in self.active_mission_uploads:
                 del self.active_mission_uploads[uav_id]
+            if uav_id in self.mission_upload_events:
+                del self.mission_upload_events[uav_id]
             self.logger.error(f"Exception during mission upload to {uav_id}: {e}")
-            return False
+            self.mission_upload_progress.emit(uav_id, f"Error: {str(e)}", 0.0)
+            self.mission_upload_completed.emit(uav_id, False, f"Exception: {str(e)}")
+        finally:
+            # Always release semaphore to free upload slot
+            self.upload_semaphore.release()
+            self.logger.info(f"Mission upload for {uav_id} - upload slot released")
 
     def start_mission(self, uav_id):
         """Start mission execution (mission must be pre-uploaded to UAV).
@@ -1144,12 +1245,13 @@ class TelemetryManager(QObject):
         try:
             system_id = int(uav_id.split('_')[1]) if '_' in uav_id else 1
             
-            # Send mission clear command
-            self.telem1_connection.mav.mission_clear_all_send(
-                system_id,  # target_system
-                1,  # target_component (autopilot)
-                mavutil.mavlink.MAV_MISSION_TYPE_MISSION
-            )
+            # Send mission clear command (with lock for thread safety)
+            with self.mavlink_lock:
+                self.telem1_connection.mav.mission_clear_all_send(
+                    system_id,  # target_system
+                    1,  # target_component (autopilot)
+                    mavutil.mavlink.MAV_MISSION_TYPE_MISSION
+                )
             self.logger.debug(f"Sent MISSION_CLEAR_ALL to {uav_id}")
             
             # Wait for ACK

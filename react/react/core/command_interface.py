@@ -1,10 +1,10 @@
-# core/uav_controller.py
+# core/command_interface.py
 
 import logging
 from PySide6.QtCore import QObject, Signal, Slot
 from pymavlink import mavutil
 
-class UAVController(QObject):
+class CommandInterface(QObject):
     # Signals for command requests (to be handled by app.py)
     command_requested = Signal(str, dict)  # uav_id, command_dict
     
@@ -18,8 +18,8 @@ class UAVController(QObject):
         self.config = config
         
         # Get logger using standard Python logging
-        self.logger = logging.getLogger("REACT.UAVController")
-        self.logger.info("UAV Controller initialized")
+        self.logger = logging.getLogger("REACT.CommandInterface")
+        self.logger.info("Command Interface initialized")
     
     @Slot(str)
     def arm_uav(self, uav_id):
