@@ -11,8 +11,8 @@ A professional Ground Control Station (GCS) for UAV fleet management with dual t
 ### Prerequisites
 
 - Python 3.8 or higher
-- MAVLink-compatible autopilot (ArduPilot/PX4)  
-- Ground station computer (Windows/Linux/macOS)
+- ArduPilot  
+- Ground station computer (Windows)
 
 ### Required Dependencies
 
@@ -90,4 +90,3 @@ python main.py
 - **Map View**: Shows real-time UAV position, mission waypoints, and flight path
 - **UAV Status Panel**: Displays telemetry data, battery, GPS, and connection status  
 - **Control Buttons**: Arm/disarm, RTL, land, emergency stop
-- **Menu Bar**: Load missions, control UAV, and access view options

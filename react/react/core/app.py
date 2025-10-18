@@ -201,6 +201,33 @@ class App(QObject):
             }
         return None
 
+    def _parse_waypoint_indices(self, waypoint_file_path):
+        """Parse waypoint indices from a mission file.
+        
+        Returns list of waypoint indices (e.g., [0, 1, 5, 7, 10] for non-continuous missions).
+        """
+        try:
+            with open(waypoint_file_path, 'r') as f:
+                lines = f.readlines()
+            
+            indices = []
+            # Skip header line, parse waypoint indices
+            for line in lines[1:]:
+                line = line.strip()
+                if line:
+                    parts = line.split('\t')
+                    if len(parts) > 0:
+                        try:
+                            wp_index = int(parts[0])
+                            indices.append(wp_index)
+                        except ValueError:
+                            continue
+            
+            return indices
+        except Exception as e:
+            self.logger.error(f"Failed to parse waypoint indices from {waypoint_file_path}: {e}")
+            return []
+
     @Slot(str, str, result=bool)
     def load_mission(self, uav_id, waypoint_file_path):
         """Load a mission to a UAV."""
@@ -208,6 +235,17 @@ class App(QObject):
         start_time = time.time()
         self.logger.info(f"[TIMING] User clicked upload mission button for {uav_id} at t=0.000s")
         self.logger.info(f"Processing mission upload request for {uav_id}: {waypoint_file_path}")
+        
+        # Parse waypoint indices from mission file for tracking
+        waypoint_indices = self._parse_waypoint_indices(waypoint_file_path)
+        
+        if waypoint_indices and uav_id in self.uav_states:
+            uav_state = self.uav_states[uav_id]
+            # For a fresh mission upload, original and uploaded are the same
+            uav_state.original_waypoint_indices = waypoint_indices.copy()
+            uav_state.uploaded_waypoint_indices = waypoint_indices.copy()
+            uav_state.reached_waypoint_indices = []  # Reset reached list
+            self.logger.info(f"Initialized mission tracking: waypoint_indices={waypoint_indices}")
         
         # Emit initial progress: upload starting
         self.mission_upload_progress.emit(uav_id, "Starting upload...", 0.0)
@@ -226,6 +264,174 @@ class App(QObject):
             self.logger.info(f"Mission upload not started for {uav_id} (may be already in progress)")
         
         return success
+
+    @Slot(str, str, result=bool)
+    def resume_mission(self, uav_id, waypoint_file_path):
+        """Resume a mission from the last completed waypoint.
+        
+        Reads the mission file, removes all waypoints up to and including the last completed waypoint,
+        then uploads the remaining waypoints to continue the mission.
+        """
+        import time
+        
+        # Validate UAV exists and get its state
+        if uav_id not in self.uav_states:
+            self.logger.error(f"Cannot resume mission - {uav_id} not found")
+            return False
+        
+        uav_state = self.uav_states[uav_id]
+        last_completed = uav_state.get_last_completed_waypoint()
+        
+        # Check if there's a last completed waypoint to resume from
+        if last_completed < 0:
+            self.logger.error(f"Cannot resume mission for {uav_id} - no waypoints have been completed yet")
+            return False
+        
+        # Get the original waypoint indices
+        if not uav_state.original_waypoint_indices:
+            self.logger.error(f"Cannot resume - no original waypoint indices stored for {uav_id}")
+            return False
+        
+        self.logger.info(f"Resuming mission for {uav_id} from waypoint after {last_completed}")
+        self.logger.info(f"Original waypoint indices: {uav_state.original_waypoint_indices}")
+        self.logger.info(f"Reached waypoint indices: {uav_state.reached_waypoint_indices}")
+        self.logger.info(f"Reading mission file: {waypoint_file_path}")
+        
+        # Read the original mission file
+        try:
+            with open(waypoint_file_path, 'r') as f:
+                lines = f.readlines()
+        except Exception as e:
+            self.logger.error(f"Failed to read mission file {waypoint_file_path}: {e}")
+            return False
+        
+        # Parse the mission file
+        if len(lines) < 2:
+            self.logger.error(f"Mission file is too short: {len(lines)} lines")
+            return False
+        
+        # First line is header: "QGC WPL 110" or similar
+        header = lines[0].strip()
+        
+        # Build waypoint dict: {wp_index: wp_line}
+        waypoint_dict = {}
+        for line in lines[1:]:
+            line = line.strip()
+            if line:
+                parts = line.split('\t')
+                if len(parts) > 0:
+                    try:
+                        wp_index = int(parts[0])
+                        waypoint_dict[wp_index] = line
+                    except ValueError:
+                        continue
+        
+        self.logger.info(f"Original mission has waypoints: {sorted(waypoint_dict.keys())}")
+        
+        # CRITICAL: Waypoint 0 is the HOME waypoint and MUST be included in every mission upload
+        # Find the position of last_completed in the original waypoint list
+        # Include HOME (waypoint 0), the last completed waypoint, and all waypoints after it
+        try:
+            last_completed_idx = uav_state.original_waypoint_indices.index(last_completed)
+            self.logger.info(f"Last completed waypoint {last_completed} is at index {last_completed_idx} in original list")
+        except ValueError:
+            self.logger.error(f"Last completed waypoint {last_completed} not found in original waypoint indices {uav_state.original_waypoint_indices}")
+            return False
+        
+        # Build remaining waypoints: HOME (0) + last_completed + all after
+        remaining_wp_indices = []
+        
+        # ALWAYS include waypoint 0 (HOME) - required by ArduPilot/MAVLink
+        if 0 in uav_state.original_waypoint_indices:
+            remaining_wp_indices.append(0)
+            self.logger.info(f"Including HOME waypoint (index 0) - required by ArduPilot")
+        
+        # Get the last completed waypoint AND all waypoints after it (skip if it's 0, already added)
+        for i in range(last_completed_idx, len(uav_state.original_waypoint_indices)):
+            wp_idx = uav_state.original_waypoint_indices[i]
+            if wp_idx != 0:  # Don't duplicate waypoint 0
+                remaining_wp_indices.append(wp_idx)
+        
+        if len(remaining_wp_indices) <= 1:  # Only HOME, no mission waypoints
+            self.logger.error(f"No mission waypoints remaining after waypoint {last_completed} - mission already complete")
+            return False
+        
+        self.logger.info(f"Resume mission will include {len(remaining_wp_indices)} waypoints (including HOME): {remaining_wp_indices}")
+        self.logger.info(f"First mission waypoint (after HOME): {remaining_wp_indices[1] if len(remaining_wp_indices) > 1 else 'none'} (should equal last completed: {last_completed})")
+        
+        # Build remaining waypoints list and re-index them sequentially
+        remaining_waypoints = []
+        self.logger.info(f"Re-indexing waypoints for upload:")
+        for new_idx, wp_idx in enumerate(remaining_wp_indices):
+            if wp_idx in waypoint_dict:
+                wp_line = waypoint_dict[wp_idx]
+                # Parse the waypoint line and replace the index with sequential numbering
+                parts = wp_line.split('\t')
+                if len(parts) > 0:
+                    old_idx = parts[0]
+                    parts[0] = str(new_idx)  # Re-index: 0, 1, 2, 3...
+                    remaining_waypoints.append('\t'.join(parts))
+                    self.logger.info(f"  Original WP {old_idx} (waypoint_dict key: {wp_idx}) -> new index {new_idx}")
+                else:
+                    remaining_waypoints.append(wp_line)
+            else:
+                self.logger.warning(f"Waypoint {wp_idx} not found in mission file!")
+        
+        self.logger.info(f"Created {len(remaining_waypoints)} re-indexed waypoints for upload")
+        
+        # CRITICAL: Update state tracking BEFORE uploading
+        # Keep original indices, but update uploaded indices to the trimmed list
+        uav_state.uploaded_waypoint_indices = remaining_wp_indices.copy()
+        # Keep reached_waypoint_indices as-is (already contains reached waypoints)
+        self.logger.info(f"State updated: uploaded_waypoint_indices={uav_state.uploaded_waypoint_indices}")
+        
+        # Create a temporary mission file with the remaining waypoints
+        import tempfile
+        import os
+        
+        temp_fd, temp_path = tempfile.mkstemp(suffix='.waypoints', text=True)
+        try:
+            with os.fdopen(temp_fd, 'w') as f:
+                # Write header
+                f.write(header + '\n')
+                # Write remaining waypoints
+                for i, wp_line in enumerate(remaining_waypoints):
+                    f.write(wp_line + '\n')
+                    if i < 3:  # Log first 3 waypoints for debugging
+                        self.logger.info(f"  Temp file waypoint {i}: {wp_line[:80]}...")  # First 80 chars
+            
+            self.logger.info(f"Created temporary resume mission file: {temp_path} with {len(remaining_waypoints)} waypoints")
+            
+            # Upload the trimmed mission using the existing upload flow
+            start_time = time.time()
+            self.logger.info(f"[TIMING] Resume mission upload started for {uav_id} at t=0.000s")
+            
+            # Emit initial progress
+            self.mission_upload_progress.emit(uav_id, f"Resuming from waypoint {last_completed + 1}...", 0.0)
+            
+            # Upload the mission
+            success = self.mavlink_manager.load_mission(uav_id, temp_path)
+            
+            elapsed = time.time() - start_time
+            if success:
+                self.logger.info(f"[TIMING] Resume mission upload thread started at t={elapsed:.3f}s")
+                self.mission_upload_progress.emit(uav_id, "Uploading resumed mission...", 10.0)
+            else:
+                self.logger.error(f"[TIMING] Resume mission upload failed at t={elapsed:.3f}s")
+            
+            return success
+            
+        except Exception as e:
+            self.logger.error(f"Failed to create/upload resume mission: {e}")
+            return False
+        finally:
+            # Clean up temporary file
+            try:
+                if os.path.exists(temp_path):
+                    os.remove(temp_path)
+                    self.logger.debug(f"Cleaned up temporary resume mission file")
+            except Exception as e:
+                self.logger.warning(f"Failed to clean up temporary file {temp_path}: {e}")
 
     @Slot(str)
     def start_mission(self, uav_id):

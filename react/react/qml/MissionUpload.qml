@@ -17,6 +17,8 @@ Window {
     property int successCount: 0
     property int failureCount: 0
     property var uploadStatuses: ({})  // {uav_id: {status: string, progress: float, success: bool}}
+    property bool isResumeOperation: false  // Track if this is a +Resume operation
+    property var successfulUAVs: []  // Track UAVs that uploaded successfully
     
     // Center the window on screen when opened
     Component.onCompleted: {
@@ -241,13 +243,15 @@ Window {
     }
     
     // Functions to manage upload status
-    function reset(total) {
+    function reset(total, isResume) {
         totalUAVs = total
         completedUAVs = 0
         successCount = 0
         failureCount = 0
         uploadStatuses = {}
         uavListModel.clear()
+        isResumeOperation = isResume || false
+        successfulUAVs = []
     }
     
     function addUAV(uavId) {
@@ -302,8 +306,47 @@ Window {
         completedUAVs++
         if (success) {
             successCount++
+            successfulUAVs.push(uavId)
         } else {
             failureCount++
+        }
+        
+        // Check if all uploads are complete
+        if (completedUAVs >= totalUAVs) {
+            // If this is a +Resume operation and we have successful uploads, auto-start missions
+            if (isResumeOperation && successfulUAVs.length > 0) {
+                console.log("+Resume: All uploads complete. Auto-starting missions for", successfulUAVs.length, "UAV(s)")
+                
+                // Delay to let user see the completion status
+                autoStartTimer.start()
+            }
+        }
+    }
+    
+    // Timer for auto-starting missions after +Resume upload completes
+    Timer {
+        id: autoStartTimer
+        interval: 1500  // 1.5 second delay to show completion
+        repeat: false
+        onTriggered: {
+            console.log("+Resume: Auto-starting missions...")
+            
+            // Start mission for each successfully uploaded UAV
+            for (var i = 0; i < successfulUAVs.length; i++) {
+                var uavId = successfulUAVs[i]
+                console.log("  Starting mission for", uavId)
+                
+                try {
+                    if (backend && backend.uav_controller) {
+                        backend.uav_controller.start_mission(uavId)
+                    }
+                } catch(e) {
+                    console.error("Error starting mission for", uavId, ":", e)
+                }
+            }
+            
+            // Close the upload window after starting missions
+            uploadWindow.close()
         }
     }
 }

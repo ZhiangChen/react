@@ -550,14 +550,77 @@ ApplicationWindow {
                                 }
                                 enabled: true
                                 onClicked: {
-                                    if (uavList.controlAllUAVs) {
-                                        console.log("Prev Resume all UAVs")
-                                    } else {
-                                        // Prev Resume all selected UAVs
-                                        for (var i = 0; i < uavList.selectedUAVs.length; i++) {
-                                            console.log("Prev Resume UAV", uavList.selectedUAVs[i])
+                                    // Determine which UAVs to process
+                                    var uavsToCheck = uavList.controlAllUAVs ? getAllUAVs() : uavList.selectedUAVs
+                                    
+                                    console.log("+Resume: Checking", uavsToCheck.length, "UAV(s)...")
+                                    
+                                    // Collect UAVs eligible for resume
+                                    var uavsToResume = []
+                                    var skippedNoWaypoints = 0
+                                    var skippedNoMission = 0
+                                    var skippedNoTelem1 = 0
+                                    
+                                    for (var i = 0; i < uavsToCheck.length; i++) {
+                                        var uavId = uavsToCheck[i]
+                                        
+                                        // Check if UAV has telem1 connection
+                                        var hasTelem1 = uavList.getTelem1Status(uavId)
+                                        if (!hasTelem1) {
+                                            console.log("  Skipping", uavId, "- no telem1 connection")
+                                            skippedNoTelem1++
+                                            continue
                                         }
+                                        
+                                        // Check if UAV has completed waypoints
+                                        var status = backend.get_uav_status(uavId)
+                                        if (!status || !status.mission || status.mission.last_completed_waypoint < 0) {
+                                            console.log("  Skipping", uavId, "- no waypoints completed yet")
+                                            skippedNoWaypoints++
+                                            continue
+                                        }
+                                        
+                                        // Check if mission file is available
+                                        var missionFile = uavList.getMissionFileFullPath(uavId)
+                                        if (!missionFile) {
+                                            console.log("  Skipping", uavId, "- no mission file selected")
+                                            skippedNoMission++
+                                            continue
+                                        }
+                                        
+                                        // Add to resume list with detailed waypoint info
+                                        uavsToResume.push({
+                                            uavId: uavId,
+                                            missionFile: missionFile,
+                                            lastWaypoint: status.mission.last_completed_waypoint,
+                                            nextWaypoint: status.mission.next_resume_waypoint,
+                                            totalWaypoints: status.mission.total_waypoints,
+                                            originalWaypointIndices: status.mission.original_waypoint_indices || [],
+                                            reachedWaypointIndices: status.mission.reached_waypoint_indices || [],
+                                            remainingWaypointIndices: status.mission.remaining_waypoint_indices || []
+                                        })
                                     }
+                                    
+                                    // Show error if nothing to resume
+                                    if (uavsToResume.length === 0) {
+                                        var message = "No missions can be resumed."
+                                        if (skippedNoTelem1 > 0) {
+                                            message += "\n\n" + skippedNoTelem1 + " UAV(s) skipped (no telem1 connection)."
+                                        }
+                                        if (skippedNoWaypoints > 0) {
+                                            message += "\n" + skippedNoWaypoints + " UAV(s) skipped (no waypoints completed)."
+                                        }
+                                        if (skippedNoMission > 0) {
+                                            message += "\n" + skippedNoMission + " UAV(s) skipped (no mission file)."
+                                        }
+                                        resumeErrorDialog.text = message
+                                        resumeErrorDialog.open()
+                                        return
+                                    }
+                                    
+                                    // Store UAVs to resume and show confirmation
+                                    resumeConfirmDialog.uavsToResume = uavsToResume
+                                    resumeConfirmDialog.open()
                                 }
                             }
                         }
@@ -1908,6 +1971,209 @@ ApplicationWindow {
             } else {
                 for (var i = 0; i < uavList.selectedUAVs.length; i++) {
                     uavList.startMission(uavList.selectedUAVs[i])
+                }
+            }
+        }
+    }
+
+    // Resume Mission Confirmation Dialog
+    Dialog {
+        id: resumeConfirmDialog
+        title: "Confirm Resume Mission"
+        width: 450
+        height: 220
+        modal: true
+        x: (parent.width - width) / 2
+        y: (parent.height - height) / 2
+        
+        property var uavsToResume: []
+        
+        background: Rectangle {
+            color: "white"
+            border.color: "#cccccc"
+            border.width: 1
+            radius: 0
+        }
+        
+        Item {
+            anchors.fill: parent
+            focus: true
+            
+            Keys.onReturnPressed: resumeConfirmDialog.accept()
+            Keys.onEnterPressed: resumeConfirmDialog.accept()
+            Keys.onEscapePressed: resumeConfirmDialog.reject()
+        
+            Column {
+                anchors.fill: parent
+                spacing: 20
+                
+                Text {
+                    text: {
+                        if (resumeConfirmDialog.uavsToResume.length === 0) return ""
+                        
+                        var msg = "Resume mission from last completed waypoint for " + 
+                                  resumeConfirmDialog.uavsToResume.length + " UAV(s)?\n\n"
+                        
+                        // Show waypoint info for each UAV
+                        for (var i = 0; i < Math.min(3, resumeConfirmDialog.uavsToResume.length); i++) {
+                            var uav = resumeConfirmDialog.uavsToResume[i]
+                            
+                            // Calculate remaining waypoints from original mission
+                            var originalTotal = uav.originalWaypointIndices ? uav.originalWaypointIndices.length : 0
+                            var reachedCount = uav.reachedWaypointIndices ? uav.reachedWaypointIndices.length : 0
+                            var remainingCount = originalTotal - reachedCount
+                            
+                            // Use pre-calculated next waypoint
+                            var nextWaypoint = uav.nextWaypoint >= 0 ? uav.nextWaypoint : "?"
+                            
+                            msg += "• " + uav.uavId + ": Last completed WP " + uav.lastWaypoint + 
+                                   ", resume from WP " + nextWaypoint + 
+                                   " (" + remainingCount + " waypoints remaining)\n"
+                        }
+                        
+                        if (resumeConfirmDialog.uavsToResume.length > 3) {
+                            msg += "• ... and " + (resumeConfirmDialog.uavsToResume.length - 3) + " more\n"
+                        }
+                        
+                        return msg
+                    }
+                    font.pointSize: 10
+                    color: "#333333"
+                    wrapMode: Text.WordWrap
+                    width: parent.width
+                }
+                
+                Row {
+                    spacing: 10
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    
+                    Button {
+                        text: "Cancel"
+                        width: 100
+                        onClicked: resumeConfirmDialog.reject()
+                        
+                        background: Rectangle {
+                            color: parent.pressed ? "#d0d0d0" : (parent.hovered ? "#e0e0e0" : "#f0f0f0")
+                            border.color: "#707070"
+                            border.width: 1
+                            radius: 0
+                        }
+                        
+                        contentItem: Text {
+                            text: parent.text
+                            font: parent.font
+                            color: "#000000"
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                    }
+                    
+                    Button {
+                        text: "Resume Mission"
+                        width: 140
+                        highlighted: true
+                        onClicked: resumeConfirmDialog.accept()
+                        
+                        background: Rectangle {
+                            color: parent.pressed ? "#0050a0" : (parent.hovered ? "#0060c0" : "#0078d4")
+                            border.color: "#003d80"
+                            border.width: 1
+                            radius: 0
+                        }
+                        
+                        contentItem: Text {
+                            text: parent.text
+                            font: parent.font
+                            color: "#ffffff"
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                    }
+                }
+            }
+        }
+        
+        onAccepted: {
+            console.log("+Resume: Starting mission resume for", uavsToResume.length, "UAV(s)")
+            
+            // Show upload window (pass true to indicate this is a resume operation)
+            missionUploadWindow.reset(uavsToResume.length, true)
+            missionUploadWindow.show()
+            
+            // Call backend resume_mission for each UAV
+            for (var i = 0; i < uavsToResume.length; i++) {
+                var uav = uavsToResume[i]
+                console.log("  Resuming mission for", uav.uavId, "from waypoint", uav.lastWaypoint + 1)
+                missionUploadWindow.addUAV(uav.uavId)
+                
+                // Call backend.resume_mission
+                var success = backend.resume_mission(uav.uavId, uav.missionFile)
+                if (!success) {
+                    console.error("Failed to resume mission for", uav.uavId)
+                }
+            }
+        }
+    }
+
+    // Resume Mission Error Dialog
+    Dialog {
+        id: resumeErrorDialog
+        title: "Cannot Resume Mission"
+        width: 400
+        height: 180
+        modal: true
+        x: (parent.width - width) / 2
+        y: (parent.height - height) / 2
+        
+        property string text: ""
+        
+        background: Rectangle {
+            color: "white"
+            border.color: "#cccccc"
+            border.width: 1
+            radius: 0
+        }
+        
+        Item {
+            anchors.fill: parent
+            focus: true
+            
+            Keys.onReturnPressed: resumeErrorDialog.accept()
+            Keys.onEnterPressed: resumeErrorDialog.accept()
+            Keys.onEscapePressed: resumeErrorDialog.reject()
+        
+            Column {
+                anchors.fill: parent
+                spacing: 20
+                
+                Text {
+                    text: resumeErrorDialog.text
+                    font.pointSize: 10
+                    color: "#d32f2f"
+                    wrapMode: Text.WordWrap
+                    width: parent.width
+                }
+                
+                Button {
+                    text: "OK"
+                    width: 100
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    onClicked: resumeErrorDialog.accept()
+                    
+                    background: Rectangle {
+                        color: parent.pressed ? "#d0d0d0" : (parent.hovered ? "#e0e0e0" : "#f0f0f0")
+                        border.color: "#707070"
+                        border.width: 1
+                        radius: 0
+                    }
+                    
+                    contentItem: Text {
+                        text: parent.text
+                        font: parent.font
+                        color: "#000000"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
                 }
             }
         }

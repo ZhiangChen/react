@@ -34,6 +34,15 @@ class UAVState:
         self.mission_elapsed_time = 0.0  # Elapsed mission time in seconds
         self.mission_running = False  # True if mission timer is running
         
+        # Mission Waypoints
+        self.current_waypoint = 0  # Current waypoint UAV is navigating to (from MISSION_CURRENT)
+        self.total_waypoints = 0  # Total number of waypoints in currently loaded mission
+        
+        # Mission tracking (handles non-continuous waypoint indices)
+        self.original_waypoint_indices = []  # List of waypoint indices from original mission file (e.g., [0, 1, 5, 7, 10])
+        self.uploaded_waypoint_indices = []  # List of waypoint indices in currently uploaded mission
+        self.reached_waypoint_indices = []  # List of waypoint indices that UAV has reached
+        
         # Pending command tracking for optimistic updates
         self.pending_arm_command = None  # Timestamp when ARM command was sent
         self.pending_disarm_command = None  # Timestamp when DISARM command was sent
@@ -169,6 +178,52 @@ class UAVState:
             self.gps_fix_type >= 3 and self.latitude != 0.0 and self.longitude != 0.0):
             self.set_home_position(self.latitude, self.longitude, self.altitude)
 
+    def get_last_completed_waypoint(self):
+        """Get the last completed waypoint index from the original mission.
+        
+        Returns -1 if no waypoints completed, otherwise the actual waypoint index
+        from the original mission file (handles non-continuous waypoint indices).
+        
+        Algorithm:
+        1. Find waypoints that are NOT in reached_waypoint_indices
+        2. These are the remaining waypoints in the uploaded mission
+        3. Find the last waypoint in original_waypoint_indices that comes BEFORE the first remaining waypoint
+        
+        Example:
+            original_waypoint_indices = [0, 1, 5, 7, 10]
+            uploaded_waypoint_indices = [0, 7, 10]  (resumed from WP 7 after completing 0,1,5)
+            reached_waypoint_indices = [0, 7]  (completed WP 0 and 7)
+            remaining in uploaded = [10]
+            last_completed in original = 7 (the waypoint before 10)
+        """
+        if not self.reached_waypoint_indices:
+            return -1  # No waypoints completed yet
+        
+        # Get the highest reached waypoint index
+        return max(self.reached_waypoint_indices)
+    
+    def get_remaining_waypoint_indices(self):
+        """Get list of waypoint indices that haven't been reached yet.
+        
+        Returns list of waypoint indices from uploaded mission that are not in reached list.
+        """
+        return [wp for wp in self.uploaded_waypoint_indices if wp not in self.reached_waypoint_indices]
+    
+    def get_next_resume_waypoint(self):
+        """Get the waypoint index to resume from in the original mission.
+        
+        Returns the LAST COMPLETED waypoint (to repeat it for safety), 
+        or -1 if no waypoints have been completed.
+        
+        Example:
+            original_waypoint_indices = [0, 1, 2, 3, 5, 7, 10]
+            reached_waypoint_indices = [0, 1, 2, 3]
+            last_completed = 3
+            resume_waypoint = 3  (repeat the last completed waypoint)
+        """
+        # Simply return the last completed waypoint to repeat it
+        return self.get_last_completed_waypoint()
+
     def is_connected(self):
         """Check if the UAV is currently connected via Telem1 (primary connection)."""
         return self.telem1_status
@@ -210,6 +265,18 @@ class UAVState:
             'mission_elapsed_time': self.get_mission_elapsed_time(),
             'mission_running': self.mission_running
         },
+            'mission': {
+                'current_waypoint': self.current_waypoint,
+                'total_waypoints': self.total_waypoints,
+                'original_waypoint_indices': self.original_waypoint_indices,
+                'uploaded_waypoint_indices': self.uploaded_waypoint_indices,
+                'reached_waypoint_indices': self.reached_waypoint_indices,
+                'remaining_waypoint_indices': self.get_remaining_waypoint_indices(),
+                'last_completed_waypoint': self.get_last_completed_waypoint(),
+                'next_resume_waypoint': self.get_next_resume_waypoint(),
+                'mission_elapsed_time': self.get_mission_elapsed_time(),
+                'mission_running': self.mission_running
+            },
             'connections': {
                 'telem1_status': self.telem1_status,
                 'telem2_status': self.telem2_status,
@@ -247,6 +314,12 @@ class UAVState:
             'connected': self.telem1_status,
             'remaining_battery_time': self.remaining_battery_time,
             'average_power_consumption': self.average_power_consumption,
+            'current_waypoint': self.current_waypoint,
+            'total_waypoints': self.total_waypoints,
+            'original_waypoint_indices': self.original_waypoint_indices,
+            'uploaded_waypoint_indices': self.uploaded_waypoint_indices,
+            'reached_waypoint_indices': self.reached_waypoint_indices,
+            'last_completed_waypoint': self.get_last_completed_waypoint(),
             'mission_elapsed_time': self.get_mission_elapsed_time(),
             'mission_running': self.mission_running
         }

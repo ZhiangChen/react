@@ -434,6 +434,46 @@ class MAVLinkManager(QObject):
             # Monitor for Telem2 status messages from Lua script
             self._handle_statustext_message(uav_id, msg)
 
+        elif msg_type == "MISSION_CURRENT":
+            # UAV is now navigating to this waypoint
+            state.current_waypoint = msg.seq
+            # Don't log navigation updates (too verbose)
+            pass
+
+        elif msg_type == "MISSION_ITEM_REACHED":
+            # UAV has reached a waypoint in the CURRENT loaded mission
+            # msg.seq is the index in the currently uploaded mission (0-based)
+            
+            # Map the sequence index to the actual waypoint index
+            if msg.seq < len(state.uploaded_waypoint_indices):
+                reached_wp_index = state.uploaded_waypoint_indices[msg.seq]
+                
+                # Add to reached list if not already there
+                if reached_wp_index not in state.reached_waypoint_indices:
+                    state.reached_waypoint_indices.append(reached_wp_index)
+                    state.reached_waypoint_indices.sort()  # Keep sorted
+                
+                # Calculate progress based on original mission
+                if state.original_waypoint_indices:
+                    total_original = len(state.original_waypoint_indices)
+                    completed_count = len(state.reached_waypoint_indices)
+                    progress = (completed_count / total_original) * 100
+                    self.logger.info(f"{uav_id}: Waypoint {reached_wp_index} REACHED ({progress:.1f}% progress: {completed_count}/{total_original})")
+                else:
+                    self.logger.info(f"{uav_id}: Waypoint {reached_wp_index} REACHED")
+            else:
+                self.logger.warning(f"{uav_id}: MISSION_ITEM_REACHED seq {msg.seq} out of range (uploaded mission has {len(state.uploaded_waypoint_indices)} waypoints)")
+            
+            # Emit telemetry update so UI can track progress
+            self.telemetry_updated.emit(uav_id, state.get_telemetry())
+
+        elif msg_type == "MISSION_COUNT":
+            # Total number of waypoints in the currently loaded mission
+            state.total_waypoints = msg.count
+            # If this is a new mission upload, reset tracking
+            # (original_total_waypoints and waypoints_remaining are set by load_mission)
+            self.logger.debug(f"{uav_id}: Mission has {msg.count} waypoints")
+
         elif msg_type == "COMMAND_ACK":
             # Handle command acknowledgments for immediate UI feedback
             cmd_id = msg.command
