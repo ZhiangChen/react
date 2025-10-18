@@ -14,6 +14,9 @@ Item {
     property var waypoints: []
     property var geofences: []
     
+    // Track last known home positions to avoid redundant updates
+    property var lastHomePositions: ({})
+    
     // Map interaction signals
     signal uavSelected(string uavId)
     signal mapClicked(real latitude, real longitude)
@@ -99,11 +102,40 @@ Item {
     Timer {
         id: updateTimer
         interval: 1000
-        running: true
+        running: false  // Don't start until map is ready
         repeat: true
         
         onTriggered: {
             updateUAVData()
+        }
+    }
+    
+    // Connect to telemetry updates to catch home position changes immediately
+    Connections {
+        target: backend
+        function onTelemetryChanged(uavId, telemetryData) {
+            // Check if home position is in the telemetry data and is valid
+            if (telemetryData && telemetryData.home_position) {
+                var home = telemetryData.home_position
+                if (home.latitude !== 0 || home.longitude !== 0) {
+                    // Check if this is a new/changed home position
+                    var lastHome = lastHomePositions[uavId]
+                    var hasChanged = !lastHome || 
+                                   lastHome.latitude !== home.latitude || 
+                                   lastHome.longitude !== home.longitude
+                    
+                    if (hasChanged) {
+                        console.log("QML: Home position changed for", uavId, "- emitting launchLocationChanged")
+                        mapBridge.launchLocationChanged(uavId, home.latitude, home.longitude)
+                        
+                        // Update cached home position
+                        lastHomePositions[uavId] = {
+                            latitude: home.latitude,
+                            longitude: home.longitude
+                        }
+                    }
+                }
+            }
         }
     }
     
@@ -138,8 +170,23 @@ Item {
                         
                         // Update launch location for each UAV (when home position is set)
                         var home = backend.getHomePosition(uavId)
-                        if (home && home.isValid && home.latitude !== 0) {
-                            mapBridge.launchLocationChanged(uavId, home.latitude, home.longitude)
+                        if (home && home.isValid) {
+                            // Check if this is a new/changed home position (same logic as Connections block)
+                            var lastHome = lastHomePositions[uavId]
+                            var hasChanged = !lastHome || 
+                                           lastHome.latitude !== home.latitude || 
+                                           lastHome.longitude !== home.longitude
+                            
+                            if (hasChanged) {
+                                console.log("QML: Emitting launchLocationChanged for", uavId, "at", home.latitude, home.longitude)
+                                mapBridge.launchLocationChanged(uavId, home.latitude, home.longitude)
+                                
+                                // Update cached home position
+                                lastHomePositions[uavId] = {
+                                    latitude: home.latitude,
+                                    longitude: home.longitude
+                                }
+                            }
                         }
                     }
                 }
@@ -210,6 +257,15 @@ Item {
                 { lat: 37.7949, lon: -122.3994, type: "mission" }
             ]
             mapBridge.missionPathChanged(testWaypoints)
+            
+            // Clear the cache so launch circles will be emitted
+            lastHomePositions = {}
+            
+            // Start the timer now that map is ready
+            updateTimer.running = true
+            
+            // Immediately update UAV data to show launch circles
+            updateUAVData()
         })
     }
     

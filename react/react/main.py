@@ -10,6 +10,7 @@ import logging
 from PySide6.QtWidgets import QApplication
 from PySide6.QtQml import QQmlApplicationEngine
 from PySide6.QtCore import QUrl
+from PySide6.QtGui import QIcon
 from PySide6.QtWebEngineQuick import QtWebEngineQuick
 from PySide6.QtWebEngineCore import QWebEngineProfile
 from core.app import App
@@ -66,8 +67,25 @@ def main():
     import os
     os.environ['QT_QUICK_CONTROLS_STYLE'] = 'Fusion'
     
+    # Fix Windows taskbar icon grouping issue
+    # This prevents Windows from grouping this app with other Python apps
+    if sys.platform == 'win32':
+        import ctypes
+        # Set unique App User Model ID to separate from Python icon
+        myappid = 'ZhiangChen.REACT.GCS.1.0'
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+    
     # Initialize Qt Application
     app = QApplication(sys.argv)
+    
+    # Set application icon (for taskbar and window)
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    icon_path = os.path.join(base_dir, "data", "logos", "logo.png")
+    if os.path.exists(icon_path):
+        app.setWindowIcon(QIcon(icon_path))
+        print(f"Application icon set: {icon_path}")
+    else:
+        print(f"Warning: Icon file not found: {icon_path}")
     
     # Set style to Fusion to allow Slider customization
     app.setStyle("Fusion")

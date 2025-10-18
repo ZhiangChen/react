@@ -138,17 +138,30 @@ class UAVState:
             self.remaining_battery_time = 0.0
 
     def set_connected(self, connected):
-        """Set the Telem1 connection status of the UAV (primary connection)."""
+        """Set the Telem1 connection status of the UAV (primary connection).
+        
+        The UI will check connection status to gray out indicators while keeping
+        the last known telemetry values visible for operator reference.
+        """
         self.telem1_status = connected
+        
+        # Note: We intentionally DO NOT reset any telemetry values (GPS, battery, position, etc.)
+        # The UI checks telem1_status to show gray indicators, but displays last known values
         
     def set_home_position(self, latitude=None, longitude=None, altitude=None):
         """Set the home position of the UAV."""
+        import logging
+        logger = logging.getLogger("REACT.UAVState")
+        
         if latitude is not None:
             self.home_lat = latitude
         if longitude is not None:
             self.home_lng = longitude
         if altitude is not None:
             self.home_alt = altitude
+        
+        if latitude is not None and longitude is not None:
+            logger.info(f"{self.uav_id}: Home position set to lat={latitude:.6f}, lon={longitude:.6f}, alt={altitude:.1f}")
             
     def update_home_position_if_needed(self):
         """Update home position if not set and UAV has valid GPS."""
@@ -168,6 +181,11 @@ class UAVState:
                 'longitude': self.longitude,
                 'altitude': self.altitude,
                 'height': self.height
+            },
+            'home_position': {
+                'latitude': self.home_lat,
+                'longitude': self.home_lng,
+                'altitude': self.home_alt
             },
             'attitude': {
                 'heading': self.heading,
@@ -210,6 +228,9 @@ class UAVState:
             'longitude': self.longitude,
             'altitude': self.altitude,
             'height': self.height,
+            'home_lat': self.home_lat,
+            'home_lng': self.home_lng,
+            'home_alt': self.home_alt,
             'mode': self.mode,
             'battery_status': self.battery_status,
             'heading': self.heading,

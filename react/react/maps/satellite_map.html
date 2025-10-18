@@ -412,22 +412,22 @@
                     updateScaleBar();
                 });
                 
-                // Add debug logging for map events
-                map.on('movestart', function(e) {
-                    console.log('Map move started');
-                });
+                // Add debug logging for map events (commented out to prevent high-frequency console spam)
+                // map.on('movestart', function(e) {
+                //     console.log('Map move started');
+                // });
                 
-                map.on('move', function(e) {
-                    console.log('Map is moving, center:', map.getCenter());
-                });
+                // map.on('move', function(e) {
+                //     console.log('Map is moving, center:', map.getCenter());
+                // });
                 
-                map.on('moveend', function(e) {
-                    console.log('Map move ended, center:', map.getCenter(), 'zoom:', map.getZoom());
-                });
+                // map.on('moveend', function(e) {
+                //     console.log('Map move ended, center:', map.getCenter(), 'zoom:', map.getZoom());
+                // });
                 
-                map.on('drag', function(e) {
-                    console.log('Map drag event');
-                });
+                // map.on('drag', function(e) {
+                //     console.log('Map drag event');
+                // });
                 
                 // Add context menu on right-click
                 map.on('contextmenu', function(e) {
@@ -715,33 +715,44 @@
                     
                     if (qtBridge) {
                         console.log('Qt mapBridge connected');
+                        console.log('Available qtBridge properties:', Object.keys(qtBridge));
                         
                         // Connect to UAV position updates
-                        qtBridge.uavPositionChanged.connect(function(uavId, lat, lon, heading, mode, armed) {
-                            console.log('UAV position update:', uavId, lat, lon, heading, mode, armed);
-                            updateUAVMarker(uavId, lat, lon, heading, mode, armed);
-                        });
+                        if (qtBridge.uavPositionChanged) {
+                            qtBridge.uavPositionChanged.connect(function(uavId, lat, lon, heading, mode, armed) {
+                                // console.log('UAV position update:', uavId, lat, lon, heading, mode, armed);  // Commented to reduce log spam
+                                updateUAVMarker(uavId, lat, lon, heading, mode, armed);
+                            });
+                        }
                         
                         // REMOVED: homePositionChanged - now using gcsHomePositionChanged for GCS home
                         // and launchLocationChanged for individual UAV launch positions
                         
                         // Connect to launch location updates
-                        qtBridge.launchLocationChanged.connect(function(uavId, lat, lon) {
-                            console.log('Launch location update:', uavId, lat, lon);
-                            updateLaunchLocationMarker(uavId, lat, lon);
-                        });
+                        if (qtBridge.launchLocationChanged) {
+                            qtBridge.launchLocationChanged.connect(function(uavId, lat, lon) {
+                                console.log('Launch location update:', uavId, lat, lon);
+                                updateLaunchLocationMarker(uavId, lat, lon);
+                            });
+                        } else {
+                            console.error('launchLocationChanged signal not available on qtBridge');
+                        }
                         
                         // Connect to GCS home position updates
-                        qtBridge.gcsHomePositionChanged.connect(function(lat, lon) {
-                            console.log('GCS home position update:', lat, lon);
-                            updateGCSHomeMarker(lat, lon);
-                        });
+                        if (qtBridge.gcsHomePositionChanged) {
+                            qtBridge.gcsHomePositionChanged.connect(function(lat, lon) {
+                                console.log('GCS home position update:', lat, lon);
+                                updateGCSHomeMarker(lat, lon);
+                            });
+                        }
                         
                         // Connect to mission path updates
-                        qtBridge.missionPathChanged.connect(function(waypoints) {
-                            console.log('Mission path update:', waypoints);
-                            updateMissionPath(waypoints);
-                        });
+                        if (qtBridge.missionPathChanged) {
+                            qtBridge.missionPathChanged.connect(function(waypoints) {
+                                console.log('Mission path update:', waypoints);
+                                updateMissionPath(waypoints);
+                            });
+                        }
                         
                         // Signal that web map is ready
                         if (qtBridge.webMapReady) {
@@ -806,11 +817,11 @@
 
         // Get UAV color based on mode and armed state
         function getUAVColor(mode, armed) {
-            // Debug logging
-            console.log('getUAVColor called - mode:', mode, 'armed:', armed);
+            // Debug logging (commented to reduce log spam)
+            // console.log('getUAVColor called - mode:', mode, 'armed:', armed);
             
             if (!armed) {
-                console.log('  -> Returning gray (disarmed)');
+                // console.log('  -> Returning gray (disarmed)');  // Commented to reduce log spam
                 return '#808080'; // Gray for disarmed
             }
             
@@ -842,17 +853,17 @@
                     break;
                 default: 
                     color = '#ffffff';  // White for unknown
-                    console.warn('  -> Unknown mode:', normalizedMode, '- using white');
+                    console.warn('  -> Unknown mode:', normalizedMode, '- using white');  // Keep warnings
                     break;
             }
             
-            console.log('  -> Mode:', normalizedMode, 'Color:', color);
+            // console.log('  -> Mode:', normalizedMode, 'Color:', color);  // Commented to reduce log spam
             return color;
         }
 
         // Update or create UAV marker
         function updateUAVMarker(uavId, lat, lon, heading, mode, armed) {
-            console.log('updateUAVMarker called for', uavId, '- mode:', mode, 'armed:', armed, 'heading:', heading);
+            // console.log('updateUAVMarker called for', uavId, '- mode:', mode, 'armed:', armed, 'heading:', heading);  // Commented to reduce log spam
             
             if (!map) {
                 console.warn('Map not initialized yet');
@@ -861,12 +872,12 @@
             
             // Remove existing marker if it exists
             if (uavMarkers[uavId]) {
-                console.log('  -> Removing old marker for', uavId);
+                // console.log('  -> Removing old marker for', uavId);  // Commented to reduce log spam
                 map.removeLayer(uavMarkers[uavId]);
             }
             
             // Create new marker with current data
-            console.log('  -> Creating new marker for', uavId);
+            // console.log('  -> Creating new marker for', uavId);  // Commented to reduce log spam
             const icon = createUAVIcon(heading, mode, armed, uavId);
             const marker = L.marker([lat, lon], {icon: icon});
             
@@ -885,7 +896,7 @@
             
             // Add click handler for UAV selection
             marker.on('click', function() {
-                console.log('UAV clicked:', uavId);
+                // console.log('UAV clicked:', uavId);  // Keep this one for debugging user interactions
                 if (qtBridge && qtBridge.uavSelected) {
                     qtBridge.uavSelected(uavId);
                 }
@@ -895,7 +906,7 @@
             marker.addTo(map);
             uavMarkers[uavId] = marker;
             
-            console.log('UAV marker updated:', uavId, 'at', lat, lon);
+            // console.log('UAV marker updated:', uavId, 'at', lat, lon);  // Commented to reduce log spam
         }
 
         // Update home marker

@@ -285,12 +285,17 @@ class App(QObject):
         """Get home position for a specific UAV."""
         if uav_id in self.uav_states:
             uav_state = self.uav_states[uav_id]
-            return {
+            result = {
                 'latitude': uav_state.home_lat,
                 'longitude': uav_state.home_lng,
                 'altitude': uav_state.home_alt,
                 'isValid': uav_state.home_lat != 0.0 or uav_state.home_lng != 0.0
             }
+            # Only log at DEBUG level to reduce noise
+            self.logger.debug(f"getHomePosition({uav_id}): lat={result['latitude']}, lon={result['longitude']}, valid={result['isValid']}")
+            return result
+        else:
+            self.logger.debug(f"getHomePosition({uav_id}): UAV not found in uav_states")
         return {'latitude': 0.0, 'longitude': 0.0, 'altitude': 0.0, 'isValid': False}
     
     @Slot(result='QVariant')

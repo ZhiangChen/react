@@ -1,273 +1,1278 @@
-2025-10-16 19:38:31,796 - REACT.Launcher - INFO - ==================================================
-2025-10-16 19:38:31,797 - REACT.Launcher - INFO - REACT Ground Control Station Launcher
-2025-10-16 19:38:31,797 - REACT.Launcher - INFO - ==================================================
-2025-10-16 19:38:31,797 - REACT.Launcher - INFO - Installing dependencies...
-2025-10-16 19:38:31,797 - REACT.Launcher.Dependencies - INFO - Installing tile server dependencies...
-2025-10-16 19:38:32,706 - REACT.Launcher.Dependencies - INFO - Dependencies installed successfully
-2025-10-16 19:38:32,707 - REACT.Launcher - INFO - Starting tile server...
-2025-10-16 19:38:32,708 - REACT.Launcher - INFO - Tile server started (PID: 17948)
-2025-10-16 19:38:32,708 - REACT.Launcher - INFO - Waiting for tile server to be ready...
-2025-10-16 19:38:33,743 - REACT.Launcher - INFO - Tile server is ready!
-2025-10-16 19:38:33,744 - REACT.Launcher - INFO - Starting REACT application...
-2025-10-16 19:38:33,744 - REACT.Launcher - INFO - Waiting for tile server to be ready...
-2025-10-16 19:38:33,760 - REACT.Launcher - INFO - Tile server is ready!
-2025-10-16 19:38:33,765 - REACT.Launcher - INFO - REACT application started (PID: 3536)
-2025-10-16 19:38:33,765 - REACT.Launcher - INFO - ==================================================
-2025-10-16 19:38:33,765 - REACT.Launcher - INFO - REACT is running!
-2025-10-16 19:38:33,765 - REACT.Launcher - INFO - - Tile server: http://127.0.0.1:8081
-2025-10-16 19:38:33,766 - REACT.Launcher - INFO - - Main application: Running
-2025-10-16 19:38:33,766 - REACT.Launcher - INFO - Press Ctrl+C to stop all services
-2025-10-16 19:38:33,766 - REACT.Launcher - INFO - ==================================================
-2025-10-16 19:38:34,497 - REACT.Main - INFO - REACT Application logging initialized
-2025-10-16 19:38:34,497 - REACT.Main - INFO - Log file: C:\Users\chenz\Documents\react\react\react\data/logs/mission_log.txt
-2025-10-16 19:38:34,497 - REACT.Main - INFO - Starting REACT Ground Control Station...
-2025-10-16 19:38:34,498 - REACT.Main - INFO - Initializing backend...
-2025-10-16 19:38:34,498 - REACT.App - INFO - REACT Application starting...
-2025-10-16 19:38:34,498 - REACT.UAVController - INFO - UAV Controller initialized
-2025-10-16 19:38:34,498 - REACT.MissionManager - INFO - Mission Manager initialized
-2025-10-16 19:38:34,498 - REACT.SafetyMonitor - INFO - Safety Monitor initialized
-2025-10-16 19:38:34,498 - REACT.App - INFO - Setting up component connections...
-2025-10-16 19:38:34,499 - REACT.App - INFO - Component connections established
-2025-10-16 19:38:34,499 - REACT.App - INFO - All managers initialized successfully
-2025-10-16 19:38:34,499 - REACT.App - INFO - Starting REACT application...
-2025-10-16 19:38:34,500 - REACT.TelemetryManager - INFO - Telem1 connected to: udp:127.0.0.1:14552
-2025-10-16 19:38:34,501 - REACT.TelemetryManager - INFO - Telem1 UAV discovery will happen continuously as messages arrive
-2025-10-16 19:38:34,508 - REACT.TelemetryManager - ERROR - Telem2 failed to connect: could not open port '/dev/ttyUSB1': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3)
-2025-10-16 19:38:34,508 - REACT.MissionManager - INFO - Mission monitoring started
-2025-10-16 19:38:34,509 - REACT.SafetyMonitor - INFO - Safety monitoring started
-2025-10-16 19:38:34,509 - REACT.App - INFO - All services started successfully!
-2025-10-16 19:38:34,509 - REACT.Main - INFO - Initializing QML frontend...
-2025-10-16 19:38:34,862 - REACT.Main - INFO - Frontend started successfully
-2025-10-16 19:38:34,863 - REACT.Main - INFO - Starting application event loop...
-2025-10-16 19:38:34,880 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_2 (System ID: 2)
-2025-10-16 19:38:34,903 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_1 (System ID: 1)
-2025-10-16 19:38:40,285 - REACT.Main - INFO - Shutting down...
-2025-10-16 19:38:40,285 - REACT.App - INFO - Stopping REACT application...
-2025-10-16 19:38:40,285 - REACT.SafetyMonitor - INFO - Safety monitoring stopped
-2025-10-16 19:38:40,285 - REACT.MissionManager - INFO - Mission monitoring stopped
-2025-10-16 19:38:40,290 - REACT.App - INFO - All services stopped.
-2025-10-16 19:38:40,770 - REACT.Launcher - INFO - Main application exited
-2025-10-16 19:38:40,770 - REACT.Launcher - INFO - Shutting down REACT...
-2025-10-16 19:38:40,770 - REACT.Launcher - INFO - Stopping main application...
-2025-10-16 19:38:40,770 - REACT.Launcher - INFO - Main application stopped
-2025-10-16 19:38:40,770 - REACT.Launcher - INFO - Stopping tile server...
-2025-10-16 19:38:40,779 - REACT.Launcher - INFO - Tile server stopped
-2025-10-16 19:38:54,675 - REACT.Launcher - INFO - ==================================================
-2025-10-16 19:38:54,675 - REACT.Launcher - INFO - REACT Ground Control Station Launcher
-2025-10-16 19:38:54,675 - REACT.Launcher - INFO - ==================================================
-2025-10-16 19:38:54,675 - REACT.Launcher - INFO - Installing dependencies...
-2025-10-16 19:38:54,675 - REACT.Launcher.Dependencies - INFO - Installing tile server dependencies...
-2025-10-16 19:38:55,610 - REACT.Launcher.Dependencies - INFO - Dependencies installed successfully
-2025-10-16 19:38:55,610 - REACT.Launcher - INFO - Starting tile server...
-2025-10-16 19:38:55,610 - REACT.Launcher - INFO - Tile server started (PID: 28376)
-2025-10-16 19:38:55,610 - REACT.Launcher - INFO - Waiting for tile server to be ready...
-2025-10-16 19:38:56,652 - REACT.Launcher - INFO - Tile server is ready!
-2025-10-16 19:38:56,652 - REACT.Launcher - INFO - Starting REACT application...
-2025-10-16 19:38:56,653 - REACT.Launcher - INFO - Waiting for tile server to be ready...
-2025-10-16 19:38:56,655 - REACT.Launcher - INFO - Tile server is ready!
-2025-10-16 19:38:56,661 - REACT.Launcher - INFO - REACT application started (PID: 27008)
-2025-10-16 19:38:56,662 - REACT.Launcher - INFO - ==================================================
-2025-10-16 19:38:56,662 - REACT.Launcher - INFO - REACT is running!
-2025-10-16 19:38:56,662 - REACT.Launcher - INFO - - Tile server: http://127.0.0.1:8081
-2025-10-16 19:38:56,663 - REACT.Launcher - INFO - - Main application: Running
-2025-10-16 19:38:56,663 - REACT.Launcher - INFO - Press Ctrl+C to stop all services
-2025-10-16 19:38:56,664 - REACT.Launcher - INFO - ==================================================
-2025-10-16 19:38:57,951 - REACT.Main - INFO - REACT Application logging initialized
-2025-10-16 19:38:57,951 - REACT.Main - INFO - Log file: C:\Users\chenz\Documents\react\react\react\data/logs/mission_log.txt
-2025-10-16 19:38:57,951 - REACT.Main - INFO - Starting REACT Ground Control Station...
-2025-10-16 19:38:57,951 - REACT.Main - INFO - Initializing backend...
-2025-10-16 19:38:57,951 - REACT.App - INFO - REACT Application starting...
-2025-10-16 19:38:57,951 - REACT.UAVController - INFO - UAV Controller initialized
-2025-10-16 19:38:57,951 - REACT.MissionManager - INFO - Mission Manager initialized
-2025-10-16 19:38:57,951 - REACT.SafetyMonitor - INFO - Safety Monitor initialized
-2025-10-16 19:38:57,951 - REACT.App - INFO - Setting up component connections...
-2025-10-16 19:38:57,956 - REACT.App - INFO - Component connections established
-2025-10-16 19:38:57,956 - REACT.App - INFO - All managers initialized successfully
-2025-10-16 19:38:57,956 - REACT.App - INFO - Starting REACT application...
-2025-10-16 19:38:57,956 - REACT.TelemetryManager - INFO - Telem1 connected to: udp:127.0.0.1:14552
-2025-10-16 19:38:57,958 - REACT.TelemetryManager - INFO - Telem1 UAV discovery will happen continuously as messages arrive
-2025-10-16 19:38:57,963 - REACT.TelemetryManager - ERROR - Telem2 failed to connect: could not open port '/dev/ttyUSB1': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3)
-2025-10-16 19:38:57,963 - REACT.MissionManager - INFO - Mission monitoring started
-2025-10-16 19:38:57,964 - REACT.SafetyMonitor - INFO - Safety monitoring started
-2025-10-16 19:38:57,964 - REACT.App - INFO - All services started successfully!
-2025-10-16 19:38:57,964 - REACT.Main - INFO - Initializing QML frontend...
-2025-10-16 19:38:58,294 - REACT.Main - INFO - Frontend started successfully
-2025-10-16 19:38:58,294 - REACT.Main - INFO - Starting application event loop...
-2025-10-16 19:38:58,341 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_2 (System ID: 2)
-2025-10-16 19:38:58,505 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_1 (System ID: 1)
-2025-10-16 19:38:58,962 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_1: GPS fix lost (type: 0)
-2025-10-16 19:39:03,637 - REACT.Main - INFO - Shutting down...
-2025-10-16 19:39:03,638 - REACT.App - INFO - Stopping REACT application...
-2025-10-16 19:39:03,639 - REACT.SafetyMonitor - INFO - Safety monitoring stopped
-2025-10-16 19:39:03,644 - REACT.MissionManager - INFO - Mission monitoring stopped
-2025-10-16 19:39:03,648 - REACT.App - INFO - All services stopped.
-2025-10-16 19:39:04,669 - REACT.Launcher - INFO - Main application exited
-2025-10-16 19:39:04,669 - REACT.Launcher - INFO - Shutting down REACT...
-2025-10-16 19:39:04,669 - REACT.Launcher - INFO - Stopping main application...
-2025-10-16 19:39:04,669 - REACT.Launcher - INFO - Main application stopped
-2025-10-16 19:39:04,670 - REACT.Launcher - INFO - Stopping tile server...
-2025-10-16 19:39:04,677 - REACT.Launcher - INFO - Tile server stopped
-2025-10-16 19:39:13,421 - REACT.Launcher - INFO - ==================================================
-2025-10-16 19:39:13,421 - REACT.Launcher - INFO - REACT Ground Control Station Launcher
-2025-10-16 19:39:13,421 - REACT.Launcher - INFO - ==================================================
-2025-10-16 19:39:13,421 - REACT.Launcher - INFO - Installing dependencies...
-2025-10-16 19:39:13,421 - REACT.Launcher.Dependencies - INFO - Installing tile server dependencies...
-2025-10-16 19:39:14,323 - REACT.Launcher.Dependencies - INFO - Dependencies installed successfully
-2025-10-16 19:39:14,323 - REACT.Launcher - INFO - Starting tile server...
-2025-10-16 19:39:14,328 - REACT.Launcher - INFO - Tile server started (PID: 19396)
-2025-10-16 19:39:14,328 - REACT.Launcher - INFO - Waiting for tile server to be ready...
-2025-10-16 19:39:14,848 - REACT.Launcher - INFO - Tile server is ready!
-2025-10-16 19:39:14,848 - REACT.Launcher - INFO - Starting REACT application...
-2025-10-16 19:39:14,849 - REACT.Launcher - INFO - Waiting for tile server to be ready...
-2025-10-16 19:39:14,865 - REACT.Launcher - INFO - Tile server is ready!
-2025-10-16 19:39:14,870 - REACT.Launcher - INFO - REACT application started (PID: 26380)
-2025-10-16 19:39:14,870 - REACT.Launcher - INFO - ==================================================
-2025-10-16 19:39:14,870 - REACT.Launcher - INFO - REACT is running!
-2025-10-16 19:39:14,870 - REACT.Launcher - INFO - - Tile server: http://127.0.0.1:8081
-2025-10-16 19:39:14,870 - REACT.Launcher - INFO - - Main application: Running
-2025-10-16 19:39:14,870 - REACT.Launcher - INFO - Press Ctrl+C to stop all services
-2025-10-16 19:39:14,871 - REACT.Launcher - INFO - ==================================================
-2025-10-16 19:39:15,541 - REACT.Main - INFO - REACT Application logging initialized
-2025-10-16 19:39:15,541 - REACT.Main - INFO - Log file: C:\Users\chenz\Documents\react\react\react\data/logs/mission_log.txt
-2025-10-16 19:39:15,542 - REACT.Main - INFO - Starting REACT Ground Control Station...
-2025-10-16 19:39:15,542 - REACT.Main - INFO - Initializing backend...
-2025-10-16 19:39:15,542 - REACT.App - INFO - REACT Application starting...
-2025-10-16 19:39:15,542 - REACT.UAVController - INFO - UAV Controller initialized
-2025-10-16 19:39:15,542 - REACT.MissionManager - INFO - Mission Manager initialized
-2025-10-16 19:39:15,542 - REACT.SafetyMonitor - INFO - Safety Monitor initialized
-2025-10-16 19:39:15,542 - REACT.App - INFO - Setting up component connections...
-2025-10-16 19:39:15,543 - REACT.App - INFO - Component connections established
-2025-10-16 19:39:15,543 - REACT.App - INFO - All managers initialized successfully
-2025-10-16 19:39:15,543 - REACT.App - INFO - Starting REACT application...
-2025-10-16 19:39:15,544 - REACT.TelemetryManager - INFO - Telem1 connected to: udp:127.0.0.1:14552
-2025-10-16 19:39:15,544 - REACT.TelemetryManager - INFO - Telem1 UAV discovery will happen continuously as messages arrive
-2025-10-16 19:39:15,549 - REACT.TelemetryManager - ERROR - Telem2 failed to connect: could not open port '/dev/ttyUSB1': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3)
-2025-10-16 19:39:15,550 - REACT.MissionManager - INFO - Mission monitoring started
-2025-10-16 19:39:15,550 - REACT.SafetyMonitor - INFO - Safety monitoring started
-2025-10-16 19:39:15,550 - REACT.App - INFO - All services started successfully!
-2025-10-16 19:39:15,550 - REACT.Main - INFO - Initializing QML frontend...
-2025-10-16 19:39:15,795 - REACT.Main - INFO - Frontend started successfully
-2025-10-16 19:39:15,797 - REACT.Main - INFO - Starting application event loop...
-2025-10-16 19:39:15,845 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_2 (System ID: 2)
-2025-10-16 19:39:15,869 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_1 (System ID: 1)
-2025-10-16 19:39:24,576 - REACT.App - INFO - Setting GCS home position to: 34.1637778750075, -118.07471448070648, 0.0
-2025-10-16 19:39:24,577 - REACT.App - INFO - GCS home position updated and signal emitted
-2025-10-16 19:39:32,133 - REACT.Main - INFO - Shutting down...
-2025-10-16 19:39:32,133 - REACT.App - INFO - Stopping REACT application...
-2025-10-16 19:39:32,134 - REACT.SafetyMonitor - INFO - Safety monitoring stopped
-2025-10-16 19:39:32,134 - REACT.MissionManager - INFO - Mission monitoring stopped
-2025-10-16 19:39:32,136 - REACT.App - INFO - All services stopped.
-2025-10-16 19:39:32,878 - REACT.Launcher - INFO - Main application exited
-2025-10-16 19:39:32,878 - REACT.Launcher - INFO - Shutting down REACT...
-2025-10-16 19:39:32,878 - REACT.Launcher - INFO - Stopping main application...
-2025-10-16 19:39:32,878 - REACT.Launcher - INFO - Main application stopped
-2025-10-16 19:39:32,878 - REACT.Launcher - INFO - Stopping tile server...
-2025-10-16 19:39:32,886 - REACT.Launcher - INFO - Tile server stopped
-2025-10-16 19:40:22,038 - REACT.Launcher - INFO - ==================================================
-2025-10-16 19:40:22,039 - REACT.Launcher - INFO - REACT Ground Control Station Launcher
-2025-10-16 19:40:22,039 - REACT.Launcher - INFO - ==================================================
-2025-10-16 19:40:22,039 - REACT.Launcher - INFO - Installing dependencies...
-2025-10-16 19:40:22,039 - REACT.Launcher.Dependencies - INFO - Installing tile server dependencies...
-2025-10-16 19:40:22,920 - REACT.Launcher.Dependencies - INFO - Dependencies installed successfully
-2025-10-16 19:40:22,920 - REACT.Launcher - INFO - Starting tile server...
-2025-10-16 19:40:22,926 - REACT.Launcher - INFO - Tile server started (PID: 20512)
-2025-10-16 19:40:22,926 - REACT.Launcher - INFO - Waiting for tile server to be ready...
-2025-10-16 19:40:23,461 - REACT.Launcher - INFO - Tile server is ready!
-2025-10-16 19:40:23,461 - REACT.Launcher - INFO - Starting REACT application...
-2025-10-16 19:40:23,461 - REACT.Launcher - INFO - Waiting for tile server to be ready...
-2025-10-16 19:40:23,463 - REACT.Launcher - INFO - Tile server is ready!
-2025-10-16 19:40:23,465 - REACT.Launcher - INFO - REACT application started (PID: 22624)
-2025-10-16 19:40:23,465 - REACT.Launcher - INFO - ==================================================
-2025-10-16 19:40:23,465 - REACT.Launcher - INFO - REACT is running!
-2025-10-16 19:40:23,465 - REACT.Launcher - INFO - - Tile server: http://127.0.0.1:8081
-2025-10-16 19:40:23,465 - REACT.Launcher - INFO - - Main application: Running
-2025-10-16 19:40:23,465 - REACT.Launcher - INFO - Press Ctrl+C to stop all services
-2025-10-16 19:40:23,465 - REACT.Launcher - INFO - ==================================================
-2025-10-16 19:40:24,144 - REACT.Main - INFO - REACT Application logging initialized
-2025-10-16 19:40:24,144 - REACT.Main - INFO - Log file: C:\Users\chenz\Documents\react\react\react\data/logs/mission_log.txt
-2025-10-16 19:40:24,144 - REACT.Main - INFO - Starting REACT Ground Control Station...
-2025-10-16 19:40:24,144 - REACT.Main - INFO - Initializing backend...
-2025-10-16 19:40:24,144 - REACT.App - INFO - REACT Application starting...
-2025-10-16 19:40:24,144 - REACT.UAVController - INFO - UAV Controller initialized
-2025-10-16 19:40:24,144 - REACT.MissionManager - INFO - Mission Manager initialized
-2025-10-16 19:40:24,144 - REACT.SafetyMonitor - INFO - Safety Monitor initialized
-2025-10-16 19:40:24,144 - REACT.App - INFO - Setting up component connections...
-2025-10-16 19:40:24,144 - REACT.App - INFO - Component connections established
-2025-10-16 19:40:24,144 - REACT.App - INFO - All managers initialized successfully
-2025-10-16 19:40:24,144 - REACT.App - INFO - Starting REACT application...
-2025-10-16 19:40:24,149 - REACT.TelemetryManager - INFO - Telem1 connected to: udp:127.0.0.1:14552
-2025-10-16 19:40:24,149 - REACT.TelemetryManager - INFO - Telem1 UAV discovery will happen continuously as messages arrive
-2025-10-16 19:40:24,155 - REACT.TelemetryManager - ERROR - Telem2 failed to connect: could not open port '/dev/ttyUSB1': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3)
-2025-10-16 19:40:24,156 - REACT.MissionManager - INFO - Mission monitoring started
-2025-10-16 19:40:24,156 - REACT.SafetyMonitor - INFO - Safety monitoring started
-2025-10-16 19:40:24,157 - REACT.App - INFO - All services started successfully!
-2025-10-16 19:40:24,157 - REACT.Main - INFO - Initializing QML frontend...
-2025-10-16 19:40:24,334 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_2 (System ID: 2)
-2025-10-16 19:40:24,479 - REACT.Main - INFO - Frontend started successfully
-2025-10-16 19:40:24,479 - REACT.Main - INFO - Starting application event loop...
-2025-10-16 19:40:24,510 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_1 (System ID: 1)
-2025-10-16 19:40:31,747 - REACT.Main - INFO - Shutting down...
-2025-10-16 19:40:31,750 - REACT.App - INFO - Stopping REACT application...
-2025-10-16 19:40:31,752 - REACT.SafetyMonitor - INFO - Safety monitoring stopped
-2025-10-16 19:40:31,753 - REACT.MissionManager - INFO - Mission monitoring stopped
-2025-10-16 19:40:31,757 - REACT.App - INFO - All services stopped.
-2025-10-16 19:40:32,474 - REACT.Launcher - INFO - Main application exited
-2025-10-16 19:40:32,474 - REACT.Launcher - INFO - Shutting down REACT...
-2025-10-16 19:40:32,474 - REACT.Launcher - INFO - Stopping main application...
-2025-10-16 19:40:32,474 - REACT.Launcher - INFO - Main application stopped
-2025-10-16 19:40:32,474 - REACT.Launcher - INFO - Stopping tile server...
-2025-10-16 19:40:32,482 - REACT.Launcher - INFO - Tile server stopped
-2025-10-16 19:40:33,794 - REACT.Launcher - INFO - ==================================================
-2025-10-16 19:40:33,794 - REACT.Launcher - INFO - REACT Ground Control Station Launcher
-2025-10-16 19:40:33,794 - REACT.Launcher - INFO - ==================================================
-2025-10-16 19:40:33,794 - REACT.Launcher - INFO - Installing dependencies...
-2025-10-16 19:40:33,794 - REACT.Launcher.Dependencies - INFO - Installing tile server dependencies...
-2025-10-16 19:40:34,673 - REACT.Launcher.Dependencies - INFO - Dependencies installed successfully
-2025-10-16 19:40:34,673 - REACT.Launcher - INFO - Starting tile server...
-2025-10-16 19:40:34,678 - REACT.Launcher - INFO - Tile server started (PID: 22504)
-2025-10-16 19:40:34,678 - REACT.Launcher - INFO - Waiting for tile server to be ready...
-2025-10-16 19:40:35,208 - REACT.Launcher - INFO - Tile server is ready!
-2025-10-16 19:40:35,208 - REACT.Launcher - INFO - Starting REACT application...
-2025-10-16 19:40:35,208 - REACT.Launcher - INFO - Waiting for tile server to be ready...
-2025-10-16 19:40:35,224 - REACT.Launcher - INFO - Tile server is ready!
-2025-10-16 19:40:35,228 - REACT.Launcher - INFO - REACT application started (PID: 20808)
-2025-10-16 19:40:35,229 - REACT.Launcher - INFO - ==================================================
-2025-10-16 19:40:35,229 - REACT.Launcher - INFO - REACT is running!
-2025-10-16 19:40:35,229 - REACT.Launcher - INFO - - Tile server: http://127.0.0.1:8081
-2025-10-16 19:40:35,229 - REACT.Launcher - INFO - - Main application: Running
-2025-10-16 19:40:35,229 - REACT.Launcher - INFO - Press Ctrl+C to stop all services
-2025-10-16 19:40:35,230 - REACT.Launcher - INFO - ==================================================
-2025-10-16 19:40:35,882 - REACT.Main - INFO - REACT Application logging initialized
-2025-10-16 19:40:35,882 - REACT.Main - INFO - Log file: C:\Users\chenz\Documents\react\react\react\data/logs/mission_log.txt
-2025-10-16 19:40:35,882 - REACT.Main - INFO - Starting REACT Ground Control Station...
-2025-10-16 19:40:35,882 - REACT.Main - INFO - Initializing backend...
-2025-10-16 19:40:35,882 - REACT.App - INFO - REACT Application starting...
-2025-10-16 19:40:35,882 - REACT.UAVController - INFO - UAV Controller initialized
-2025-10-16 19:40:35,882 - REACT.MissionManager - INFO - Mission Manager initialized
-2025-10-16 19:40:35,882 - REACT.SafetyMonitor - INFO - Safety Monitor initialized
-2025-10-16 19:40:35,882 - REACT.App - INFO - Setting up component connections...
-2025-10-16 19:40:35,882 - REACT.App - INFO - Component connections established
-2025-10-16 19:40:35,886 - REACT.App - INFO - All managers initialized successfully
-2025-10-16 19:40:35,886 - REACT.App - INFO - Starting REACT application...
-2025-10-16 19:40:35,886 - REACT.TelemetryManager - INFO - Telem1 connected to: udp:127.0.0.1:14552
-2025-10-16 19:40:35,886 - REACT.TelemetryManager - INFO - Telem1 UAV discovery will happen continuously as messages arrive
-2025-10-16 19:40:35,886 - REACT.TelemetryManager - ERROR - Telem2 failed to connect: could not open port '/dev/ttyUSB1': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3)
-2025-10-16 19:40:35,886 - REACT.MissionManager - INFO - Mission monitoring started
-2025-10-16 19:40:35,894 - REACT.SafetyMonitor - INFO - Safety monitoring started
-2025-10-16 19:40:35,895 - REACT.App - INFO - All services started successfully!
-2025-10-16 19:40:35,895 - REACT.Main - INFO - Initializing QML frontend...
-2025-10-16 19:40:35,987 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_1 (System ID: 1)
-2025-10-16 19:40:36,173 - REACT.Main - INFO - Frontend started successfully
-2025-10-16 19:40:36,174 - REACT.Main - INFO - Starting application event loop...
-2025-10-16 19:40:36,338 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_2 (System ID: 2)
-2025-10-16 19:40:39,084 - REACT.Main - INFO - Shutting down...
-2025-10-16 19:40:39,084 - REACT.App - INFO - Stopping REACT application...
-2025-10-16 19:40:39,084 - REACT.SafetyMonitor - INFO - Safety monitoring stopped
-2025-10-16 19:40:39,084 - REACT.MissionManager - INFO - Mission monitoring stopped
-2025-10-16 19:40:39,086 - REACT.App - INFO - All services stopped.
-2025-10-16 19:40:40,232 - REACT.Launcher - INFO - Main application exited
-2025-10-16 19:40:40,232 - REACT.Launcher - INFO - Shutting down REACT...
-2025-10-16 19:40:40,232 - REACT.Launcher - INFO - Stopping main application...
-2025-10-16 19:40:40,232 - REACT.Launcher - INFO - Main application stopped
-2025-10-16 19:40:40,232 - REACT.Launcher - INFO - Stopping tile server...
-2025-10-16 19:40:40,238 - REACT.Launcher - INFO - Tile server stopped
+2025-10-17 16:14:08,674 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:14:08,674 - REACT.Launcher - INFO - REACT Ground Control Station Launcher
+2025-10-17 16:14:08,674 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:14:08,674 - REACT.Launcher - INFO - Installing dependencies...
+2025-10-17 16:14:08,685 - REACT.Launcher.Dependencies - INFO - Installing tile server dependencies...
+2025-10-17 16:14:10,492 - REACT.Launcher.Dependencies - INFO - Dependencies installed successfully
+2025-10-17 16:14:10,492 - REACT.Launcher - INFO - Starting tile server...
+2025-10-17 16:14:10,506 - REACT.Launcher - INFO - Tile server started (PID: 12512)
+2025-10-17 16:14:10,506 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-17 16:14:11,558 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-17 16:14:11,558 - REACT.Launcher - INFO - Starting REACT application...
+2025-10-17 16:14:11,558 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-17 16:14:11,562 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-17 16:14:11,567 - REACT.Launcher - INFO - REACT application started (PID: 21508)
+2025-10-17 16:14:11,571 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:14:11,571 - REACT.Launcher - INFO - REACT is running!
+2025-10-17 16:14:11,573 - REACT.Launcher - INFO - - Tile server: http://127.0.0.1:8081
+2025-10-17 16:14:11,574 - REACT.Launcher - INFO - - Main application: Running
+2025-10-17 16:14:11,575 - REACT.Launcher - INFO - Press Ctrl+C to stop all services
+2025-10-17 16:14:11,575 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:14:13,141 - REACT.Main - INFO - REACT Application logging initialized
+2025-10-17 16:14:13,141 - REACT.Main - INFO - Log file: C:\Users\chenz\Documents\react\react\react\data/logs/mission_log.txt
+2025-10-17 16:14:13,141 - REACT.Main - INFO - Starting REACT Ground Control Station...
+2025-10-17 16:14:13,141 - REACT.Main - INFO - Initializing backend...
+2025-10-17 16:14:13,141 - REACT.App - INFO - REACT Application starting...
+2025-10-17 16:14:13,141 - REACT.UAVController - INFO - UAV Controller initialized
+2025-10-17 16:14:13,141 - REACT.MissionManager - INFO - Mission Manager initialized
+2025-10-17 16:14:13,141 - REACT.SafetyMonitor - INFO - Safety Monitor initialized
+2025-10-17 16:14:13,141 - REACT.App - INFO - Setting up component connections...
+2025-10-17 16:14:13,141 - REACT.App - INFO - Component connections established
+2025-10-17 16:14:13,146 - REACT.App - INFO - All managers initialized successfully
+2025-10-17 16:14:13,146 - REACT.App - INFO - Starting REACT application...
+2025-10-17 16:14:13,149 - REACT.TelemetryManager - INFO - Telem1 connected to: udp:127.0.0.1:14552
+2025-10-17 16:14:13,152 - REACT.TelemetryManager - INFO - Telem1 UAV discovery will happen continuously as messages arrive
+2025-10-17 16:14:13,164 - REACT.TelemetryManager - ERROR - Telem2 failed to connect: could not open port '/dev/ttyUSB1': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3)
+2025-10-17 16:14:13,170 - REACT.MissionManager - INFO - Mission monitoring started
+2025-10-17 16:14:13,171 - REACT.SafetyMonitor - INFO - Safety monitoring started
+2025-10-17 16:14:13,172 - REACT.App - INFO - All services started successfully!
+2025-10-17 16:14:13,176 - REACT.Main - INFO - Initializing QML frontend...
+2025-10-17 16:14:13,224 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_1 (System ID: 1)
+2025-10-17 16:14:13,322 - REACT.UAVState - INFO - UAV_1: Home position set to lat=34.162741, lon=-118.075390, alt=291.1
+2025-10-17 16:14:13,412 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_4 (System ID: 4)
+2025-10-17 16:14:13,440 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_3 (System ID: 3)
+2025-10-17 16:14:13,536 - REACT.UAVState - INFO - UAV_3: Home position set to lat=34.162813, lon=-118.075390, alt=291.1
+2025-10-17 16:14:13,626 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_2 (System ID: 2)
+2025-10-17 16:14:13,723 - REACT.UAVState - INFO - UAV_2: Home position set to lat=34.162777, lon=-118.075390, alt=291.1
+2025-10-17 16:14:13,809 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_5 (System ID: 5)
+2025-10-17 16:14:13,897 - REACT.Main - INFO - Frontend started successfully
+2025-10-17 16:14:13,897 - REACT.UAVState - INFO - UAV_5: Home position set to lat=34.162885, lon=-118.075390, alt=291.1
+2025-10-17 16:14:13,897 - REACT.Main - INFO - Starting application event loop...
+2025-10-17 16:14:14,060 - REACT.UAVState - INFO - UAV_4: Home position set to lat=34.162849, lon=-118.075390, alt=291.1
+2025-10-17 16:14:35,175 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_4: GPS fix lost (type: 0)
+2025-10-17 16:14:35,175 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_3: GPS fix lost (type: 0)
+2025-10-17 16:14:35,177 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_2: GPS fix lost (type: 0)
+2025-10-17 16:14:36,166 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_1: GPS fix lost (type: 0)
+2025-10-17 16:14:38,814 - REACT.UAVState - INFO - UAV_5: Home position set to lat=0.000000, lon=0.000000, alt=0.0
+2025-10-17 16:14:38,815 - REACT.TelemetryManager - WARNING - UAV UAV_5 Telem1 connection lost (last seen 10.0s ago)
+2025-10-17 16:14:39,168 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_5: Communication lost for 10.4s
+2025-10-17 16:14:50,235 - REACT.UAVState - INFO - UAV_4: Home position set to lat=34.163311, lon=-118.074317, alt=291.1
+2025-10-17 16:14:50,662 - REACT.UAVState - INFO - UAV_2: Home position set to lat=34.163239, lon=-118.074317, alt=291.0
+2025-10-17 16:14:50,685 - REACT.UAVState - INFO - UAV_1: Home position set to lat=34.163203, lon=-118.074317, alt=290.9
+2025-10-17 16:14:50,858 - REACT.UAVState - INFO - UAV_3: Home position set to lat=34.163275, lon=-118.074317, alt=291.0
+2025-10-17 16:15:09,200 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_5: Communication lost for 40.4s
+2025-10-17 16:15:09,201 - REACT.App - CRITICAL - Emergency RTL triggered for UAV_5: Communication lost for 40.4s
+2025-10-17 16:15:09,202 - REACT.MissionManager - WARNING - No active mission for UAV UAV_5
+2025-10-17 16:15:09,203 - REACT.TelemetryManager - WARNING - Aborting mission for UAV_5 - switching to RTL
+2025-10-17 16:15:09,204 - REACT.TelemetryManager - ERROR - Cannot send command to UAV_5 - no telemetry channels available
+2025-10-17 16:15:09,204 - REACT.TelemetryManager - ERROR -   Telem1 available: True, UAV connected: False
+2025-10-17 16:15:09,204 - REACT.TelemetryManager - ERROR -   Telem2 available: False, Telem2 status: False
+2025-10-17 16:15:09,204 - REACT.App - ERROR - Emergency RTL command failed for UAV_5
+2025-10-17 16:15:09,206 - REACT.SafetyMonitor - INFO - Emergency action EMERGENCY_RTL taken for UAV_5 at 1760742909.2004724
+2025-10-17 16:15:27,630 - REACT.Main - INFO - Shutting down...
+2025-10-17 16:15:27,632 - REACT.App - INFO - Stopping REACT application...
+2025-10-17 16:15:27,633 - REACT.SafetyMonitor - INFO - Safety monitoring stopped
+2025-10-17 16:15:27,633 - REACT.MissionManager - INFO - Mission monitoring stopped
+2025-10-17 16:15:27,638 - REACT.App - INFO - All services stopped.
+2025-10-17 16:15:28,646 - REACT.Launcher - INFO - Main application exited
+2025-10-17 16:15:28,647 - REACT.Launcher - INFO - Shutting down REACT...
+2025-10-17 16:15:28,647 - REACT.Launcher - INFO - Stopping main application...
+2025-10-17 16:15:28,647 - REACT.Launcher - INFO - Main application stopped
+2025-10-17 16:15:28,647 - REACT.Launcher - INFO - Stopping tile server...
+2025-10-17 16:15:28,666 - REACT.Launcher - INFO - Tile server stopped
+2025-10-17 16:22:39,217 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:22:39,217 - REACT.Launcher - INFO - REACT Ground Control Station Launcher
+2025-10-17 16:22:39,217 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:22:39,217 - REACT.Launcher - INFO - Installing dependencies...
+2025-10-17 16:22:39,217 - REACT.Launcher.Dependencies - INFO - Installing tile server dependencies...
+2025-10-17 16:22:41,253 - REACT.Launcher.Dependencies - INFO - Dependencies installed successfully
+2025-10-17 16:22:41,253 - REACT.Launcher - INFO - Starting tile server...
+2025-10-17 16:22:41,253 - REACT.Launcher - INFO - Tile server started (PID: 17236)
+2025-10-17 16:22:41,253 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-17 16:22:42,311 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-17 16:22:42,311 - REACT.Launcher - INFO - Starting REACT application...
+2025-10-17 16:22:42,311 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-17 16:22:42,311 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-17 16:22:42,318 - REACT.Launcher - INFO - REACT application started (PID: 22436)
+2025-10-17 16:22:42,318 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:22:42,318 - REACT.Launcher - INFO - REACT is running!
+2025-10-17 16:22:42,318 - REACT.Launcher - INFO - - Tile server: http://127.0.0.1:8081
+2025-10-17 16:22:42,318 - REACT.Launcher - INFO - - Main application: Running
+2025-10-17 16:22:42,318 - REACT.Launcher - INFO - Press Ctrl+C to stop all services
+2025-10-17 16:22:42,318 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:22:44,089 - REACT.Main - INFO - REACT Application logging initialized
+2025-10-17 16:22:44,089 - REACT.Main - INFO - Log file: C:\Users\chenz\Documents\react\react\react\data/logs/mission_log.txt
+2025-10-17 16:22:44,089 - REACT.Main - INFO - Starting REACT Ground Control Station...
+2025-10-17 16:22:44,089 - REACT.Main - INFO - Initializing backend...
+2025-10-17 16:22:44,089 - REACT.App - INFO - REACT Application starting...
+2025-10-17 16:22:44,089 - REACT.UAVController - INFO - UAV Controller initialized
+2025-10-17 16:22:44,089 - REACT.MissionManager - INFO - Mission Manager initialized
+2025-10-17 16:22:44,089 - REACT.SafetyMonitor - INFO - Safety Monitor initialized
+2025-10-17 16:22:44,089 - REACT.App - INFO - Setting up component connections...
+2025-10-17 16:22:44,096 - REACT.App - INFO - Component connections established
+2025-10-17 16:22:44,096 - REACT.App - INFO - All managers initialized successfully
+2025-10-17 16:22:44,098 - REACT.App - INFO - Starting REACT application...
+2025-10-17 16:22:44,101 - REACT.TelemetryManager - INFO - Telem1 connected to: udp:127.0.0.1:14552
+2025-10-17 16:22:44,102 - REACT.TelemetryManager - INFO - Telem1 UAV discovery will happen continuously as messages arrive
+2025-10-17 16:22:44,113 - REACT.TelemetryManager - ERROR - Telem2 failed to connect: could not open port '/dev/ttyUSB1': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3)
+2025-10-17 16:22:44,116 - REACT.MissionManager - INFO - Mission monitoring started
+2025-10-17 16:22:44,116 - REACT.SafetyMonitor - INFO - Safety monitoring started
+2025-10-17 16:22:44,116 - REACT.App - INFO - All services started successfully!
+2025-10-17 16:22:44,122 - REACT.Main - INFO - Initializing QML frontend...
+2025-10-17 16:22:44,165 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_1 (System ID: 1)
+2025-10-17 16:22:44,259 - REACT.UAVState - INFO - UAV_1: Home position set to lat=34.163203, lon=-118.074317, alt=290.9
+2025-10-17 16:22:44,315 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_2 (System ID: 2)
+2025-10-17 16:22:44,399 - REACT.UAVState - INFO - UAV_2: Home position set to lat=34.163239, lon=-118.074317, alt=291.0
+2025-10-17 16:22:44,454 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_4 (System ID: 4)
+2025-10-17 16:22:44,537 - REACT.UAVState - INFO - UAV_4: Home position set to lat=34.163311, lon=-118.074317, alt=291.1
+2025-10-17 16:22:44,612 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_3 (System ID: 3)
+2025-10-17 16:22:44,808 - REACT.Main - INFO - Frontend started successfully
+2025-10-17 16:22:44,808 - REACT.Main - INFO - Starting application event loop...
+2025-10-17 16:22:45,132 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_3: GPS fix lost (type: 0)
+2025-10-17 16:22:45,137 - REACT.UAVState - INFO - UAV_3: Home position set to lat=34.163275, lon=-118.074317, alt=291.0
+2025-10-17 16:23:48,917 - REACT.Main - INFO - Shutting down...
+2025-10-17 16:23:48,917 - REACT.App - INFO - Stopping REACT application...
+2025-10-17 16:23:48,917 - REACT.SafetyMonitor - INFO - Safety monitoring stopped
+2025-10-17 16:23:48,917 - REACT.MissionManager - INFO - Mission monitoring stopped
+2025-10-17 16:23:48,923 - REACT.App - INFO - All services stopped.
+2025-10-17 16:23:49,379 - REACT.Launcher - INFO - Main application exited
+2025-10-17 16:23:49,379 - REACT.Launcher - INFO - Shutting down REACT...
+2025-10-17 16:23:49,379 - REACT.Launcher - INFO - Stopping main application...
+2025-10-17 16:23:49,379 - REACT.Launcher - INFO - Main application stopped
+2025-10-17 16:23:49,379 - REACT.Launcher - INFO - Stopping tile server...
+2025-10-17 16:23:49,386 - REACT.Launcher - INFO - Tile server stopped
+2025-10-17 16:42:57,186 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:42:57,201 - REACT.Launcher - INFO - REACT Ground Control Station Launcher
+2025-10-17 16:42:57,201 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:42:57,201 - REACT.Launcher - INFO - Installing dependencies...
+2025-10-17 16:42:57,201 - REACT.Launcher.Dependencies - INFO - Installing tile server dependencies...
+2025-10-17 16:42:59,839 - REACT.Launcher.Dependencies - INFO - Dependencies installed successfully
+2025-10-17 16:42:59,839 - REACT.Launcher - INFO - Starting tile server...
+2025-10-17 16:42:59,849 - REACT.Launcher - INFO - Tile server started (PID: 28024)
+2025-10-17 16:42:59,849 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-17 16:43:01,421 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-17 16:43:01,421 - REACT.Launcher - INFO - Starting REACT application...
+2025-10-17 16:43:01,421 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-17 16:43:01,427 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-17 16:43:01,432 - REACT.Launcher - INFO - REACT application started (PID: 18016)
+2025-10-17 16:43:01,432 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:43:01,432 - REACT.Launcher - INFO - REACT is running!
+2025-10-17 16:43:01,432 - REACT.Launcher - INFO - - Tile server: http://127.0.0.1:8081
+2025-10-17 16:43:01,432 - REACT.Launcher - INFO - - Main application: Running
+2025-10-17 16:43:01,438 - REACT.Launcher - INFO - Press Ctrl+C to stop all services
+2025-10-17 16:43:01,438 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:43:02,698 - REACT.Main - INFO - REACT Application logging initialized
+2025-10-17 16:43:02,698 - REACT.Main - INFO - Log file: C:\Users\chenz\Documents\react\react\react\data/logs/mission_log.txt
+2025-10-17 16:43:02,698 - REACT.Main - INFO - Starting REACT Ground Control Station...
+2025-10-17 16:43:02,698 - REACT.Main - INFO - Initializing backend...
+2025-10-17 16:43:02,698 - REACT.App - INFO - REACT Application starting...
+2025-10-17 16:43:02,703 - REACT.UAVController - INFO - UAV Controller initialized
+2025-10-17 16:43:02,703 - REACT.MissionManager - INFO - Mission Manager initialized
+2025-10-17 16:43:02,706 - REACT.SafetyMonitor - INFO - Safety Monitor initialized
+2025-10-17 16:43:02,707 - REACT.App - INFO - Setting up component connections...
+2025-10-17 16:43:02,708 - REACT.App - INFO - Component connections established
+2025-10-17 16:43:02,709 - REACT.App - INFO - All managers initialized successfully
+2025-10-17 16:43:02,709 - REACT.App - INFO - Starting REACT application...
+2025-10-17 16:43:02,710 - REACT.TelemetryManager - INFO - Telem1 connected to: udp:127.0.0.1:14552
+2025-10-17 16:43:02,710 - REACT.TelemetryManager - INFO - Telem1 UAV discovery will happen continuously as messages arrive
+2025-10-17 16:43:02,737 - REACT.TelemetryManager - ERROR - Telem2 failed to connect: could not open port '/dev/ttyUSB1': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3)
+2025-10-17 16:43:02,737 - REACT.MissionManager - INFO - Mission monitoring started
+2025-10-17 16:43:02,740 - REACT.SafetyMonitor - INFO - Safety monitoring started
+2025-10-17 16:43:02,740 - REACT.App - INFO - All services started successfully!
+2025-10-17 16:43:02,742 - REACT.Main - INFO - Initializing QML frontend...
+2025-10-17 16:43:02,757 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_2 (System ID: 2)
+2025-10-17 16:43:02,862 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_4 (System ID: 4)
+2025-10-17 16:43:02,914 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_1 (System ID: 1)
+2025-10-17 16:43:02,991 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_3 (System ID: 3)
+2025-10-17 16:43:03,169 - REACT.Main - INFO - Frontend started successfully
+2025-10-17 16:43:03,178 - REACT.Main - INFO - Starting application event loop...
+2025-10-17 16:43:03,184 - REACT.UAVState - INFO - UAV_1: Home position set to lat=34.163203, lon=-118.074317, alt=290.9
+2025-10-17 16:43:03,393 - REACT.UAVState - INFO - UAV_2: Home position set to lat=34.163239, lon=-118.074317, alt=291.0
+2025-10-17 16:43:03,593 - REACT.UAVState - INFO - UAV_3: Home position set to lat=34.163275, lon=-118.074317, alt=291.0
+2025-10-17 16:43:03,726 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_4: GPS fix lost (type: 0)
+2025-10-17 16:43:03,752 - REACT.UAVState - INFO - UAV_4: Home position set to lat=34.163311, lon=-118.074317, alt=291.1
+2025-10-17 16:43:17,392 - REACT.Main - INFO - Shutting down...
+2025-10-17 16:43:17,396 - REACT.App - INFO - Stopping REACT application...
+2025-10-17 16:43:17,396 - REACT.SafetyMonitor - INFO - Safety monitoring stopped
+2025-10-17 16:43:17,396 - REACT.MissionManager - INFO - Mission monitoring stopped
+2025-10-17 16:43:17,397 - REACT.App - INFO - All services stopped.
+2025-10-17 16:43:18,481 - REACT.Launcher - INFO - Main application exited
+2025-10-17 16:43:18,481 - REACT.Launcher - INFO - Shutting down REACT...
+2025-10-17 16:43:18,481 - REACT.Launcher - INFO - Stopping main application...
+2025-10-17 16:43:18,483 - REACT.Launcher - INFO - Main application stopped
+2025-10-17 16:43:18,483 - REACT.Launcher - INFO - Stopping tile server...
+2025-10-17 16:43:18,493 - REACT.Launcher - INFO - Tile server stopped
+2025-10-17 16:44:00,651 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:44:00,651 - REACT.Launcher - INFO - REACT Ground Control Station Launcher
+2025-10-17 16:44:00,651 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:44:00,651 - REACT.Launcher - INFO - Installing dependencies...
+2025-10-17 16:44:00,651 - REACT.Launcher.Dependencies - INFO - Installing tile server dependencies...
+2025-10-17 16:44:03,317 - REACT.Launcher.Dependencies - INFO - Dependencies installed successfully
+2025-10-17 16:44:03,317 - REACT.Launcher - INFO - Starting tile server...
+2025-10-17 16:44:03,328 - REACT.Launcher - INFO - Tile server started (PID: 21140)
+2025-10-17 16:44:03,330 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-17 16:44:04,909 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-17 16:44:04,910 - REACT.Launcher - INFO - Starting REACT application...
+2025-10-17 16:44:04,910 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-17 16:44:04,911 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-17 16:44:04,924 - REACT.Launcher - INFO - REACT application started (PID: 24904)
+2025-10-17 16:44:04,924 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:44:04,924 - REACT.Launcher - INFO - REACT is running!
+2025-10-17 16:44:04,926 - REACT.Launcher - INFO - - Tile server: http://127.0.0.1:8081
+2025-10-17 16:44:04,926 - REACT.Launcher - INFO - - Main application: Running
+2025-10-17 16:44:04,926 - REACT.Launcher - INFO - Press Ctrl+C to stop all services
+2025-10-17 16:44:04,928 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:44:07,172 - REACT.Main - INFO - REACT Application logging initialized
+2025-10-17 16:44:07,172 - REACT.Main - INFO - Log file: C:\Users\chenz\Documents\react\react\react\data/logs/mission_log.txt
+2025-10-17 16:44:07,172 - REACT.Main - INFO - Starting REACT Ground Control Station...
+2025-10-17 16:44:07,172 - REACT.Main - INFO - Initializing backend...
+2025-10-17 16:44:07,172 - REACT.App - INFO - REACT Application starting...
+2025-10-17 16:44:07,172 - REACT.UAVController - INFO - UAV Controller initialized
+2025-10-17 16:44:07,172 - REACT.MissionManager - INFO - Mission Manager initialized
+2025-10-17 16:44:07,172 - REACT.SafetyMonitor - INFO - Safety Monitor initialized
+2025-10-17 16:44:07,172 - REACT.App - INFO - Setting up component connections...
+2025-10-17 16:44:07,172 - REACT.App - INFO - Component connections established
+2025-10-17 16:44:07,172 - REACT.App - INFO - All managers initialized successfully
+2025-10-17 16:44:07,172 - REACT.App - INFO - Starting REACT application...
+2025-10-17 16:44:07,184 - REACT.TelemetryManager - INFO - Telem1 connected to: udp:127.0.0.1:14552
+2025-10-17 16:44:07,188 - REACT.TelemetryManager - INFO - Telem1 UAV discovery will happen continuously as messages arrive
+2025-10-17 16:44:07,200 - REACT.TelemetryManager - ERROR - Telem2 failed to connect: could not open port '/dev/ttyUSB1': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3)
+2025-10-17 16:44:07,203 - REACT.MissionManager - INFO - Mission monitoring started
+2025-10-17 16:44:07,204 - REACT.SafetyMonitor - INFO - Safety monitoring started
+2025-10-17 16:44:07,204 - REACT.App - INFO - All services started successfully!
+2025-10-17 16:44:07,204 - REACT.Main - INFO - Initializing QML frontend...
+2025-10-17 16:44:07,254 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_4 (System ID: 4)
+2025-10-17 16:44:07,263 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_2 (System ID: 2)
+2025-10-17 16:44:07,355 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_3 (System ID: 3)
+2025-10-17 16:44:07,448 - REACT.UAVState - INFO - UAV_2: Home position set to lat=34.163239, lon=-118.074317, alt=291.0
+2025-10-17 16:44:07,509 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_1 (System ID: 1)
+2025-10-17 16:44:07,616 - REACT.UAVState - INFO - UAV_4: Home position set to lat=34.163311, lon=-118.074317, alt=291.1
+2025-10-17 16:44:07,758 - REACT.UAVState - INFO - UAV_3: Home position set to lat=34.163275, lon=-118.074317, alt=291.0
+2025-10-17 16:44:07,812 - REACT.Main - INFO - Frontend started successfully
+2025-10-17 16:44:07,814 - REACT.Main - INFO - Starting application event loop...
+2025-10-17 16:44:08,195 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_1: GPS fix lost (type: 0)
+2025-10-17 16:44:08,269 - REACT.UAVState - INFO - UAV_1: Home position set to lat=34.163203, lon=-118.074317, alt=290.9
+2025-10-17 16:44:44,581 - REACT.Main - INFO - Shutting down...
+2025-10-17 16:44:44,581 - REACT.App - INFO - Stopping REACT application...
+2025-10-17 16:44:44,584 - REACT.SafetyMonitor - INFO - Safety monitoring stopped
+2025-10-17 16:44:44,584 - REACT.MissionManager - INFO - Mission monitoring stopped
+2025-10-17 16:44:44,586 - REACT.App - INFO - All services stopped.
+2025-10-17 16:44:44,988 - REACT.Launcher - INFO - Main application exited
+2025-10-17 16:44:44,988 - REACT.Launcher - INFO - Shutting down REACT...
+2025-10-17 16:44:44,988 - REACT.Launcher - INFO - Stopping main application...
+2025-10-17 16:44:44,988 - REACT.Launcher - INFO - Main application stopped
+2025-10-17 16:44:44,988 - REACT.Launcher - INFO - Stopping tile server...
+2025-10-17 16:44:45,011 - REACT.Launcher - INFO - Tile server stopped
+2025-10-17 16:45:02,313 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:45:02,318 - REACT.Launcher - INFO - REACT Ground Control Station Launcher
+2025-10-17 16:45:02,318 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:45:02,318 - REACT.Launcher - INFO - Installing dependencies...
+2025-10-17 16:45:02,318 - REACT.Launcher.Dependencies - INFO - Installing tile server dependencies...
+2025-10-17 16:45:04,135 - REACT.Launcher.Dependencies - INFO - Dependencies installed successfully
+2025-10-17 16:45:04,135 - REACT.Launcher - INFO - Starting tile server...
+2025-10-17 16:45:04,147 - REACT.Launcher - INFO - Tile server started (PID: 14252)
+2025-10-17 16:45:04,148 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-17 16:45:05,761 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-17 16:45:05,761 - REACT.Launcher - INFO - Starting REACT application...
+2025-10-17 16:45:05,761 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-17 16:45:05,770 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-17 16:45:05,775 - REACT.Launcher - INFO - REACT application started (PID: 29672)
+2025-10-17 16:45:05,775 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:45:05,785 - REACT.Launcher - INFO - REACT is running!
+2025-10-17 16:45:05,787 - REACT.Launcher - INFO - - Tile server: http://127.0.0.1:8081
+2025-10-17 16:45:05,791 - REACT.Launcher - INFO - - Main application: Running
+2025-10-17 16:45:05,793 - REACT.Launcher - INFO - Press Ctrl+C to stop all services
+2025-10-17 16:45:05,793 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:45:07,856 - REACT.Main - INFO - REACT Application logging initialized
+2025-10-17 16:45:07,856 - REACT.Main - INFO - Log file: C:\Users\chenz\Documents\react\react\react\data/logs/mission_log.txt
+2025-10-17 16:45:07,856 - REACT.Main - INFO - Starting REACT Ground Control Station...
+2025-10-17 16:45:07,856 - REACT.Main - INFO - Initializing backend...
+2025-10-17 16:45:07,856 - REACT.App - INFO - REACT Application starting...
+2025-10-17 16:45:07,856 - REACT.UAVController - INFO - UAV Controller initialized
+2025-10-17 16:45:07,856 - REACT.MissionManager - INFO - Mission Manager initialized
+2025-10-17 16:45:07,856 - REACT.SafetyMonitor - INFO - Safety Monitor initialized
+2025-10-17 16:45:07,856 - REACT.App - INFO - Setting up component connections...
+2025-10-17 16:45:07,856 - REACT.App - INFO - Component connections established
+2025-10-17 16:45:07,856 - REACT.App - INFO - All managers initialized successfully
+2025-10-17 16:45:07,868 - REACT.App - INFO - Starting REACT application...
+2025-10-17 16:45:07,869 - REACT.TelemetryManager - INFO - Telem1 connected to: udp:127.0.0.1:14552
+2025-10-17 16:45:07,869 - REACT.TelemetryManager - INFO - Telem1 UAV discovery will happen continuously as messages arrive
+2025-10-17 16:45:07,884 - REACT.TelemetryManager - ERROR - Telem2 failed to connect: could not open port '/dev/ttyUSB1': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3)
+2025-10-17 16:45:07,887 - REACT.MissionManager - INFO - Mission monitoring started
+2025-10-17 16:45:07,887 - REACT.SafetyMonitor - INFO - Safety monitoring started
+2025-10-17 16:45:07,887 - REACT.App - INFO - All services started successfully!
+2025-10-17 16:45:07,887 - REACT.Main - INFO - Initializing QML frontend...
+2025-10-17 16:45:07,943 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_4 (System ID: 4)
+2025-10-17 16:45:07,976 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_1 (System ID: 1)
+2025-10-17 16:45:08,080 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_3 (System ID: 3)
+2025-10-17 16:45:08,255 - REACT.UAVState - INFO - UAV_1: Home position set to lat=34.163203, lon=-118.074317, alt=290.9
+2025-10-17 16:45:08,318 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_2 (System ID: 2)
+2025-10-17 16:45:08,508 - REACT.UAVState - INFO - UAV_2: Home position set to lat=34.163239, lon=-118.074317, alt=291.0
+2025-10-17 16:45:08,543 - REACT.Main - INFO - Frontend started successfully
+2025-10-17 16:45:08,545 - REACT.Main - INFO - Starting application event loop...
+2025-10-17 16:45:08,708 - REACT.UAVState - INFO - UAV_4: Home position set to lat=34.163311, lon=-118.074317, alt=291.1
+2025-10-17 16:45:08,843 - REACT.UAVState - INFO - UAV_3: Home position set to lat=34.163275, lon=-118.074317, alt=291.0
+2025-10-17 16:46:01,822 - REACT.Main - INFO - Shutting down...
+2025-10-17 16:46:01,822 - REACT.App - INFO - Stopping REACT application...
+2025-10-17 16:46:01,822 - REACT.SafetyMonitor - INFO - Safety monitoring stopped
+2025-10-17 16:46:01,822 - REACT.MissionManager - INFO - Mission monitoring stopped
+2025-10-17 16:46:01,826 - REACT.App - INFO - All services stopped.
+2025-10-17 16:46:02,841 - REACT.Launcher - INFO - Main application exited
+2025-10-17 16:46:02,841 - REACT.Launcher - INFO - Shutting down REACT...
+2025-10-17 16:46:02,844 - REACT.Launcher - INFO - Stopping main application...
+2025-10-17 16:46:02,844 - REACT.Launcher - INFO - Main application stopped
+2025-10-17 16:46:02,844 - REACT.Launcher - INFO - Stopping tile server...
+2025-10-17 16:46:02,874 - REACT.Launcher - INFO - Tile server stopped
+2025-10-17 16:47:28,901 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:47:28,901 - REACT.Launcher - INFO - REACT Ground Control Station Launcher
+2025-10-17 16:47:28,901 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:47:28,901 - REACT.Launcher - INFO - Installing dependencies...
+2025-10-17 16:47:28,901 - REACT.Launcher.Dependencies - INFO - Installing tile server dependencies...
+2025-10-17 16:47:31,611 - REACT.Launcher.Dependencies - INFO - Dependencies installed successfully
+2025-10-17 16:47:31,611 - REACT.Launcher - INFO - Starting tile server...
+2025-10-17 16:47:31,621 - REACT.Launcher - INFO - Tile server started (PID: 27360)
+2025-10-17 16:47:31,621 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-17 16:47:33,175 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-17 16:47:33,175 - REACT.Launcher - INFO - Starting REACT application...
+2025-10-17 16:47:33,175 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-17 16:47:33,211 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-17 16:47:33,219 - REACT.Launcher - INFO - REACT application started (PID: 27488)
+2025-10-17 16:47:33,225 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:47:33,225 - REACT.Launcher - INFO - REACT is running!
+2025-10-17 16:47:33,227 - REACT.Launcher - INFO - - Tile server: http://127.0.0.1:8081
+2025-10-17 16:47:33,228 - REACT.Launcher - INFO - - Main application: Running
+2025-10-17 16:47:33,230 - REACT.Launcher - INFO - Press Ctrl+C to stop all services
+2025-10-17 16:47:33,231 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:47:34,844 - REACT.Main - INFO - REACT Application logging initialized
+2025-10-17 16:47:34,844 - REACT.Main - INFO - Log file: C:\Users\chenz\Documents\react\react\react\data/logs/mission_log.txt
+2025-10-17 16:47:34,844 - REACT.Main - INFO - Starting REACT Ground Control Station...
+2025-10-17 16:47:34,844 - REACT.Main - INFO - Initializing backend...
+2025-10-17 16:47:34,844 - REACT.App - INFO - REACT Application starting...
+2025-10-17 16:47:34,844 - REACT.UAVController - INFO - UAV Controller initialized
+2025-10-17 16:47:34,844 - REACT.MissionManager - INFO - Mission Manager initialized
+2025-10-17 16:47:34,844 - REACT.SafetyMonitor - INFO - Safety Monitor initialized
+2025-10-17 16:47:34,844 - REACT.App - INFO - Setting up component connections...
+2025-10-17 16:47:34,844 - REACT.App - INFO - Component connections established
+2025-10-17 16:47:34,844 - REACT.App - INFO - All managers initialized successfully
+2025-10-17 16:47:34,844 - REACT.App - INFO - Starting REACT application...
+2025-10-17 16:47:34,850 - REACT.TelemetryManager - INFO - Telem1 connected to: udp:127.0.0.1:14552
+2025-10-17 16:47:34,850 - REACT.TelemetryManager - INFO - Telem1 UAV discovery will happen continuously as messages arrive
+2025-10-17 16:47:34,857 - REACT.TelemetryManager - ERROR - Telem2 failed to connect: could not open port '/dev/ttyUSB1': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3)
+2025-10-17 16:47:34,857 - REACT.MissionManager - INFO - Mission monitoring started
+2025-10-17 16:47:34,867 - REACT.SafetyMonitor - INFO - Safety monitoring started
+2025-10-17 16:47:34,867 - REACT.App - INFO - All services started successfully!
+2025-10-17 16:47:34,867 - REACT.Main - INFO - Initializing QML frontend...
+2025-10-17 16:47:35,004 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_4 (System ID: 4)
+2025-10-17 16:47:35,036 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_1 (System ID: 1)
+2025-10-17 16:47:35,191 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_3 (System ID: 3)
+2025-10-17 16:47:35,308 - REACT.UAVState - INFO - UAV_1: Home position set to lat=34.163203, lon=-118.074317, alt=290.9
+2025-10-17 16:47:35,362 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_2 (System ID: 2)
+2025-10-17 16:47:35,486 - REACT.UAVState - INFO - UAV_2: Home position set to lat=34.163239, lon=-118.074317, alt=291.0
+2025-10-17 16:47:35,617 - REACT.Main - INFO - Frontend started successfully
+2025-10-17 16:47:35,631 - REACT.Main - INFO - Starting application event loop...
+2025-10-17 16:47:35,682 - REACT.UAVState - INFO - UAV_4: Home position set to lat=34.163311, lon=-118.074317, alt=291.1
+2025-10-17 16:47:35,821 - REACT.UAVState - INFO - UAV_3: Home position set to lat=34.163275, lon=-118.074317, alt=291.0
+2025-10-17 16:47:56,944 - REACT.Main - INFO - Shutting down...
+2025-10-17 16:47:56,946 - REACT.App - INFO - Stopping REACT application...
+2025-10-17 16:47:56,946 - REACT.SafetyMonitor - INFO - Safety monitoring stopped
+2025-10-17 16:47:56,946 - REACT.MissionManager - INFO - Mission monitoring stopped
+2025-10-17 16:47:56,951 - REACT.App - INFO - All services stopped.
+2025-10-17 16:47:57,253 - REACT.Launcher - INFO - Main application exited
+2025-10-17 16:47:57,253 - REACT.Launcher - INFO - Shutting down REACT...
+2025-10-17 16:47:57,253 - REACT.Launcher - INFO - Stopping main application...
+2025-10-17 16:47:57,253 - REACT.Launcher - INFO - Main application stopped
+2025-10-17 16:47:57,253 - REACT.Launcher - INFO - Stopping tile server...
+2025-10-17 16:47:57,270 - REACT.Launcher - INFO - Tile server stopped
+2025-10-17 16:48:56,252 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:48:56,254 - REACT.Launcher - INFO - REACT Ground Control Station Launcher
+2025-10-17 16:48:56,254 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:48:56,254 - REACT.Launcher - INFO - Installing dependencies...
+2025-10-17 16:48:56,254 - REACT.Launcher.Dependencies - INFO - Installing tile server dependencies...
+2025-10-17 16:48:58,803 - REACT.Launcher.Dependencies - INFO - Dependencies installed successfully
+2025-10-17 16:48:58,803 - REACT.Launcher - INFO - Starting tile server...
+2025-10-17 16:48:58,819 - REACT.Launcher - INFO - Tile server started (PID: 14904)
+2025-10-17 16:48:58,819 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-17 16:49:00,367 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-17 16:49:00,367 - REACT.Launcher - INFO - Starting REACT application...
+2025-10-17 16:49:00,372 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-17 16:49:00,377 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-17 16:49:00,388 - REACT.Launcher - INFO - REACT application started (PID: 22120)
+2025-10-17 16:49:00,390 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:49:00,390 - REACT.Launcher - INFO - REACT is running!
+2025-10-17 16:49:00,390 - REACT.Launcher - INFO - - Tile server: http://127.0.0.1:8081
+2025-10-17 16:49:00,392 - REACT.Launcher - INFO - - Main application: Running
+2025-10-17 16:49:00,392 - REACT.Launcher - INFO - Press Ctrl+C to stop all services
+2025-10-17 16:49:00,392 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:49:02,099 - REACT.Main - INFO - REACT Application logging initialized
+2025-10-17 16:49:02,100 - REACT.Main - INFO - Log file: C:\Users\chenz\Documents\react\react\react\data/logs/mission_log.txt
+2025-10-17 16:49:02,100 - REACT.Main - INFO - Starting REACT Ground Control Station...
+2025-10-17 16:49:02,100 - REACT.Main - INFO - Initializing backend...
+2025-10-17 16:49:02,100 - REACT.App - INFO - REACT Application starting...
+2025-10-17 16:49:02,100 - REACT.UAVController - INFO - UAV Controller initialized
+2025-10-17 16:49:02,102 - REACT.MissionManager - INFO - Mission Manager initialized
+2025-10-17 16:49:02,102 - REACT.SafetyMonitor - INFO - Safety Monitor initialized
+2025-10-17 16:49:02,102 - REACT.App - INFO - Setting up component connections...
+2025-10-17 16:49:02,102 - REACT.App - INFO - Component connections established
+2025-10-17 16:49:02,102 - REACT.App - INFO - All managers initialized successfully
+2025-10-17 16:49:02,102 - REACT.App - INFO - Starting REACT application...
+2025-10-17 16:49:02,102 - REACT.TelemetryManager - INFO - Telem1 connected to: udp:127.0.0.1:14552
+2025-10-17 16:49:02,102 - REACT.TelemetryManager - INFO - Telem1 UAV discovery will happen continuously as messages arrive
+2025-10-17 16:49:02,102 - REACT.TelemetryManager - ERROR - Telem2 failed to connect: could not open port '/dev/ttyUSB1': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3)
+2025-10-17 16:49:02,112 - REACT.MissionManager - INFO - Mission monitoring started
+2025-10-17 16:49:02,112 - REACT.SafetyMonitor - INFO - Safety monitoring started
+2025-10-17 16:49:02,112 - REACT.App - INFO - All services started successfully!
+2025-10-17 16:49:02,112 - REACT.Main - INFO - Initializing QML frontend...
+2025-10-17 16:49:02,196 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_1 (System ID: 1)
+2025-10-17 16:49:02,322 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_3 (System ID: 3)
+2025-10-17 16:49:02,436 - REACT.UAVState - INFO - UAV_1: Home position set to lat=34.163203, lon=-118.074317, alt=290.9
+2025-10-17 16:49:02,492 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_2 (System ID: 2)
+2025-10-17 16:49:02,525 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_4 (System ID: 4)
+2025-10-17 16:49:02,637 - REACT.Main - INFO - Frontend started successfully
+2025-10-17 16:49:02,637 - REACT.Main - INFO - Starting application event loop...
+2025-10-17 16:49:02,646 - REACT.UAVState - INFO - UAV_2: Home position set to lat=34.163239, lon=-118.074317, alt=291.0
+2025-10-17 16:49:02,784 - REACT.UAVState - INFO - UAV_4: Home position set to lat=34.163311, lon=-118.074317, alt=291.1
+2025-10-17 16:49:02,941 - REACT.UAVState - INFO - UAV_3: Home position set to lat=34.163275, lon=-118.074317, alt=291.0
+2025-10-17 16:49:52,221 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_3: GPS fix lost (type: 0)
+2025-10-17 16:49:54,213 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_1: GPS fix lost (type: 0)
+2025-10-17 16:49:54,907 - REACT.UAVState - INFO - UAV_4: Home position set to lat=0.000000, lon=0.000000, alt=0.0
+2025-10-17 16:49:54,908 - REACT.TelemetryManager - WARNING - UAV UAV_4 Telem1 connection lost (last seen 10.0s ago)
+2025-10-17 16:49:55,215 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_4: Communication lost for 10.4s
+2025-10-17 16:49:56,214 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_2: GPS fix lost (type: 0)
+2025-10-17 16:50:07,786 - REACT.UAVState - INFO - UAV_1: Home position set to lat=34.164692, lon=-118.074511, alt=301.8
+2025-10-17 16:50:07,828 - REACT.UAVState - INFO - UAV_3: Home position set to lat=34.164764, lon=-118.074511, alt=302.6
+2025-10-17 16:50:07,877 - REACT.UAVState - INFO - UAV_2: Home position set to lat=34.164728, lon=-118.074511, alt=302.2
+2025-10-17 16:50:21,868 - REACT.Main - INFO - Shutting down...
+2025-10-17 16:50:21,868 - REACT.App - INFO - Stopping REACT application...
+2025-10-17 16:50:21,869 - REACT.SafetyMonitor - INFO - Safety monitoring stopped
+2025-10-17 16:50:21,869 - REACT.MissionManager - INFO - Mission monitoring stopped
+2025-10-17 16:50:21,871 - REACT.App - INFO - All services stopped.
+2025-10-17 16:50:22,526 - REACT.Launcher - INFO - Main application exited
+2025-10-17 16:50:22,526 - REACT.Launcher - INFO - Shutting down REACT...
+2025-10-17 16:50:22,526 - REACT.Launcher - INFO - Stopping main application...
+2025-10-17 16:50:22,526 - REACT.Launcher - INFO - Main application stopped
+2025-10-17 16:50:22,528 - REACT.Launcher - INFO - Stopping tile server...
+2025-10-17 16:50:22,540 - REACT.Launcher - INFO - Tile server stopped
+2025-10-17 16:50:36,554 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:50:36,554 - REACT.Launcher - INFO - REACT Ground Control Station Launcher
+2025-10-17 16:50:36,554 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:50:36,554 - REACT.Launcher - INFO - Installing dependencies...
+2025-10-17 16:50:36,554 - REACT.Launcher.Dependencies - INFO - Installing tile server dependencies...
+2025-10-17 16:50:39,083 - REACT.Launcher.Dependencies - INFO - Dependencies installed successfully
+2025-10-17 16:50:39,083 - REACT.Launcher - INFO - Starting tile server...
+2025-10-17 16:50:39,092 - REACT.Launcher - INFO - Tile server started (PID: 27360)
+2025-10-17 16:50:39,092 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-17 16:50:40,649 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-17 16:50:40,651 - REACT.Launcher - INFO - Starting REACT application...
+2025-10-17 16:50:40,652 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-17 16:50:40,660 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-17 16:50:40,669 - REACT.Launcher - INFO - REACT application started (PID: 12788)
+2025-10-17 16:50:40,672 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:50:40,673 - REACT.Launcher - INFO - REACT is running!
+2025-10-17 16:50:40,674 - REACT.Launcher - INFO - - Tile server: http://127.0.0.1:8081
+2025-10-17 16:50:40,674 - REACT.Launcher - INFO - - Main application: Running
+2025-10-17 16:50:40,674 - REACT.Launcher - INFO - Press Ctrl+C to stop all services
+2025-10-17 16:50:40,674 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:50:42,185 - REACT.Main - INFO - REACT Application logging initialized
+2025-10-17 16:50:42,185 - REACT.Main - INFO - Log file: C:\Users\chenz\Documents\react\react\react\data/logs/mission_log.txt
+2025-10-17 16:50:42,185 - REACT.Main - INFO - Starting REACT Ground Control Station...
+2025-10-17 16:50:42,185 - REACT.Main - INFO - Initializing backend...
+2025-10-17 16:50:42,185 - REACT.App - INFO - REACT Application starting...
+2025-10-17 16:50:42,185 - REACT.UAVController - INFO - UAV Controller initialized
+2025-10-17 16:50:42,185 - REACT.MissionManager - INFO - Mission Manager initialized
+2025-10-17 16:50:42,185 - REACT.SafetyMonitor - INFO - Safety Monitor initialized
+2025-10-17 16:50:42,185 - REACT.App - INFO - Setting up component connections...
+2025-10-17 16:50:42,185 - REACT.App - INFO - Component connections established
+2025-10-17 16:50:42,185 - REACT.App - INFO - All managers initialized successfully
+2025-10-17 16:50:42,185 - REACT.App - INFO - Starting REACT application...
+2025-10-17 16:50:42,192 - REACT.TelemetryManager - INFO - Telem1 connected to: udp:127.0.0.1:14552
+2025-10-17 16:50:42,192 - REACT.TelemetryManager - INFO - Telem1 UAV discovery will happen continuously as messages arrive
+2025-10-17 16:50:42,203 - REACT.TelemetryManager - ERROR - Telem2 failed to connect: could not open port '/dev/ttyUSB1': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3)
+2025-10-17 16:50:42,203 - REACT.MissionManager - INFO - Mission monitoring started
+2025-10-17 16:50:42,205 - REACT.SafetyMonitor - INFO - Safety monitoring started
+2025-10-17 16:50:42,205 - REACT.App - INFO - All services started successfully!
+2025-10-17 16:50:42,205 - REACT.Main - INFO - Initializing QML frontend...
+2025-10-17 16:50:42,236 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_3 (System ID: 3)
+2025-10-17 16:50:42,262 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_2 (System ID: 2)
+2025-10-17 16:50:42,643 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_1 (System ID: 1)
+2025-10-17 16:50:42,786 - REACT.UAVState - INFO - UAV_1: Home position set to lat=34.164692, lon=-118.074511, alt=301.8
+2025-10-17 16:50:42,804 - REACT.Main - INFO - Frontend started successfully
+2025-10-17 16:50:42,813 - REACT.Main - INFO - Starting application event loop...
+2025-10-17 16:50:42,963 - REACT.UAVState - INFO - UAV_2: Home position set to lat=34.164728, lon=-118.074511, alt=302.1
+2025-10-17 16:50:43,200 - REACT.UAVState - INFO - UAV_3: Home position set to lat=34.164764, lon=-118.074511, alt=302.5
+2025-10-17 16:51:05,435 - REACT.Main - INFO - Shutting down...
+2025-10-17 16:51:05,451 - REACT.App - INFO - Stopping REACT application...
+2025-10-17 16:51:05,453 - REACT.SafetyMonitor - INFO - Safety monitoring stopped
+2025-10-17 16:51:05,461 - REACT.MissionManager - INFO - Mission monitoring stopped
+2025-10-17 16:51:05,468 - REACT.App - INFO - All services stopped.
+2025-10-17 16:51:06,745 - REACT.Launcher - INFO - Main application exited
+2025-10-17 16:51:06,748 - REACT.Launcher - INFO - Shutting down REACT...
+2025-10-17 16:51:06,750 - REACT.Launcher - INFO - Stopping main application...
+2025-10-17 16:51:06,750 - REACT.Launcher - INFO - Main application stopped
+2025-10-17 16:51:06,752 - REACT.Launcher - INFO - Stopping tile server...
+2025-10-17 16:51:06,789 - REACT.Launcher - INFO - Tile server stopped
+2025-10-17 16:51:17,240 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:51:17,240 - REACT.Launcher - INFO - REACT Ground Control Station Launcher
+2025-10-17 16:51:17,240 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:51:17,240 - REACT.Launcher - INFO - Installing dependencies...
+2025-10-17 16:51:17,240 - REACT.Launcher.Dependencies - INFO - Installing tile server dependencies...
+2025-10-17 16:51:19,751 - REACT.Launcher.Dependencies - INFO - Dependencies installed successfully
+2025-10-17 16:51:19,751 - REACT.Launcher - INFO - Starting tile server...
+2025-10-17 16:51:19,762 - REACT.Launcher - INFO - Tile server started (PID: 27972)
+2025-10-17 16:51:19,762 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-17 16:51:21,328 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-17 16:51:21,328 - REACT.Launcher - INFO - Starting REACT application...
+2025-10-17 16:51:21,328 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-17 16:51:21,345 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-17 16:51:21,355 - REACT.Launcher - INFO - REACT application started (PID: 22860)
+2025-10-17 16:51:21,357 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:51:21,358 - REACT.Launcher - INFO - REACT is running!
+2025-10-17 16:51:21,358 - REACT.Launcher - INFO - - Tile server: http://127.0.0.1:8081
+2025-10-17 16:51:21,358 - REACT.Launcher - INFO - - Main application: Running
+2025-10-17 16:51:21,358 - REACT.Launcher - INFO - Press Ctrl+C to stop all services
+2025-10-17 16:51:21,358 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:51:22,779 - REACT.Main - INFO - REACT Application logging initialized
+2025-10-17 16:51:22,779 - REACT.Main - INFO - Log file: C:\Users\chenz\Documents\react\react\react\data/logs/mission_log.txt
+2025-10-17 16:51:22,779 - REACT.Main - INFO - Starting REACT Ground Control Station...
+2025-10-17 16:51:22,779 - REACT.Main - INFO - Initializing backend...
+2025-10-17 16:51:22,779 - REACT.App - INFO - REACT Application starting...
+2025-10-17 16:51:22,779 - REACT.UAVController - INFO - UAV Controller initialized
+2025-10-17 16:51:22,779 - REACT.MissionManager - INFO - Mission Manager initialized
+2025-10-17 16:51:22,794 - REACT.SafetyMonitor - INFO - Safety Monitor initialized
+2025-10-17 16:51:22,794 - REACT.App - INFO - Setting up component connections...
+2025-10-17 16:51:22,794 - REACT.App - INFO - Component connections established
+2025-10-17 16:51:22,796 - REACT.App - INFO - All managers initialized successfully
+2025-10-17 16:51:22,797 - REACT.App - INFO - Starting REACT application...
+2025-10-17 16:51:22,797 - REACT.TelemetryManager - INFO - Telem1 connected to: udp:127.0.0.1:14552
+2025-10-17 16:51:22,800 - REACT.TelemetryManager - INFO - Telem1 UAV discovery will happen continuously as messages arrive
+2025-10-17 16:51:22,807 - REACT.TelemetryManager - ERROR - Telem2 failed to connect: could not open port '/dev/ttyUSB1': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3)
+2025-10-17 16:51:22,807 - REACT.MissionManager - INFO - Mission monitoring started
+2025-10-17 16:51:22,816 - REACT.SafetyMonitor - INFO - Safety monitoring started
+2025-10-17 16:51:22,816 - REACT.App - INFO - All services started successfully!
+2025-10-17 16:51:22,816 - REACT.Main - INFO - Initializing QML frontend...
+2025-10-17 16:51:23,050 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_3 (System ID: 3)
+2025-10-17 16:51:23,134 - REACT.UAVState - INFO - UAV_3: Home position set to lat=34.164764, lon=-118.074511, alt=302.5
+2025-10-17 16:51:23,195 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_1 (System ID: 1)
+2025-10-17 16:51:23,216 - REACT.Main - INFO - Frontend started successfully
+2025-10-17 16:51:23,217 - REACT.Main - INFO - Starting application event loop...
+2025-10-17 16:51:23,296 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_2 (System ID: 2)
+2025-10-17 16:51:23,784 - REACT.UAVState - INFO - UAV_1: Home position set to lat=34.164692, lon=-118.074511, alt=301.8
+2025-10-17 16:51:23,803 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_2: GPS fix lost (type: 0)
+2025-10-17 16:51:23,935 - REACT.UAVState - INFO - UAV_2: Home position set to lat=34.164728, lon=-118.074511, alt=302.1
+2025-10-17 16:51:47,820 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_1: GPS fix lost (type: 0)
+2025-10-17 16:51:50,781 - REACT.UAVState - INFO - UAV_3: Home position set to lat=0.000000, lon=0.000000, alt=0.0
+2025-10-17 16:51:50,783 - REACT.TelemetryManager - WARNING - UAV UAV_3 Telem1 connection lost (last seen 10.0s ago)
+2025-10-17 16:51:50,829 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_3: Communication lost for 10.1s
+2025-10-17 16:52:03,410 - REACT.UAVState - INFO - UAV_2: Home position set to lat=34.163345, lon=-118.075003, alt=291.1
+2025-10-17 16:52:03,696 - REACT.UAVState - INFO - UAV_1: Home position set to lat=34.163309, lon=-118.075003, alt=291.1
+2025-10-17 16:52:21,835 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_3: Communication lost for 41.1s
+2025-10-17 16:52:21,835 - REACT.App - CRITICAL - Emergency RTL triggered for UAV_3: Communication lost for 41.1s
+2025-10-17 16:52:21,835 - REACT.MissionManager - WARNING - No active mission for UAV UAV_3
+2025-10-17 16:52:21,838 - REACT.TelemetryManager - WARNING - Aborting mission for UAV_3 - switching to RTL
+2025-10-17 16:52:21,838 - REACT.TelemetryManager - ERROR - Cannot send command to UAV_3 - no telemetry channels available
+2025-10-17 16:52:21,838 - REACT.TelemetryManager - ERROR -   Telem1 available: True, UAV connected: False
+2025-10-17 16:52:21,838 - REACT.TelemetryManager - ERROR -   Telem2 available: False, Telem2 status: False
+2025-10-17 16:52:21,838 - REACT.App - ERROR - Emergency RTL command failed for UAV_3
+2025-10-17 16:52:21,838 - REACT.SafetyMonitor - INFO - Emergency action EMERGENCY_RTL taken for UAV_3 at 1760745141.835146
+2025-10-17 16:52:51,838 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_3: Communication lost for 71.1s
+2025-10-17 16:53:21,839 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_3: Communication lost for 101.1s
+2025-10-17 16:53:25,879 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_1: Communication lost for 10.1s
+2025-10-17 16:53:25,980 - REACT.UAVState - INFO - UAV_1: Home position set to lat=0.000000, lon=0.000000, alt=0.0
+2025-10-17 16:53:25,980 - REACT.TelemetryManager - WARNING - UAV UAV_1 Telem1 connection lost (last seen 10.0s ago)
+2025-10-17 16:53:26,149 - REACT.UAVState - INFO - UAV_2: Home position set to lat=0.000000, lon=0.000000, alt=0.0
+2025-10-17 16:53:26,150 - REACT.TelemetryManager - WARNING - UAV UAV_2 Telem1 connection lost (last seen 10.0s ago)
+2025-10-17 16:53:26,896 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_2: Communication lost for 10.8s
+2025-10-17 16:53:41,919 - REACT.Main - INFO - Shutting down...
+2025-10-17 16:53:41,921 - REACT.App - INFO - Stopping REACT application...
+2025-10-17 16:53:41,926 - REACT.SafetyMonitor - INFO - Safety monitoring stopped
+2025-10-17 16:53:41,960 - REACT.MissionManager - INFO - Mission monitoring stopped
+2025-10-17 16:53:41,965 - REACT.App - INFO - All services stopped.
+2025-10-17 16:53:42,604 - REACT.Launcher - INFO - Main application exited
+2025-10-17 16:53:42,633 - REACT.Launcher - INFO - Shutting down REACT...
+2025-10-17 16:53:42,633 - REACT.Launcher - INFO - Stopping main application...
+2025-10-17 16:53:42,633 - REACT.Launcher - INFO - Main application stopped
+2025-10-17 16:53:42,634 - REACT.Launcher - INFO - Stopping tile server...
+2025-10-17 16:53:42,644 - REACT.Launcher - INFO - Tile server stopped
+2025-10-17 16:53:45,386 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:53:45,386 - REACT.Launcher - INFO - REACT Ground Control Station Launcher
+2025-10-17 16:53:45,386 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:53:45,386 - REACT.Launcher - INFO - Installing dependencies...
+2025-10-17 16:53:45,386 - REACT.Launcher.Dependencies - INFO - Installing tile server dependencies...
+2025-10-17 16:53:48,019 - REACT.Launcher.Dependencies - INFO - Dependencies installed successfully
+2025-10-17 16:53:48,019 - REACT.Launcher - INFO - Starting tile server...
+2025-10-17 16:53:48,030 - REACT.Launcher - INFO - Tile server started (PID: 15932)
+2025-10-17 16:53:48,040 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-17 16:53:49,611 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-17 16:53:49,611 - REACT.Launcher - INFO - Starting REACT application...
+2025-10-17 16:53:49,611 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-17 16:53:49,620 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-17 16:53:49,630 - REACT.Launcher - INFO - REACT application started (PID: 24216)
+2025-10-17 16:53:49,634 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:53:49,636 - REACT.Launcher - INFO - REACT is running!
+2025-10-17 16:53:49,637 - REACT.Launcher - INFO - - Tile server: http://127.0.0.1:8081
+2025-10-17 16:53:49,637 - REACT.Launcher - INFO - - Main application: Running
+2025-10-17 16:53:49,637 - REACT.Launcher - INFO - Press Ctrl+C to stop all services
+2025-10-17 16:53:49,637 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:53:51,424 - REACT.Main - INFO - REACT Application logging initialized
+2025-10-17 16:53:51,424 - REACT.Main - INFO - Log file: C:\Users\chenz\Documents\react\react\react\data/logs/mission_log.txt
+2025-10-17 16:53:51,424 - REACT.Main - INFO - Starting REACT Ground Control Station...
+2025-10-17 16:53:51,424 - REACT.Main - INFO - Initializing backend...
+2025-10-17 16:53:51,424 - REACT.App - INFO - REACT Application starting...
+2025-10-17 16:53:51,424 - REACT.UAVController - INFO - UAV Controller initialized
+2025-10-17 16:53:51,424 - REACT.MissionManager - INFO - Mission Manager initialized
+2025-10-17 16:53:51,424 - REACT.SafetyMonitor - INFO - Safety Monitor initialized
+2025-10-17 16:53:51,424 - REACT.App - INFO - Setting up component connections...
+2025-10-17 16:53:51,424 - REACT.App - INFO - Component connections established
+2025-10-17 16:53:51,424 - REACT.App - INFO - All managers initialized successfully
+2025-10-17 16:53:51,424 - REACT.App - INFO - Starting REACT application...
+2025-10-17 16:53:51,431 - REACT.TelemetryManager - INFO - Telem1 connected to: udp:127.0.0.1:14552
+2025-10-17 16:53:51,431 - REACT.TelemetryManager - INFO - Telem1 UAV discovery will happen continuously as messages arrive
+2025-10-17 16:53:51,440 - REACT.TelemetryManager - ERROR - Telem2 failed to connect: could not open port '/dev/ttyUSB1': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3)
+2025-10-17 16:53:51,450 - REACT.MissionManager - INFO - Mission monitoring started
+2025-10-17 16:53:51,450 - REACT.SafetyMonitor - INFO - Safety monitoring started
+2025-10-17 16:53:51,450 - REACT.App - INFO - All services started successfully!
+2025-10-17 16:53:51,450 - REACT.Main - INFO - Initializing QML frontend...
+2025-10-17 16:53:52,267 - REACT.Main - INFO - Frontend started successfully
+2025-10-17 16:53:52,300 - REACT.Main - INFO - Starting application event loop...
+2025-10-17 16:55:10,594 - REACT.Main - INFO - Shutting down...
+2025-10-17 16:55:10,611 - REACT.App - INFO - Stopping REACT application...
+2025-10-17 16:55:10,611 - REACT.SafetyMonitor - INFO - Safety monitoring stopped
+2025-10-17 16:55:10,614 - REACT.MissionManager - INFO - Mission monitoring stopped
+2025-10-17 16:55:10,625 - REACT.App - INFO - All services stopped.
+2025-10-17 16:55:11,796 - REACT.Launcher - INFO - Main application exited
+2025-10-17 16:55:11,796 - REACT.Launcher - INFO - Shutting down REACT...
+2025-10-17 16:55:11,796 - REACT.Launcher - INFO - Stopping main application...
+2025-10-17 16:55:11,797 - REACT.Launcher - INFO - Main application stopped
+2025-10-17 16:55:11,797 - REACT.Launcher - INFO - Stopping tile server...
+2025-10-17 16:55:11,810 - REACT.Launcher - INFO - Tile server stopped
+2025-10-17 16:55:52,240 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:55:52,240 - REACT.Launcher - INFO - REACT Ground Control Station Launcher
+2025-10-17 16:55:52,240 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:55:52,240 - REACT.Launcher - INFO - Installing dependencies...
+2025-10-17 16:55:52,240 - REACT.Launcher.Dependencies - INFO - Installing tile server dependencies...
+2025-10-17 16:55:54,661 - REACT.Launcher.Dependencies - INFO - Dependencies installed successfully
+2025-10-17 16:55:54,661 - REACT.Launcher - INFO - Starting tile server...
+2025-10-17 16:55:54,675 - REACT.Launcher - INFO - Tile server started (PID: 9500)
+2025-10-17 16:55:54,675 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-17 16:55:55,724 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-17 16:55:55,724 - REACT.Launcher - INFO - Starting REACT application...
+2025-10-17 16:55:55,724 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-17 16:55:55,729 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-17 16:55:55,744 - REACT.Launcher - INFO - REACT application started (PID: 16476)
+2025-10-17 16:55:55,744 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:55:55,750 - REACT.Launcher - INFO - REACT is running!
+2025-10-17 16:55:55,750 - REACT.Launcher - INFO - - Tile server: http://127.0.0.1:8081
+2025-10-17 16:55:55,750 - REACT.Launcher - INFO - - Main application: Running
+2025-10-17 16:55:55,750 - REACT.Launcher - INFO - Press Ctrl+C to stop all services
+2025-10-17 16:55:55,750 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:55:57,328 - REACT.Main - INFO - REACT Application logging initialized
+2025-10-17 16:55:57,328 - REACT.Main - INFO - Log file: C:\Users\chenz\Documents\react\react\react\data/logs/mission_log.txt
+2025-10-17 16:55:57,328 - REACT.Main - INFO - Starting REACT Ground Control Station...
+2025-10-17 16:55:57,328 - REACT.Main - INFO - Initializing backend...
+2025-10-17 16:55:57,328 - REACT.App - INFO - REACT Application starting...
+2025-10-17 16:55:57,328 - REACT.UAVController - INFO - UAV Controller initialized
+2025-10-17 16:55:57,328 - REACT.MissionManager - INFO - Mission Manager initialized
+2025-10-17 16:55:57,328 - REACT.SafetyMonitor - INFO - Safety Monitor initialized
+2025-10-17 16:55:57,328 - REACT.App - INFO - Setting up component connections...
+2025-10-17 16:55:57,328 - REACT.App - INFO - Component connections established
+2025-10-17 16:55:57,328 - REACT.App - INFO - All managers initialized successfully
+2025-10-17 16:55:57,328 - REACT.App - INFO - Starting REACT application...
+2025-10-17 16:55:57,328 - REACT.TelemetryManager - INFO - Telem1 connected to: udp:127.0.0.1:14552
+2025-10-17 16:55:57,328 - REACT.TelemetryManager - INFO - Telem1 UAV discovery will happen continuously as messages arrive
+2025-10-17 16:55:57,345 - REACT.TelemetryManager - ERROR - Telem2 failed to connect: could not open port '/dev/ttyUSB1': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3)
+2025-10-17 16:55:57,347 - REACT.MissionManager - INFO - Mission monitoring started
+2025-10-17 16:55:57,349 - REACT.SafetyMonitor - INFO - Safety monitoring started
+2025-10-17 16:55:57,349 - REACT.App - INFO - All services started successfully!
+2025-10-17 16:55:57,349 - REACT.Main - INFO - Initializing QML frontend...
+2025-10-17 16:55:58,163 - REACT.Main - INFO - Frontend started successfully
+2025-10-17 16:55:58,181 - REACT.Main - INFO - Starting application event loop...
+2025-10-17 16:57:08,932 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_1 (System ID: 1)
+2025-10-17 16:57:08,979 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_2 (System ID: 2)
+2025-10-17 16:57:09,009 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_6 (System ID: 6)
+2025-10-17 16:57:09,055 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_3 (System ID: 3)
+2025-10-17 16:57:09,076 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_4 (System ID: 4)
+2025-10-17 16:57:09,089 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_5 (System ID: 5)
+2025-10-17 16:57:09,210 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_7 (System ID: 7)
+2025-10-17 16:57:09,226 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_8 (System ID: 8)
+2025-10-17 16:57:09,754 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_1: GPS fix lost (type: 0)
+2025-10-17 16:57:09,754 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_2: GPS fix lost (type: 0)
+2025-10-17 16:57:09,754 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_6: GPS fix lost (type: 0)
+2025-10-17 16:57:09,754 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_3: GPS fix lost (type: 0)
+2025-10-17 16:57:09,754 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_4: GPS fix lost (type: 0)
+2025-10-17 16:57:09,754 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_5: GPS fix lost (type: 0)
+2025-10-17 16:57:09,754 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_7: GPS fix lost (type: 0)
+2025-10-17 16:57:09,754 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_8: GPS fix lost (type: 0)
+2025-10-17 16:57:17,581 - REACT.Main - INFO - Shutting down...
+2025-10-17 16:57:17,581 - REACT.App - INFO - Stopping REACT application...
+2025-10-17 16:57:17,583 - REACT.SafetyMonitor - INFO - Safety monitoring stopped
+2025-10-17 16:57:17,583 - REACT.MissionManager - INFO - Mission monitoring stopped
+2025-10-17 16:57:17,588 - REACT.App - INFO - All services stopped.
+2025-10-17 16:57:18,828 - REACT.Launcher - INFO - Main application exited
+2025-10-17 16:57:18,828 - REACT.Launcher - INFO - Shutting down REACT...
+2025-10-17 16:57:18,828 - REACT.Launcher - INFO - Stopping main application...
+2025-10-17 16:57:18,832 - REACT.Launcher - INFO - Main application stopped
+2025-10-17 16:57:18,836 - REACT.Launcher - INFO - Stopping tile server...
+2025-10-17 16:57:18,850 - REACT.Launcher - INFO - Tile server stopped
+2025-10-17 16:57:27,608 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:57:27,608 - REACT.Launcher - INFO - REACT Ground Control Station Launcher
+2025-10-17 16:57:27,608 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:57:27,608 - REACT.Launcher - INFO - Installing dependencies...
+2025-10-17 16:57:27,608 - REACT.Launcher.Dependencies - INFO - Installing tile server dependencies...
+2025-10-17 16:57:30,304 - REACT.Launcher.Dependencies - INFO - Dependencies installed successfully
+2025-10-17 16:57:30,304 - REACT.Launcher - INFO - Starting tile server...
+2025-10-17 16:57:30,313 - REACT.Launcher - INFO - Tile server started (PID: 22596)
+2025-10-17 16:57:30,316 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-17 16:57:31,869 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-17 16:57:31,869 - REACT.Launcher - INFO - Starting REACT application...
+2025-10-17 16:57:31,869 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-17 16:57:31,879 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-17 16:57:31,889 - REACT.Launcher - INFO - REACT application started (PID: 5592)
+2025-10-17 16:57:31,891 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:57:31,891 - REACT.Launcher - INFO - REACT is running!
+2025-10-17 16:57:31,891 - REACT.Launcher - INFO - - Tile server: http://127.0.0.1:8081
+2025-10-17 16:57:31,893 - REACT.Launcher - INFO - - Main application: Running
+2025-10-17 16:57:31,898 - REACT.Launcher - INFO - Press Ctrl+C to stop all services
+2025-10-17 16:57:31,899 - REACT.Launcher - INFO - ==================================================
+2025-10-17 16:57:33,620 - REACT.Main - INFO - REACT Application logging initialized
+2025-10-17 16:57:33,620 - REACT.Main - INFO - Log file: C:\Users\chenz\Documents\react\react\react\data/logs/mission_log.txt
+2025-10-17 16:57:33,620 - REACT.Main - INFO - Starting REACT Ground Control Station...
+2025-10-17 16:57:33,624 - REACT.Main - INFO - Initializing backend...
+2025-10-17 16:57:33,624 - REACT.App - INFO - REACT Application starting...
+2025-10-17 16:57:33,628 - REACT.UAVController - INFO - UAV Controller initialized
+2025-10-17 16:57:33,630 - REACT.MissionManager - INFO - Mission Manager initialized
+2025-10-17 16:57:33,630 - REACT.SafetyMonitor - INFO - Safety Monitor initialized
+2025-10-17 16:57:33,631 - REACT.App - INFO - Setting up component connections...
+2025-10-17 16:57:33,632 - REACT.App - INFO - Component connections established
+2025-10-17 16:57:33,632 - REACT.App - INFO - All managers initialized successfully
+2025-10-17 16:57:33,632 - REACT.App - INFO - Starting REACT application...
+2025-10-17 16:57:33,632 - REACT.TelemetryManager - INFO - Telem1 connected to: udp:127.0.0.1:14552
+2025-10-17 16:57:33,632 - REACT.TelemetryManager - INFO - Telem1 UAV discovery will happen continuously as messages arrive
+2025-10-17 16:57:33,649 - REACT.TelemetryManager - ERROR - Telem2 failed to connect: could not open port '/dev/ttyUSB1': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3)
+2025-10-17 16:57:33,651 - REACT.MissionManager - INFO - Mission monitoring started
+2025-10-17 16:57:33,651 - REACT.SafetyMonitor - INFO - Safety monitoring started
+2025-10-17 16:57:33,653 - REACT.App - INFO - All services started successfully!
+2025-10-17 16:57:33,653 - REACT.Main - INFO - Initializing QML frontend...
+2025-10-17 16:57:33,734 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_8 (System ID: 8)
+2025-10-17 16:57:33,745 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_7 (System ID: 7)
+2025-10-17 16:57:33,756 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_4 (System ID: 4)
+2025-10-17 16:57:33,768 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_5 (System ID: 5)
+2025-10-17 16:57:33,781 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_3 (System ID: 3)
+2025-10-17 16:57:33,809 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_2 (System ID: 2)
+2025-10-17 16:57:33,821 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_1 (System ID: 1)
+2025-10-17 16:57:34,046 - REACT.UAVState - INFO - UAV_3: Home position set to lat=34.164764, lon=-118.074511, alt=302.6
+2025-10-17 16:57:34,177 - REACT.UAVState - INFO - UAV_4: Home position set to lat=34.164800, lon=-118.074511, alt=302.9
+2025-10-17 16:57:34,296 - REACT.UAVState - INFO - UAV_1: Home position set to lat=34.164692, lon=-118.074511, alt=301.8
+2025-10-17 16:57:34,394 - REACT.Main - INFO - Frontend started successfully
+2025-10-17 16:57:34,418 - REACT.Main - INFO - Starting application event loop...
+2025-10-17 16:57:34,423 - REACT.UAVState - INFO - UAV_2: Home position set to lat=34.164728, lon=-118.074511, alt=302.2
+2025-10-17 16:57:34,575 - REACT.UAVState - INFO - UAV_7: Home position set to lat=34.164908, lon=-118.074511, alt=304.1
+2025-10-17 16:57:34,652 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_8: GPS fix lost (type: 0)
+2025-10-17 16:57:34,654 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_5: GPS fix lost (type: 0)
+2025-10-17 16:57:34,762 - REACT.UAVState - INFO - UAV_8: Home position set to lat=34.164944, lon=-118.074511, alt=304.5
+2025-10-17 16:57:34,850 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_6 (System ID: 6)
+2025-10-17 16:57:34,957 - REACT.UAVState - INFO - UAV_5: Home position set to lat=34.164836, lon=-118.074511, alt=303.3
+2025-10-17 16:57:35,159 - REACT.UAVState - INFO - UAV_6: Home position set to lat=34.164872, lon=-118.074511, alt=303.7
+2025-10-17 16:58:11,676 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_2: GPS fix lost (type: 0)
+2025-10-17 16:58:12,668 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_7: GPS fix lost (type: 0)
+2025-10-17 16:58:12,673 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_4: GPS fix lost (type: 0)
+2025-10-17 16:58:12,677 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_5: GPS fix lost (type: 0)
+2025-10-17 16:58:12,678 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_1: GPS fix lost (type: 0)
+2025-10-17 16:58:12,679 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_6: GPS fix lost (type: 0)
+2025-10-17 16:58:16,682 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_3: GPS fix lost (type: 0)
+2025-10-17 16:58:20,020 - REACT.UAVState - INFO - UAV_8: Home position set to lat=0.000000, lon=0.000000, alt=0.0
+2025-10-17 16:58:20,020 - REACT.TelemetryManager - WARNING - UAV UAV_8 Telem1 connection lost (last seen 10.0s ago)
+2025-10-17 16:58:20,144 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_8: Communication lost for 10.1s
+2025-10-17 16:58:33,859 - REACT.UAVState - INFO - UAV_2: Home position set to lat=34.162706, lon=-118.075497, alt=291.3
+2025-10-17 16:58:33,873 - REACT.UAVState - INFO - UAV_1: Home position set to lat=34.162670, lon=-118.075497, alt=291.4
+2025-10-17 16:58:34,151 - REACT.UAVState - INFO - UAV_6: Home position set to lat=34.162850, lon=-118.075497, alt=291.1
+2025-10-17 16:58:46,367 - REACT.Main - INFO - Shutting down...
+2025-10-17 16:58:46,369 - REACT.App - INFO - Stopping REACT application...
+2025-10-17 16:58:46,370 - REACT.SafetyMonitor - INFO - Safety monitoring stopped
+2025-10-17 16:58:46,370 - REACT.MissionManager - INFO - Mission monitoring stopped
+2025-10-17 16:58:46,374 - REACT.App - INFO - All services stopped.
+2025-10-17 16:58:46,980 - REACT.Launcher - INFO - Main application exited
+2025-10-17 16:58:46,980 - REACT.Launcher - INFO - Shutting down REACT...
+2025-10-17 16:58:46,980 - REACT.Launcher - INFO - Stopping main application...
+2025-10-17 16:58:46,980 - REACT.Launcher - INFO - Main application stopped
+2025-10-17 16:58:46,980 - REACT.Launcher - INFO - Stopping tile server...
+2025-10-17 16:58:46,995 - REACT.Launcher - INFO - Tile server stopped
+2025-10-17 17:00:32,500 - REACT.Launcher - INFO - ==================================================
+2025-10-17 17:00:32,500 - REACT.Launcher - INFO - REACT Ground Control Station Launcher
+2025-10-17 17:00:32,500 - REACT.Launcher - INFO - ==================================================
+2025-10-17 17:00:32,500 - REACT.Launcher - INFO - Installing dependencies...
+2025-10-17 17:00:32,500 - REACT.Launcher.Dependencies - INFO - Installing tile server dependencies...
+2025-10-17 17:00:35,128 - REACT.Launcher.Dependencies - INFO - Dependencies installed successfully
+2025-10-17 17:00:35,130 - REACT.Launcher - INFO - Starting tile server...
+2025-10-17 17:00:35,131 - REACT.Launcher - INFO - Tile server started (PID: 11576)
+2025-10-17 17:00:35,131 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-17 17:00:36,724 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-17 17:00:36,724 - REACT.Launcher - INFO - Starting REACT application...
+2025-10-17 17:00:36,724 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-17 17:00:36,730 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-17 17:00:36,739 - REACT.Launcher - INFO - REACT application started (PID: 24904)
+2025-10-17 17:00:36,745 - REACT.Launcher - INFO - ==================================================
+2025-10-17 17:00:36,747 - REACT.Launcher - INFO - REACT is running!
+2025-10-17 17:00:36,747 - REACT.Launcher - INFO - - Tile server: http://127.0.0.1:8081
+2025-10-17 17:00:36,749 - REACT.Launcher - INFO - - Main application: Running
+2025-10-17 17:00:36,749 - REACT.Launcher - INFO - Press Ctrl+C to stop all services
+2025-10-17 17:00:36,749 - REACT.Launcher - INFO - ==================================================
+2025-10-17 17:00:38,553 - REACT.Main - INFO - REACT Application logging initialized
+2025-10-17 17:00:38,553 - REACT.Main - INFO - Log file: C:\Users\chenz\Documents\react\react\react\data/logs/mission_log.txt
+2025-10-17 17:00:38,568 - REACT.Main - INFO - Starting REACT Ground Control Station...
+2025-10-17 17:00:38,575 - REACT.Main - INFO - Initializing backend...
+2025-10-17 17:00:38,579 - REACT.App - INFO - REACT Application starting...
+2025-10-17 17:00:38,584 - REACT.UAVController - INFO - UAV Controller initialized
+2025-10-17 17:00:38,584 - REACT.MissionManager - INFO - Mission Manager initialized
+2025-10-17 17:00:38,586 - REACT.SafetyMonitor - INFO - Safety Monitor initialized
+2025-10-17 17:00:38,586 - REACT.App - INFO - Setting up component connections...
+2025-10-17 17:00:38,586 - REACT.App - INFO - Component connections established
+2025-10-17 17:00:38,586 - REACT.App - INFO - All managers initialized successfully
+2025-10-17 17:00:38,586 - REACT.App - INFO - Starting REACT application...
+2025-10-17 17:00:38,591 - REACT.TelemetryManager - INFO - Telem1 connected to: udp:127.0.0.1:14552
+2025-10-17 17:00:38,591 - REACT.TelemetryManager - INFO - Telem1 UAV discovery will happen continuously as messages arrive
+2025-10-17 17:00:38,598 - REACT.TelemetryManager - ERROR - Telem2 failed to connect: could not open port '/dev/ttyUSB1': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3)
+2025-10-17 17:00:38,598 - REACT.MissionManager - INFO - Mission monitoring started
+2025-10-17 17:00:38,598 - REACT.SafetyMonitor - INFO - Safety monitoring started
+2025-10-17 17:00:38,601 - REACT.App - INFO - All services started successfully!
+2025-10-17 17:00:38,601 - REACT.Main - INFO - Initializing QML frontend...
+2025-10-17 17:00:38,650 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_7 (System ID: 7)
+2025-10-17 17:00:38,655 - REACT.TelemetryManager - INFO - Requested HOME_POSITION from UAV_7
+2025-10-17 17:00:38,663 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_5 (System ID: 5)
+2025-10-17 17:00:38,663 - REACT.TelemetryManager - INFO - Requested HOME_POSITION from UAV_5
+2025-10-17 17:00:38,693 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_6 (System ID: 6)
+2025-10-17 17:00:38,693 - REACT.TelemetryManager - INFO - Requested HOME_POSITION from UAV_6
+2025-10-17 17:00:38,859 - REACT.UAVState - INFO - UAV_7: Home position set to lat=34.162886, lon=-118.075497, alt=291.1
+2025-10-17 17:00:38,918 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_4 (System ID: 4)
+2025-10-17 17:00:38,920 - REACT.TelemetryManager - INFO - Requested HOME_POSITION from UAV_4
+2025-10-17 17:00:38,934 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_1 (System ID: 1)
+2025-10-17 17:00:38,936 - REACT.TelemetryManager - INFO - Requested HOME_POSITION from UAV_1
+2025-10-17 17:00:38,955 - REACT.Main - INFO - Frontend started successfully
+2025-10-17 17:00:38,957 - REACT.Main - INFO - Starting application event loop...
+2025-10-17 17:00:39,025 - REACT.UAVState - INFO - UAV_1: Home position set to lat=34.162670, lon=-118.075497, alt=291.4
+2025-10-17 17:00:39,157 - REACT.UAVState - INFO - UAV_5: Home position set to lat=34.162814, lon=-118.075497, alt=291.1
+2025-10-17 17:00:39,294 - REACT.UAVState - INFO - UAV_4: Home position set to lat=34.162778, lon=-118.075497, alt=291.1
+2025-10-17 17:00:39,357 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_2 (System ID: 2)
+2025-10-17 17:00:39,357 - REACT.TelemetryManager - INFO - Requested HOME_POSITION from UAV_2
+2025-10-17 17:00:39,408 - REACT.UAVState - INFO - UAV_6: Home position set to lat=34.162850, lon=-118.075497, alt=291.1
+2025-10-17 17:00:39,448 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_3 (System ID: 3)
+2025-10-17 17:00:39,449 - REACT.TelemetryManager - INFO - Requested HOME_POSITION from UAV_3
+2025-10-17 17:00:39,588 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_2: GPS fix lost (type: 0)
+2025-10-17 17:00:39,588 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_3: GPS fix lost (type: 0)
+2025-10-17 17:00:39,859 - REACT.UAVState - INFO - UAV_3: Home position set to lat=34.162742, lon=-118.075497, alt=291.2
+2025-10-17 17:00:39,944 - REACT.UAVState - INFO - UAV_2: Home position set to lat=34.162706, lon=-118.075497, alt=291.3
+2025-10-17 17:01:22,735 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_5: GPS fix lost (type: 0)
+2025-10-17 17:01:22,735 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_4: GPS fix lost (type: 0)
+2025-10-17 17:01:22,737 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_1: GPS fix lost (type: 0)
+2025-10-17 17:01:22,737 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_2: GPS fix lost (type: 0)
+2025-10-17 17:01:22,739 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_3: GPS fix lost (type: 0)
+2025-10-17 17:01:26,726 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_6: GPS fix lost (type: 0)
+2025-10-17 17:01:30,182 - REACT.UAVState - INFO - UAV_7: Home position set to lat=0.000000, lon=0.000000, alt=0.0
+2025-10-17 17:01:30,184 - REACT.TelemetryManager - WARNING - UAV UAV_7 Telem1 connection lost (last seen 10.0s ago)
+2025-10-17 17:01:30,723 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_7: Communication lost for 10.6s
+2025-10-17 17:01:40,529 - REACT.UAVState - INFO - UAV_6: Home position set to lat=34.164872, lon=-118.074511, alt=303.7
+2025-10-17 17:01:40,901 - REACT.UAVState - INFO - UAV_5: Home position set to lat=34.164836, lon=-118.074511, alt=303.3
+2025-10-17 17:01:41,001 - REACT.UAVState - INFO - UAV_2: Home position set to lat=34.164728, lon=-118.074511, alt=302.2
+2025-10-17 17:01:41,182 - REACT.UAVState - INFO - UAV_4: Home position set to lat=34.164800, lon=-118.074511, alt=302.9
+2025-10-17 17:01:41,483 - REACT.UAVState - INFO - UAV_3: Home position set to lat=34.164764, lon=-118.074511, alt=302.6
+2025-10-17 17:01:41,508 - REACT.UAVState - INFO - UAV_1: Home position set to lat=34.164692, lon=-118.074511, alt=301.8
+2025-10-17 17:02:00,744 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_7: Communication lost for 40.6s
+2025-10-17 17:02:00,744 - REACT.App - CRITICAL - Emergency RTL triggered for UAV_7: Communication lost for 40.6s
+2025-10-17 17:02:00,744 - REACT.MissionManager - WARNING - No active mission for UAV UAV_7
+2025-10-17 17:02:00,744 - REACT.TelemetryManager - WARNING - Aborting mission for UAV_7 - switching to RTL
+2025-10-17 17:02:00,744 - REACT.TelemetryManager - ERROR - Cannot send command to UAV_7 - no telemetry channels available
+2025-10-17 17:02:00,744 - REACT.TelemetryManager - ERROR -   Telem1 available: True, UAV connected: False
+2025-10-17 17:02:00,744 - REACT.TelemetryManager - ERROR -   Telem2 available: False, Telem2 status: False
+2025-10-17 17:02:00,744 - REACT.App - ERROR - Emergency RTL command failed for UAV_7
+2025-10-17 17:02:00,744 - REACT.SafetyMonitor - INFO - Emergency action EMERGENCY_RTL taken for UAV_7 at 1760745720.744802
+2025-10-17 17:02:30,824 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_7: Communication lost for 70.7s
+2025-10-17 17:02:51,304 - REACT.Main - INFO - Shutting down...
+2025-10-17 17:02:51,307 - REACT.App - INFO - Stopping REACT application...
+2025-10-17 17:02:51,307 - REACT.SafetyMonitor - INFO - Safety monitoring stopped
+2025-10-17 17:02:51,307 - REACT.MissionManager - INFO - Mission monitoring stopped
+2025-10-17 17:02:51,313 - REACT.App - INFO - All services stopped.
+2025-10-17 17:02:51,921 - REACT.Launcher - INFO - Main application exited
+2025-10-17 17:02:51,921 - REACT.Launcher - INFO - Shutting down REACT...
+2025-10-17 17:02:51,921 - REACT.Launcher - INFO - Stopping main application...
+2025-10-17 17:02:51,921 - REACT.Launcher - INFO - Main application stopped
+2025-10-17 17:02:51,921 - REACT.Launcher - INFO - Stopping tile server...
+2025-10-17 17:02:51,930 - REACT.Launcher - INFO - Tile server stopped
+2025-10-17 17:05:30,388 - REACT.Launcher - INFO - ==================================================
+2025-10-17 17:05:30,388 - REACT.Launcher - INFO - REACT Ground Control Station Launcher
+2025-10-17 17:05:30,388 - REACT.Launcher - INFO - ==================================================
+2025-10-17 17:05:30,388 - REACT.Launcher - INFO - Installing dependencies...
+2025-10-17 17:05:30,388 - REACT.Launcher.Dependencies - INFO - Installing tile server dependencies...
+2025-10-17 17:05:32,963 - REACT.Launcher.Dependencies - INFO - Dependencies installed successfully
+2025-10-17 17:05:32,963 - REACT.Launcher - INFO - Starting tile server...
+2025-10-17 17:05:32,975 - REACT.Launcher - INFO - Tile server started (PID: 16860)
+2025-10-17 17:05:32,977 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-17 17:05:34,553 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-17 17:05:34,553 - REACT.Launcher - INFO - Starting REACT application...
+2025-10-17 17:05:34,553 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-17 17:05:34,558 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-17 17:05:34,570 - REACT.Launcher - INFO - REACT application started (PID: 27272)
+2025-10-17 17:05:34,575 - REACT.Launcher - INFO - ==================================================
+2025-10-17 17:05:34,579 - REACT.Launcher - INFO - REACT is running!
+2025-10-17 17:05:34,582 - REACT.Launcher - INFO - - Tile server: http://127.0.0.1:8081
+2025-10-17 17:05:34,582 - REACT.Launcher - INFO - - Main application: Running
+2025-10-17 17:05:34,585 - REACT.Launcher - INFO - Press Ctrl+C to stop all services
+2025-10-17 17:05:34,586 - REACT.Launcher - INFO - ==================================================
+2025-10-17 17:05:36,207 - REACT.Main - INFO - REACT Application logging initialized
+2025-10-17 17:05:36,207 - REACT.Main - INFO - Log file: C:\Users\chenz\Documents\react\react\react\data/logs/mission_log.txt
+2025-10-17 17:05:36,207 - REACT.Main - INFO - Starting REACT Ground Control Station...
+2025-10-17 17:05:36,207 - REACT.Main - INFO - Initializing backend...
+2025-10-17 17:05:36,207 - REACT.App - INFO - REACT Application starting...
+2025-10-17 17:05:36,207 - REACT.UAVController - INFO - UAV Controller initialized
+2025-10-17 17:05:36,207 - REACT.MissionManager - INFO - Mission Manager initialized
+2025-10-17 17:05:36,207 - REACT.SafetyMonitor - INFO - Safety Monitor initialized
+2025-10-17 17:05:36,207 - REACT.App - INFO - Setting up component connections...
+2025-10-17 17:05:36,207 - REACT.App - INFO - Component connections established
+2025-10-17 17:05:36,207 - REACT.App - INFO - All managers initialized successfully
+2025-10-17 17:05:36,207 - REACT.App - INFO - Starting REACT application...
+2025-10-17 17:05:36,217 - REACT.TelemetryManager - INFO - Telem1 connected to: udp:127.0.0.1:14552
+2025-10-17 17:05:36,218 - REACT.TelemetryManager - INFO - Telem1 UAV discovery will happen continuously as messages arrive
+2025-10-17 17:05:36,231 - REACT.TelemetryManager - ERROR - Telem2 failed to connect: could not open port '/dev/ttyUSB1': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3)
+2025-10-17 17:05:36,231 - REACT.MissionManager - INFO - Mission monitoring started
+2025-10-17 17:05:36,236 - REACT.SafetyMonitor - INFO - Safety monitoring started
+2025-10-17 17:05:36,236 - REACT.App - INFO - All services started successfully!
+2025-10-17 17:05:36,236 - REACT.Main - INFO - Initializing QML frontend...
+2025-10-17 17:05:36,338 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_1 (System ID: 1)
+2025-10-17 17:05:36,342 - REACT.TelemetryManager - INFO - Requested HOME_POSITION from UAV_1
+2025-10-17 17:05:36,349 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_3 (System ID: 3)
+2025-10-17 17:05:36,349 - REACT.TelemetryManager - INFO - Requested HOME_POSITION from UAV_3
+2025-10-17 17:05:36,446 - REACT.UAVState - INFO - UAV_1: Home position set to lat=34.164692, lon=-118.074511, alt=301.8
+2025-10-17 17:05:36,547 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_6 (System ID: 6)
+2025-10-17 17:05:36,547 - REACT.TelemetryManager - INFO - Requested HOME_POSITION from UAV_6
+2025-10-17 17:05:36,576 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_2 (System ID: 2)
+2025-10-17 17:05:36,576 - REACT.TelemetryManager - INFO - Requested HOME_POSITION from UAV_2
+2025-10-17 17:05:36,608 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_4 (System ID: 4)
+2025-10-17 17:05:36,608 - REACT.TelemetryManager - INFO - Requested HOME_POSITION from UAV_4
+2025-10-17 17:05:36,641 - REACT.UAVState - INFO - UAV_3: Home position set to lat=34.164764, lon=-118.074511, alt=302.6
+2025-10-17 17:05:36,818 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_5 (System ID: 5)
+2025-10-17 17:05:36,818 - REACT.TelemetryManager - INFO - Requested HOME_POSITION from UAV_5
+2025-10-17 17:05:36,851 - REACT.UAVState - INFO - UAV_2: Home position set to lat=34.164728, lon=-118.074511, alt=302.2
+2025-10-17 17:05:36,870 - REACT.UAVState - INFO - UAV_4: Home position set to lat=34.164800, lon=-118.074511, alt=302.9
+2025-10-17 17:05:36,882 - REACT.UAVState - INFO - UAV_6: Home position set to lat=34.164872, lon=-118.074511, alt=303.7
+2025-10-17 17:05:37,048 - REACT.Main - INFO - Frontend started successfully
+2025-10-17 17:05:37,052 - REACT.Main - INFO - Starting application event loop...
+2025-10-17 17:05:37,229 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_6: GPS fix lost (type: 0)
+2025-10-17 17:05:37,229 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_4: GPS fix lost (type: 0)
+2025-10-17 17:05:37,229 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_5: GPS fix lost (type: 0)
+2025-10-17 17:05:37,235 - REACT.UAVState - INFO - UAV_5: Home position set to lat=34.164836, lon=-118.074511, alt=303.3
+2025-10-17 17:05:53,802 - REACT.Main - INFO - Shutting down...
+2025-10-17 17:05:53,802 - REACT.App - INFO - Stopping REACT application...
+2025-10-17 17:05:53,802 - REACT.SafetyMonitor - INFO - Safety monitoring stopped
+2025-10-17 17:05:53,802 - REACT.MissionManager - INFO - Mission monitoring stopped
+2025-10-17 17:05:53,807 - REACT.App - INFO - All services stopped.
+2025-10-17 17:05:54,606 - REACT.Launcher - INFO - Main application exited
+2025-10-17 17:05:54,606 - REACT.Launcher - INFO - Shutting down REACT...
+2025-10-17 17:05:54,607 - REACT.Launcher - INFO - Stopping main application...
+2025-10-17 17:05:54,607 - REACT.Launcher - INFO - Main application stopped
+2025-10-17 17:05:54,608 - REACT.Launcher - INFO - Stopping tile server...
+2025-10-17 17:05:54,625 - REACT.Launcher - INFO - Tile server stopped
+2025-10-17 17:07:06,391 - REACT.Launcher - INFO - ==================================================
+2025-10-17 17:07:06,391 - REACT.Launcher - INFO - REACT Ground Control Station Launcher
+2025-10-17 17:07:06,391 - REACT.Launcher - INFO - ==================================================
+2025-10-17 17:07:06,391 - REACT.Launcher - INFO - Installing dependencies...
+2025-10-17 17:07:06,391 - REACT.Launcher.Dependencies - INFO - Installing tile server dependencies...
+2025-10-17 17:07:08,623 - REACT.Launcher.Dependencies - INFO - Dependencies installed successfully
+2025-10-17 17:07:08,623 - REACT.Launcher - INFO - Starting tile server...
+2025-10-17 17:07:08,623 - REACT.Launcher - INFO - Tile server started (PID: 4952)
+2025-10-17 17:07:08,623 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-17 17:07:10,174 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-17 17:07:10,174 - REACT.Launcher - INFO - Starting REACT application...
+2025-10-17 17:07:10,174 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-17 17:07:10,179 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-17 17:07:10,189 - REACT.Launcher - INFO - REACT application started (PID: 16556)
+2025-10-17 17:07:10,190 - REACT.Launcher - INFO - ==================================================
+2025-10-17 17:07:10,191 - REACT.Launcher - INFO - REACT is running!
+2025-10-17 17:07:10,191 - REACT.Launcher - INFO - - Tile server: http://127.0.0.1:8081
+2025-10-17 17:07:10,193 - REACT.Launcher - INFO - - Main application: Running
+2025-10-17 17:07:10,193 - REACT.Launcher - INFO - Press Ctrl+C to stop all services
+2025-10-17 17:07:10,193 - REACT.Launcher - INFO - ==================================================
+2025-10-17 17:07:11,815 - REACT.Main - INFO - REACT Application logging initialized
+2025-10-17 17:07:11,815 - REACT.Main - INFO - Log file: C:\Users\chenz\Documents\react\react\react\data/logs/mission_log.txt
+2025-10-17 17:07:11,815 - REACT.Main - INFO - Starting REACT Ground Control Station...
+2025-10-17 17:07:11,815 - REACT.Main - INFO - Initializing backend...
+2025-10-17 17:07:11,815 - REACT.App - INFO - REACT Application starting...
+2025-10-17 17:07:11,815 - REACT.UAVController - INFO - UAV Controller initialized
+2025-10-17 17:07:11,818 - REACT.MissionManager - INFO - Mission Manager initialized
+2025-10-17 17:07:11,818 - REACT.SafetyMonitor - INFO - Safety Monitor initialized
+2025-10-17 17:07:11,818 - REACT.App - INFO - Setting up component connections...
+2025-10-17 17:07:11,818 - REACT.App - INFO - Component connections established
+2025-10-17 17:07:11,818 - REACT.App - INFO - All managers initialized successfully
+2025-10-17 17:07:11,818 - REACT.App - INFO - Starting REACT application...
+2025-10-17 17:07:11,822 - REACT.TelemetryManager - INFO - Telem1 connected to: udp:127.0.0.1:14552
+2025-10-17 17:07:11,823 - REACT.TelemetryManager - INFO - Telem1 UAV discovery will happen continuously as messages arrive
+2025-10-17 17:07:11,826 - REACT.TelemetryManager - ERROR - Telem2 failed to connect: could not open port '/dev/ttyUSB1': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3)
+2025-10-17 17:07:11,826 - REACT.MissionManager - INFO - Mission monitoring started
+2025-10-17 17:07:11,833 - REACT.SafetyMonitor - INFO - Safety monitoring started
+2025-10-17 17:07:11,833 - REACT.App - INFO - All services started successfully!
+2025-10-17 17:07:11,834 - REACT.Main - INFO - Initializing QML frontend...
+2025-10-17 17:07:11,879 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_6 (System ID: 6)
+2025-10-17 17:07:11,879 - REACT.TelemetryManager - INFO - Requested HOME_POSITION from UAV_6
+2025-10-17 17:07:11,922 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_5 (System ID: 5)
+2025-10-17 17:07:11,922 - REACT.TelemetryManager - INFO - Requested HOME_POSITION from UAV_5
+2025-10-17 17:07:11,996 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_4 (System ID: 4)
+2025-10-17 17:07:11,996 - REACT.TelemetryManager - INFO - Requested HOME_POSITION from UAV_4
+2025-10-17 17:07:12,003 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_2 (System ID: 2)
+2025-10-17 17:07:12,005 - REACT.TelemetryManager - INFO - Requested HOME_POSITION from UAV_2
+2025-10-17 17:07:12,012 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_1 (System ID: 1)
+2025-10-17 17:07:12,012 - REACT.TelemetryManager - INFO - Requested HOME_POSITION from UAV_1
+2025-10-17 17:07:12,106 - REACT.UAVState - INFO - UAV_2: Home position set to lat=34.164728, lon=-118.074511, alt=302.1
+2025-10-17 17:07:12,202 - REACT.UAVState - INFO - UAV_1: Home position set to lat=34.164692, lon=-118.074511, alt=301.8
+2025-10-17 17:07:12,216 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_3 (System ID: 3)
+2025-10-17 17:07:12,218 - REACT.TelemetryManager - INFO - Requested HOME_POSITION from UAV_3
+2025-10-17 17:07:12,317 - REACT.UAVState - INFO - UAV_5: Home position set to lat=34.164836, lon=-118.074511, alt=303.3
+2025-10-17 17:07:12,457 - REACT.UAVState - INFO - UAV_6: Home position set to lat=34.164872, lon=-118.074511, alt=303.7
+2025-10-17 17:07:12,564 - REACT.Main - INFO - Frontend started successfully
+2025-10-17 17:07:12,565 - REACT.Main - INFO - Starting application event loop...
+2025-10-17 17:07:12,618 - REACT.UAVState - INFO - UAV_4: Home position set to lat=34.164800, lon=-118.074511, alt=302.9
+2025-10-17 17:07:12,839 - REACT.UAVState - INFO - UAV_3: Home position set to lat=34.164764, lon=-118.074511, alt=302.6
+2025-10-17 17:07:12,846 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_1: GPS fix lost (type: 0)
+2025-10-17 17:07:12,858 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_3: GPS fix lost (type: 0)
+2025-10-17 17:07:22,327 - REACT.Main - INFO - Shutting down...
+2025-10-17 17:07:22,327 - REACT.App - INFO - Stopping REACT application...
+2025-10-17 17:07:22,327 - REACT.SafetyMonitor - INFO - Safety monitoring stopped
+2025-10-17 17:07:22,327 - REACT.MissionManager - INFO - Mission monitoring stopped
+2025-10-17 17:07:22,331 - REACT.App - INFO - All services stopped.
+2025-10-17 17:07:23,213 - REACT.Launcher - INFO - Main application exited
+2025-10-17 17:07:23,213 - REACT.Launcher - INFO - Shutting down REACT...
+2025-10-17 17:07:23,213 - REACT.Launcher - INFO - Stopping main application...
+2025-10-17 17:07:23,213 - REACT.Launcher - INFO - Main application stopped
+2025-10-17 17:07:23,213 - REACT.Launcher - INFO - Stopping tile server...
+2025-10-17 17:07:23,233 - REACT.Launcher - INFO - Tile server stopped
+2025-10-17 17:08:23,718 - REACT.Launcher - INFO - ==================================================
+2025-10-17 17:08:23,718 - REACT.Launcher - INFO - REACT Ground Control Station Launcher
+2025-10-17 17:08:23,718 - REACT.Launcher - INFO - ==================================================
+2025-10-17 17:08:23,718 - REACT.Launcher - INFO - Installing dependencies...
+2025-10-17 17:08:23,718 - REACT.Launcher.Dependencies - INFO - Installing tile server dependencies...
+2025-10-17 17:08:26,238 - REACT.Launcher.Dependencies - INFO - Dependencies installed successfully
+2025-10-17 17:08:26,238 - REACT.Launcher - INFO - Starting tile server...
+2025-10-17 17:08:26,254 - REACT.Launcher - INFO - Tile server started (PID: 8840)
+2025-10-17 17:08:26,255 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-17 17:08:27,830 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-17 17:08:27,832 - REACT.Launcher - INFO - Starting REACT application...
+2025-10-17 17:08:27,832 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-17 17:08:27,851 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-17 17:08:27,859 - REACT.Launcher - INFO - REACT application started (PID: 4584)
+2025-10-17 17:08:27,864 - REACT.Launcher - INFO - ==================================================
+2025-10-17 17:08:27,864 - REACT.Launcher - INFO - REACT is running!
+2025-10-17 17:08:27,868 - REACT.Launcher - INFO - - Tile server: http://127.0.0.1:8081
+2025-10-17 17:08:27,871 - REACT.Launcher - INFO - - Main application: Running
+2025-10-17 17:08:27,871 - REACT.Launcher - INFO - Press Ctrl+C to stop all services
+2025-10-17 17:08:27,871 - REACT.Launcher - INFO - ==================================================
+2025-10-17 17:08:29,527 - REACT.Main - INFO - REACT Application logging initialized
+2025-10-17 17:08:29,527 - REACT.Main - INFO - Log file: C:\Users\chenz\Documents\react\react\react\data/logs/mission_log.txt
+2025-10-17 17:08:29,527 - REACT.Main - INFO - Starting REACT Ground Control Station...
+2025-10-17 17:08:29,527 - REACT.Main - INFO - Initializing backend...
+2025-10-17 17:08:29,527 - REACT.App - INFO - REACT Application starting...
+2025-10-17 17:08:29,527 - REACT.UAVController - INFO - UAV Controller initialized
+2025-10-17 17:08:29,527 - REACT.MissionManager - INFO - Mission Manager initialized
+2025-10-17 17:08:29,527 - REACT.SafetyMonitor - INFO - Safety Monitor initialized
+2025-10-17 17:08:29,527 - REACT.App - INFO - Setting up component connections...
+2025-10-17 17:08:29,533 - REACT.App - INFO - Component connections established
+2025-10-17 17:08:29,533 - REACT.App - INFO - All managers initialized successfully
+2025-10-17 17:08:29,534 - REACT.App - INFO - Starting REACT application...
+2025-10-17 17:08:29,536 - REACT.TelemetryManager - INFO - Telem1 connected to: udp:127.0.0.1:14552
+2025-10-17 17:08:29,536 - REACT.TelemetryManager - INFO - Telem1 UAV discovery will happen continuously as messages arrive
+2025-10-17 17:08:29,547 - REACT.TelemetryManager - ERROR - Telem2 failed to connect: could not open port '/dev/ttyUSB1': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3)
+2025-10-17 17:08:29,560 - REACT.MissionManager - INFO - Mission monitoring started
+2025-10-17 17:08:29,561 - REACT.SafetyMonitor - INFO - Safety monitoring started
+2025-10-17 17:08:29,561 - REACT.App - INFO - All services started successfully!
+2025-10-17 17:08:29,561 - REACT.Main - INFO - Initializing QML frontend...
+2025-10-17 17:08:29,621 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_3 (System ID: 3)
+2025-10-17 17:08:29,623 - REACT.TelemetryManager - INFO - Requested HOME_POSITION from UAV_3
+2025-10-17 17:08:29,632 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_1 (System ID: 1)
+2025-10-17 17:08:29,632 - REACT.TelemetryManager - INFO - Requested HOME_POSITION from UAV_1
+2025-10-17 17:08:29,730 - REACT.UAVState - INFO - UAV_1: Home position set to lat=34.164692, lon=-118.074511, alt=301.8
+2025-10-17 17:08:29,785 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_6 (System ID: 6)
+2025-10-17 17:08:29,785 - REACT.TelemetryManager - INFO - Requested HOME_POSITION from UAV_6
+2025-10-17 17:08:29,822 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_4 (System ID: 4)
+2025-10-17 17:08:29,822 - REACT.TelemetryManager - INFO - Requested HOME_POSITION from UAV_4
+2025-10-17 17:08:29,890 - REACT.UAVState - INFO - UAV_3: Home position set to lat=34.164764, lon=-118.074511, alt=302.6
+2025-10-17 17:08:29,896 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_2 (System ID: 2)
+2025-10-17 17:08:29,897 - REACT.TelemetryManager - INFO - Requested HOME_POSITION from UAV_2
+2025-10-17 17:08:29,930 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_5 (System ID: 5)
+2025-10-17 17:08:29,940 - REACT.TelemetryManager - INFO - Requested HOME_POSITION from UAV_5
+2025-10-17 17:08:30,152 - REACT.UAVState - INFO - UAV_4: Home position set to lat=34.164800, lon=-118.074511, alt=302.9
+2025-10-17 17:08:30,165 - REACT.UAVState - INFO - UAV_2: Home position set to lat=34.164728, lon=-118.074511, alt=302.2
+2025-10-17 17:08:30,177 - REACT.UAVState - INFO - UAV_6: Home position set to lat=34.164872, lon=-118.074511, alt=303.7
+2025-10-17 17:08:30,195 - REACT.UAVState - INFO - UAV_5: Home position set to lat=34.164836, lon=-118.074511, alt=303.3
+2025-10-17 17:08:30,319 - REACT.Main - INFO - Frontend started successfully
+2025-10-17 17:08:30,335 - REACT.Main - INFO - Starting application event loop...
+2025-10-17 17:08:30,553 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_4: GPS fix lost (type: 0)
+2025-10-17 17:08:30,553 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_2: GPS fix lost (type: 0)
+2025-10-17 17:08:58,555 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_1: GPS fix lost (type: 0)
+2025-10-17 17:08:59,556 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_3: GPS fix lost (type: 0)
+2025-10-17 17:08:59,557 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_5: GPS fix lost (type: 0)
+2025-10-17 17:09:00,557 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_4: GPS fix lost (type: 0)
+2025-10-17 17:09:00,562 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_2: GPS fix lost (type: 0)
+2025-10-17 17:09:05,555 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_6: Communication lost for 10.2s
+2025-10-17 17:09:05,759 - REACT.UAVState - INFO - UAV_6: Home position set to lat=0.000000, lon=0.000000, alt=0.0
+2025-10-17 17:09:05,760 - REACT.TelemetryManager - WARNING - UAV UAV_6 Telem1 connection lost (last seen 10.0s ago)
+2025-10-17 17:09:13,815 - REACT.UAVState - INFO - UAV_4: Home position set to lat=34.163275, lon=-118.075218, alt=291.1
+2025-10-17 17:09:13,852 - REACT.UAVState - INFO - UAV_5: Home position set to lat=34.163311, lon=-118.075218, alt=291.1
+2025-10-17 17:09:14,028 - REACT.UAVState - INFO - UAV_1: Home position set to lat=34.163168, lon=-118.075218, alt=291.1
+2025-10-17 17:09:14,223 - REACT.UAVState - INFO - UAV_3: Home position set to lat=34.163239, lon=-118.075218, alt=291.1
+2025-10-17 17:09:14,521 - REACT.UAVState - INFO - UAV_2: Home position set to lat=34.163203, lon=-118.075218, alt=291.1
+2025-10-17 17:09:26,343 - REACT.Main - INFO - Shutting down...
+2025-10-17 17:09:26,344 - REACT.App - INFO - Stopping REACT application...
+2025-10-17 17:09:26,344 - REACT.SafetyMonitor - INFO - Safety monitoring stopped
+2025-10-17 17:09:26,344 - REACT.MissionManager - INFO - Mission monitoring stopped
+2025-10-17 17:09:26,350 - REACT.App - INFO - All services stopped.
+2025-10-17 17:09:27,028 - REACT.Launcher - INFO - Main application exited
+2025-10-17 17:09:27,030 - REACT.Launcher - INFO - Shutting down REACT...
+2025-10-17 17:09:27,030 - REACT.Launcher - INFO - Stopping main application...
+2025-10-17 17:09:27,030 - REACT.Launcher - INFO - Main application stopped
+2025-10-17 17:09:27,031 - REACT.Launcher - INFO - Stopping tile server...
+2025-10-17 17:09:27,031 - REACT.Launcher - INFO - Tile server stopped
+2025-10-17 17:13:30,533 - REACT.Launcher - INFO - ==================================================
+2025-10-17 17:13:30,535 - REACT.Launcher - INFO - REACT Ground Control Station Launcher
+2025-10-17 17:13:30,535 - REACT.Launcher - INFO - ==================================================
+2025-10-17 17:13:30,535 - REACT.Launcher - INFO - Installing dependencies...
+2025-10-17 17:13:30,535 - REACT.Launcher.Dependencies - INFO - Installing tile server dependencies...
+2025-10-17 17:13:32,741 - REACT.Launcher.Dependencies - INFO - Dependencies installed successfully
+2025-10-17 17:13:32,741 - REACT.Launcher - INFO - Starting tile server...
+2025-10-17 17:13:32,760 - REACT.Launcher - INFO - Tile server started (PID: 9668)
+2025-10-17 17:13:32,760 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-17 17:13:34,325 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-17 17:13:34,325 - REACT.Launcher - INFO - Starting REACT application...
+2025-10-17 17:13:34,325 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-17 17:13:34,346 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-17 17:13:34,347 - REACT.Launcher - INFO - REACT application started (PID: 26364)
+2025-10-17 17:13:34,347 - REACT.Launcher - INFO - ==================================================
+2025-10-17 17:13:34,356 - REACT.Launcher - INFO - REACT is running!
+2025-10-17 17:13:34,359 - REACT.Launcher - INFO - - Tile server: http://127.0.0.1:8081
+2025-10-17 17:13:34,361 - REACT.Launcher - INFO - - Main application: Running
+2025-10-17 17:13:34,362 - REACT.Launcher - INFO - Press Ctrl+C to stop all services
+2025-10-17 17:13:34,363 - REACT.Launcher - INFO - ==================================================
+2025-10-17 17:13:36,110 - REACT.Main - INFO - REACT Application logging initialized
+2025-10-17 17:13:36,110 - REACT.Main - INFO - Log file: C:\Users\chenz\Documents\react\react\react\data/logs/mission_log.txt
+2025-10-17 17:13:36,110 - REACT.Main - INFO - Starting REACT Ground Control Station...
+2025-10-17 17:13:36,110 - REACT.Main - INFO - Initializing backend...
+2025-10-17 17:13:36,110 - REACT.App - INFO - REACT Application starting...
+2025-10-17 17:13:36,110 - REACT.UAVController - INFO - UAV Controller initialized
+2025-10-17 17:13:36,110 - REACT.MissionManager - INFO - Mission Manager initialized
+2025-10-17 17:13:36,110 - REACT.SafetyMonitor - INFO - Safety Monitor initialized
+2025-10-17 17:13:36,110 - REACT.App - INFO - Setting up component connections...
+2025-10-17 17:13:36,110 - REACT.App - INFO - Component connections established
+2025-10-17 17:13:36,110 - REACT.App - INFO - All managers initialized successfully
+2025-10-17 17:13:36,110 - REACT.App - INFO - Starting REACT application...
+2025-10-17 17:13:36,116 - REACT.TelemetryManager - INFO - Telem1 connected to: udp:127.0.0.1:14552
+2025-10-17 17:13:36,116 - REACT.TelemetryManager - INFO - Telem1 UAV discovery will happen continuously as messages arrive
+2025-10-17 17:13:36,127 - REACT.TelemetryManager - ERROR - Telem2 failed to connect: could not open port '/dev/ttyUSB1': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3)
+2025-10-17 17:13:36,127 - REACT.MissionManager - INFO - Mission monitoring started
+2025-10-17 17:13:36,127 - REACT.SafetyMonitor - INFO - Safety monitoring started
+2025-10-17 17:13:36,127 - REACT.App - INFO - All services started successfully!
+2025-10-17 17:13:36,131 - REACT.Main - INFO - Initializing QML frontend...
+2025-10-17 17:13:36,160 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_1 (System ID: 1)
+2025-10-17 17:13:36,161 - REACT.TelemetryManager - INFO - Requested HOME_POSITION from UAV_1
+2025-10-17 17:13:36,185 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_4 (System ID: 4)
+2025-10-17 17:13:36,186 - REACT.TelemetryManager - INFO - Requested HOME_POSITION from UAV_4
+2025-10-17 17:13:36,211 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_2 (System ID: 2)
+2025-10-17 17:13:36,211 - REACT.TelemetryManager - INFO - Requested HOME_POSITION from UAV_2
+2025-10-17 17:13:36,265 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_5 (System ID: 5)
+2025-10-17 17:13:36,265 - REACT.TelemetryManager - INFO - Requested HOME_POSITION from UAV_5
+2025-10-17 17:13:36,309 - REACT.UAVState - INFO - UAV_1: Home position set to lat=34.163168, lon=-118.075218, alt=291.1
+2025-10-17 17:13:36,322 - REACT.UAVState - INFO - UAV_2: Home position set to lat=34.163203, lon=-118.075218, alt=291.1
+2025-10-17 17:13:36,381 - REACT.UAVState - INFO - UAV_4: Home position set to lat=34.163275, lon=-118.075218, alt=291.1
+2025-10-17 17:13:36,466 - REACT.UAVState - INFO - UAV_5: Home position set to lat=34.163311, lon=-118.075218, alt=291.1
+2025-10-17 17:13:36,511 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_3 (System ID: 3)
+2025-10-17 17:13:36,511 - REACT.TelemetryManager - INFO - Requested HOME_POSITION from UAV_3
+2025-10-17 17:13:36,648 - REACT.UAVState - INFO - UAV_3: Home position set to lat=34.163239, lon=-118.075218, alt=291.1
+2025-10-17 17:13:36,919 - REACT.Main - INFO - Frontend started successfully
+2025-10-17 17:13:36,962 - REACT.Main - INFO - Starting application event loop...
+2025-10-17 17:13:37,134 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_4: GPS fix lost (type: 0)
+2025-10-17 17:13:37,136 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_2: GPS fix lost (type: 0)
+2025-10-17 17:13:37,136 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_5: GPS fix lost (type: 0)
+2025-10-17 17:14:35,886 - REACT.Main - INFO - Shutting down...
+2025-10-17 17:14:35,890 - REACT.App - INFO - Stopping REACT application...
+2025-10-17 17:14:35,890 - REACT.SafetyMonitor - INFO - Safety monitoring stopped
+2025-10-17 17:14:35,890 - REACT.MissionManager - INFO - Mission monitoring stopped
+2025-10-17 17:14:35,893 - REACT.App - INFO - All services stopped.
+2025-10-17 17:14:36,460 - REACT.Launcher - INFO - Main application exited
+2025-10-17 17:14:36,460 - REACT.Launcher - INFO - Shutting down REACT...
+2025-10-17 17:14:36,462 - REACT.Launcher - INFO - Stopping main application...
+2025-10-17 17:14:36,462 - REACT.Launcher - INFO - Main application stopped
+2025-10-17 17:14:36,462 - REACT.Launcher - INFO - Stopping tile server...
+2025-10-17 17:14:36,473 - REACT.Launcher - INFO - Tile server stopped
+2025-10-17 17:15:38,462 - REACT.Launcher - INFO - ==================================================
+2025-10-17 17:15:38,462 - REACT.Launcher - INFO - REACT Ground Control Station Launcher
+2025-10-17 17:15:38,462 - REACT.Launcher - INFO - ==================================================
+2025-10-17 17:15:38,462 - REACT.Launcher - INFO - Installing dependencies...
+2025-10-17 17:15:38,462 - REACT.Launcher.Dependencies - INFO - Installing tile server dependencies...
+2025-10-17 17:15:40,794 - REACT.Launcher.Dependencies - INFO - Dependencies installed successfully
+2025-10-17 17:15:40,794 - REACT.Launcher - INFO - Starting tile server...
+2025-10-17 17:15:40,794 - REACT.Launcher - INFO - Tile server started (PID: 5580)
+2025-10-17 17:15:40,794 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-17 17:15:42,342 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-17 17:15:42,342 - REACT.Launcher - INFO - Starting REACT application...
+2025-10-17 17:15:42,342 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-17 17:15:42,351 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-17 17:15:42,361 - REACT.Launcher - INFO - REACT application started (PID: 22572)
+2025-10-17 17:15:42,361 - REACT.Launcher - INFO - ==================================================
+2025-10-17 17:15:42,361 - REACT.Launcher - INFO - REACT is running!
+2025-10-17 17:15:42,366 - REACT.Launcher - INFO - - Tile server: http://127.0.0.1:8081
+2025-10-17 17:15:42,366 - REACT.Launcher - INFO - - Main application: Running
+2025-10-17 17:15:42,367 - REACT.Launcher - INFO - Press Ctrl+C to stop all services
+2025-10-17 17:15:42,367 - REACT.Launcher - INFO - ==================================================
+2025-10-17 17:15:44,347 - REACT.Main - INFO - REACT Application logging initialized
+2025-10-17 17:15:44,347 - REACT.Main - INFO - Log file: C:\Users\chenz\Documents\react\react\react\data/logs/mission_log.txt
+2025-10-17 17:15:44,347 - REACT.Main - INFO - Starting REACT Ground Control Station...
+2025-10-17 17:15:44,347 - REACT.Main - INFO - Initializing backend...
+2025-10-17 17:15:44,350 - REACT.App - INFO - REACT Application starting...
+2025-10-17 17:15:44,351 - REACT.UAVController - INFO - UAV Controller initialized
+2025-10-17 17:15:44,351 - REACT.MissionManager - INFO - Mission Manager initialized
+2025-10-17 17:15:44,351 - REACT.SafetyMonitor - INFO - Safety Monitor initialized
+2025-10-17 17:15:44,353 - REACT.App - INFO - Setting up component connections...
+2025-10-17 17:15:44,354 - REACT.App - INFO - Component connections established
+2025-10-17 17:15:44,354 - REACT.App - INFO - All managers initialized successfully
+2025-10-17 17:15:44,355 - REACT.App - INFO - Starting REACT application...
+2025-10-17 17:15:44,357 - REACT.TelemetryManager - INFO - Telem1 connected to: udp:127.0.0.1:14552
+2025-10-17 17:15:44,359 - REACT.TelemetryManager - INFO - Telem1 UAV discovery will happen continuously as messages arrive
+2025-10-17 17:15:44,370 - REACT.TelemetryManager - ERROR - Telem2 failed to connect: could not open port '/dev/ttyUSB1': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3)
+2025-10-17 17:15:44,373 - REACT.MissionManager - INFO - Mission monitoring started
+2025-10-17 17:15:44,377 - REACT.SafetyMonitor - INFO - Safety monitoring started
+2025-10-17 17:15:44,377 - REACT.App - INFO - All services started successfully!
+2025-10-17 17:15:44,378 - REACT.Main - INFO - Initializing QML frontend...
+2025-10-17 17:15:44,527 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_5 (System ID: 5)
+2025-10-17 17:15:44,527 - REACT.TelemetryManager - INFO - Requested HOME_POSITION from UAV_5
+2025-10-17 17:15:44,553 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_3 (System ID: 3)
+2025-10-17 17:15:44,556 - REACT.TelemetryManager - INFO - Requested HOME_POSITION from UAV_3
+2025-10-17 17:15:44,576 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_4 (System ID: 4)
+2025-10-17 17:15:44,576 - REACT.TelemetryManager - INFO - Requested HOME_POSITION from UAV_4
+2025-10-17 17:15:44,595 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_1 (System ID: 1)
+2025-10-17 17:15:44,595 - REACT.TelemetryManager - INFO - Requested HOME_POSITION from UAV_1
+2025-10-17 17:15:44,613 - REACT.TelemetryManager - INFO - New UAV discovered: UAV_2 (System ID: 2)
+2025-10-17 17:15:44,613 - REACT.TelemetryManager - INFO - Requested HOME_POSITION from UAV_2
+2025-10-17 17:15:44,668 - REACT.UAVState - INFO - UAV_1: Home position set to lat=34.163168, lon=-118.075218, alt=291.1
+2025-10-17 17:15:44,705 - REACT.UAVState - INFO - UAV_5: Home position set to lat=34.163311, lon=-118.075218, alt=291.1
+2025-10-17 17:15:44,716 - REACT.UAVState - INFO - UAV_3: Home position set to lat=34.163239, lon=-118.075218, alt=291.1
+2025-10-17 17:15:44,754 - REACT.UAVState - INFO - UAV_2: Home position set to lat=34.163203, lon=-118.075218, alt=291.1
+2025-10-17 17:15:44,804 - REACT.UAVState - INFO - UAV_4: Home position set to lat=34.163275, lon=-118.075218, alt=291.1
+2025-10-17 17:15:45,099 - REACT.Main - INFO - Frontend started successfully
+2025-10-17 17:15:45,106 - REACT.Main - INFO - Starting application event loop...
+2025-10-17 17:15:45,370 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_5: GPS fix lost (type: 0)
+2025-10-17 17:15:45,371 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_4: GPS fix lost (type: 0)
+2025-10-17 17:16:04,387 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_2: GPS fix lost (type: 0)
+2025-10-17 17:16:05,394 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_3: GPS fix lost (type: 0)
+2025-10-17 17:16:05,394 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_1: GPS fix lost (type: 0)
+2025-10-17 17:16:07,243 - REACT.UAVState - INFO - UAV_4: Home position set to lat=0.000000, lon=0.000000, alt=0.0
+2025-10-17 17:16:07,246 - REACT.TelemetryManager - WARNING - UAV UAV_4 Telem1 connection lost (last seen 10.0s ago)
+2025-10-17 17:16:07,284 - REACT.UAVState - INFO - UAV_5: Home position set to lat=0.000000, lon=0.000000, alt=0.0
+2025-10-17 17:16:07,286 - REACT.TelemetryManager - WARNING - UAV UAV_5 Telem1 connection lost (last seen 10.0s ago)
+2025-10-17 17:16:07,400 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_5: Communication lost for 10.1s
+2025-10-17 17:16:07,403 - REACT.SafetyMonitor - ERROR - CRITICAL - UAV_4: Communication lost for 10.2s
+2025-10-17 17:16:19,563 - REACT.UAVState - INFO - UAV_1: Home position set to lat=34.164692, lon=-118.074511, alt=301.8
+2025-10-17 17:16:19,610 - REACT.UAVState - INFO - UAV_3: Home position set to lat=34.164764, lon=-118.074511, alt=302.6
+2025-10-17 17:16:19,939 - REACT.UAVState - INFO - UAV_2: Home position set to lat=34.164728, lon=-118.074511, alt=302.2
+2025-10-17 17:16:35,213 - REACT.Main - INFO - Shutting down...
+2025-10-17 17:16:35,213 - REACT.App - INFO - Stopping REACT application...
+2025-10-17 17:16:35,213 - REACT.SafetyMonitor - INFO - Safety monitoring stopped
+2025-10-17 17:16:35,213 - REACT.MissionManager - INFO - Mission monitoring stopped
+2025-10-17 17:16:35,215 - REACT.App - INFO - All services stopped.
+2025-10-17 17:16:36,519 - REACT.Launcher - INFO - Main application exited
+2025-10-17 17:16:36,519 - REACT.Launcher - INFO - Shutting down REACT...
+2025-10-17 17:16:36,519 - REACT.Launcher - INFO - Stopping main application...
+2025-10-17 17:16:36,519 - REACT.Launcher - INFO - Main application stopped
+2025-10-17 17:16:36,519 - REACT.Launcher - INFO - Stopping tile server...
+2025-10-17 17:16:36,537 - REACT.Launcher - INFO - Tile server stopped

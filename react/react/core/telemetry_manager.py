@@ -146,6 +146,9 @@ class TelemetryManager(QObject):
             self.discovered_uavs.add(system_id)
             self.uav_states[uav_id] = UAVState(uav_id)
             self.logger.info(f"New UAV discovered: {uav_id} (System ID: {system_id})")
+            
+            # Request home position from the newly discovered UAV
+            self._request_home_position(system_id)
         
         # Update last seen time for connection monitoring
         self.uav_last_seen[system_id] = current_time
@@ -172,6 +175,8 @@ class TelemetryManager(QObject):
                     # Mark as disconnected if not already
                     if self.uav_states[uav_id].is_connected():
                         self.uav_states[uav_id].set_connected(False)
+                        # Reset home position - UAV may reboot at different location
+                        self.uav_states[uav_id].set_home_position(0.0, 0.0, 0.0)
                         self.logger.warning(f"UAV {uav_id} Telem1 connection lost (last seen {time_since_last_msg:.1f}s ago)")
                         
                         # Emit signal for UI updates
@@ -253,6 +258,24 @@ class TelemetryManager(QObject):
                 
         except Exception as e:
             self.logger.debug(f"Error requesting immediate heartbeat from {uav_id}: {e}")
+
+    def _request_home_position(self, system_id):
+        """Request HOME_POSITION message from a UAV when first discovered."""
+        try:
+            if self._is_telem1_available():
+                # Request HOME_POSITION message (ID 242)
+                self.telem1_connection.mav.command_long_send(
+                    system_id,  # target_system
+                    1,  # target_component (autopilot)
+                    mavutil.mavlink.MAV_CMD_REQUEST_MESSAGE,  # command
+                    0,  # confirmation
+                    242,  # param1: HOME_POSITION message ID
+                    0, 0, 0, 0, 0, 0  # param2-7: unused
+                )
+                self.logger.info(f"Requested HOME_POSITION from UAV_{system_id}")
+                
+        except Exception as e:
+            self.logger.warning(f"Error requesting HOME_POSITION from UAV_{system_id}: {e}")
 
     def _check_telem2_status(self):
         """Check Telem2 connection status based on messages from UAVs via Telem1."""
@@ -365,6 +388,29 @@ class TelemetryManager(QObject):
                 gps_fix_type=msg.fix_type,
                 satellites_visible=msg.satellites_visible
             )
+
+        elif msg_type == "HOME_POSITION":
+            # Receive home position from autopilot (set on boot with GPS fix)
+            # Coordinates are in degE7 format (degrees * 10^7)
+            lat = msg.latitude / 1e7
+            lon = msg.longitude / 1e7
+            alt = msg.altitude / 1000.0  # Convert from mm to meters
+            
+            # Only update if position has changed
+            if (state.home_lat != lat or state.home_lng != lon):
+                state.set_home_position(lat, lon, alt)
+                # Emit signal to update UI with new home position
+                self.telemetry_updated.emit(uav_id, state.get_telemetry())
+
+        elif msg_type == "GPS_GLOBAL_ORIGIN":
+            # Alternative message for global origin (fallback if HOME_POSITION not available)
+            # Only set if home position not already set
+            if state.home_lat == 0.0 and state.home_lng == 0.0:
+                lat = msg.latitude / 1e7
+                lon = msg.longitude / 1e7
+                alt = msg.altitude / 1000.0
+                state.set_home_position(lat, lon, alt)
+                self.telemetry_updated.emit(uav_id, state.get_telemetry())
 
         elif msg_type == "STATUSTEXT":
             # Monitor for Telem2 status messages from Lua script
@@ -748,9 +794,10 @@ class TelemetryManager(QObject):
         system_id = int(uav_id.split('_')[1]) if '_' in uav_id else 1
         msg_type = msg.get_type()
         
-        # Verify message is from the correct system
-        if msg.get_srcSystem() != system_id:
-            return
+        # Note: When using Mission Planner's MAVLink forwarding, the source_system
+        # field may be modified. We'll accept mission protocol messages during an
+        # active upload as long as we're not in a multi-UAV scenario where we need
+        # to distinguish between different UAVs sending requests simultaneously.
         
         if msg_type in ['MISSION_REQUEST', 'MISSION_REQUEST_INT']:
             # UAV is requesting a specific waypoint
@@ -761,7 +808,10 @@ class TelemetryManager(QObject):
             if seq < len(waypoints):
                 # Check for duplicate requests
                 if seq in upload_state['requests_received']:
-                    self.logger.warning(f"Duplicate request for waypoint {seq} from {uav_id}")
+                    self.logger.debug(f"Duplicate request for waypoint {seq} from {uav_id} - ignoring to avoid sequence errors")
+                    # Don't resend - this can cause "Invalid sequence" errors
+                    # The autopilot should have received it the first time
+                    return
                 
                 upload_state['requests_received'].add(seq)
                 waypoint = waypoints[seq]

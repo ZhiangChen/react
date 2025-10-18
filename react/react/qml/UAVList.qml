@@ -266,7 +266,12 @@ Rectangle {
                                         width: 12
                                         height: 12
                                         radius: 6  // Circular light
-                                        color: (uavStatus && uavStatus.gps && uavStatus.gps.fix_type >= 3) ? "#4CAF50" : "#F44336"
+                                        color: {
+                                            if (!uavStatus || !uavStatus.gps) return "#9E9E9E"  // Gray for no data
+                                            // Check if Telem1 is disconnected - show gray to alert operator
+                                            if (uavStatus.connections && !uavStatus.connections.telem1_connected) return "#9E9E9E"
+                                            return uavStatus.gps.fix_type >= 3 ? "#4CAF50" : "#F44336"
+                                        }
                                         anchors.horizontalCenter: parent.horizontalCenter
                                     }
                                     Text {
@@ -285,11 +290,13 @@ Rectangle {
                                         radius: 6  // Circular light
                                         color: {
                                             if (!uavStatus || !uavStatus.battery) return "#9E9E9E"
+                                            // Check if Telem1 is disconnected - show gray to alert operator
+                                            if (uavStatus.connections && !uavStatus.connections.telem1_connected) return "#9E9E9E"
                                             var batteryLevel = uavStatus.battery.remaining_percent || 0
                                             if (batteryLevel >= 50) return "#4CAF50"  // Green for good
                                             if (batteryLevel >= 25) return "#FF9800"  // Orange for warning
                                             if (batteryLevel >= 10) return "#F44336"  // Red for critical
-                                            return "#9E9E9E"  // Gray for unknown
+                                            return "#9E9E9E"  // Gray for unknown/disconnected
                                         }
                                         anchors.horizontalCenter: parent.horizontalCenter
                                     }
@@ -317,6 +324,8 @@ Rectangle {
                                 font.pointSize: 9
                                 color: {
                                     if (!uavStatus || !uavStatus.battery) return "gray"
+                                    // Check if Telem1 is disconnected - show gray to alert operator
+                                    if (uavStatus.connections && !uavStatus.connections.telem1_connected) return "gray"
                                     var batteryLevel = uavStatus.battery.remaining_percent || 0
                                     return batteryLevel < 25 ? "red" : (batteryLevel < 50 ? "orange" : "green")
                                 }
@@ -354,7 +363,12 @@ Rectangle {
                             Text { 
                                 text: "GPS: " + (uavStatus && uavStatus.gps ? ((uavStatus.gps.satellites_visible || 0) + " sats (Fix: " + (uavStatus.gps.fix_type || 0) + ")") : "No GPS")
                                 font.pointSize: 9
-                                color: (uavStatus && uavStatus.gps && uavStatus.gps.fix_type >= 3) ? "green" : "orange"
+                                color: {
+                                    if (!uavStatus || !uavStatus.gps) return "gray"
+                                    // Check if Telem1 is disconnected - show gray to alert operator
+                                    if (uavStatus.connections && !uavStatus.connections.telem1_connected) return "gray"
+                                    return uavStatus.gps.fix_type >= 3 ? "green" : "orange"
+                                }
                                 width: parent.width
                                 elide: Text.ElideRight
                             }
