@@ -6794,3 +6794,246 @@
 2025-10-18 01:18:26,338 - REACT.Launcher - INFO - Main application stopped
 2025-10-18 01:18:26,339 - REACT.Launcher - INFO - Stopping tile server...
 2025-10-18 01:18:26,349 - REACT.Launcher - INFO - Tile server stopped
+2025-10-18 01:20:19,784 - REACT.Launcher - INFO - ==================================================
+2025-10-18 01:20:19,784 - REACT.Launcher - INFO - REACT Ground Control Station Launcher
+2025-10-18 01:20:19,784 - REACT.Launcher - INFO - ==================================================
+2025-10-18 01:20:19,784 - REACT.Launcher - INFO - Installing dependencies...
+2025-10-18 01:20:19,784 - REACT.Launcher.Dependencies - INFO - Installing tile server dependencies...
+2025-10-18 01:20:22,242 - REACT.Launcher.Dependencies - INFO - Dependencies installed successfully
+2025-10-18 01:20:22,242 - REACT.Launcher - INFO - Starting tile server...
+2025-10-18 01:20:22,254 - REACT.Launcher - INFO - Tile server started (PID: 7924)
+2025-10-18 01:20:22,255 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-18 01:20:23,319 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-18 01:20:23,319 - REACT.Launcher - INFO - Starting REACT application...
+2025-10-18 01:20:23,323 - REACT.Launcher - INFO - Waiting for tile server to be ready...
+2025-10-18 01:20:23,327 - REACT.Launcher - INFO - Tile server is ready!
+2025-10-18 01:20:23,339 - REACT.Launcher - INFO - REACT application started (PID: 21748)
+2025-10-18 01:20:23,339 - REACT.Launcher - INFO - ==================================================
+2025-10-18 01:20:23,341 - REACT.Launcher - INFO - REACT is running!
+2025-10-18 01:20:23,342 - REACT.Launcher - INFO - - Tile server: http://127.0.0.1:8081
+2025-10-18 01:20:23,342 - REACT.Launcher - INFO - - Main application: Running
+2025-10-18 01:20:23,342 - REACT.Launcher - INFO - Press Ctrl+C to stop all services
+2025-10-18 01:20:23,342 - REACT.Launcher - INFO - ==================================================
+2025-10-18 01:20:24,524 - REACT.Main - INFO - REACT Application logging initialized
+2025-10-18 01:20:24,524 - REACT.Main - INFO - Log file: C:\Users\chenz\Documents\react\react\react\data/logs/mission_log.txt
+2025-10-18 01:20:24,524 - REACT.Main - INFO - Starting REACT Ground Control Station...
+2025-10-18 01:20:24,524 - REACT.Main - INFO - Initializing backend...
+2025-10-18 01:20:24,524 - REACT.App - INFO - REACT Application starting...
+2025-10-18 01:20:24,524 - REACT.MAVLinkManager - INFO - Mission upload limits: max_concurrent=2, waypoint_delay=50ms
+2025-10-18 01:20:24,524 - REACT.CommandInterface - INFO - Command Interface initialized
+2025-10-18 01:20:24,524 - REACT.SafetyMonitor - INFO - Safety Monitor initialized
+2025-10-18 01:20:24,524 - REACT.App - INFO - Setting up component connections...
+2025-10-18 01:20:24,524 - REACT.App - INFO - Component connections established
+2025-10-18 01:20:24,524 - REACT.App - INFO - All managers initialized successfully
+2025-10-18 01:20:24,524 - REACT.App - INFO - Starting REACT application...
+2025-10-18 01:20:24,540 - REACT.MAVLinkManager - INFO - Telem1 connected to: udp:127.0.0.1:14552
+2025-10-18 01:20:24,540 - REACT.MAVLinkManager - INFO - Telem1 UAV discovery will happen continuously as messages arrive
+2025-10-18 01:20:24,550 - REACT.MAVLinkManager - ERROR - Telem2 failed to connect: could not open port '/dev/ttyUSB1': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3)
+2025-10-18 01:20:24,555 - REACT.SafetyMonitor - INFO - Safety monitoring started
+2025-10-18 01:20:24,556 - REACT.App - INFO - All services started successfully!
+2025-10-18 01:20:24,556 - REACT.Main - INFO - Initializing QML frontend...
+2025-10-18 01:20:24,720 - REACT.MAVLinkManager - INFO - New UAV discovered: UAV_2 (System ID: 2)
+2025-10-18 01:20:24,720 - REACT.MAVLinkManager - INFO - Requested HOME_POSITION from UAV_2
+2025-10-18 01:20:24,802 - REACT.UAVState - INFO - UAV_2: Home position set to lat=34.165805, lon=-118.074130, alt=293.0
+2025-10-18 01:20:24,883 - REACT.MAVLinkManager - INFO - New UAV discovered: UAV_1 (System ID: 1)
+2025-10-18 01:20:24,883 - REACT.MAVLinkManager - INFO - Requested HOME_POSITION from UAV_1
+2025-10-18 01:20:24,967 - REACT.UAVState - INFO - UAV_1: Home position set to lat=34.164051, lon=-118.075474, alt=312.7
+2025-10-18 01:20:25,015 - REACT.Main - INFO - Frontend started successfully
+2025-10-18 01:20:25,016 - REACT.Main - INFO - Starting application event loop...
+2025-10-18 01:20:25,070 - REACT.UAVState - INFO - UAV_1: Home position set to lat=34.164050, lon=-118.075159, alt=292.8
+2025-10-18 01:20:25,554 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_2: CRITICAL battery: 0%
+2025-10-18 01:20:25,554 - REACT.App - CRITICAL - Emergency land triggered for UAV_2: Critical battery level: 0%
+2025-10-18 01:20:25,555 - REACT.CommandInterface - INFO - Requesting LAND mode for UAV UAV_2
+2025-10-18 01:20:25,555 - REACT.MAVLinkManager - INFO - Sending mode change to UAV_2: LAND (9)
+2025-10-18 01:20:25,556 - REACT.SafetyMonitor - INFO - Emergency action EMERGENCY_LAND taken for UAV_2 at 1760775625.553387
+2025-10-18 01:20:25,556 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_1: CRITICAL battery: 0%
+2025-10-18 01:20:25,556 - REACT.App - CRITICAL - Emergency land triggered for UAV_1: Critical battery level: 0%
+2025-10-18 01:20:25,556 - REACT.CommandInterface - INFO - Requesting LAND mode for UAV UAV_1
+2025-10-18 01:20:25,557 - REACT.MAVLinkManager - INFO - Sending mode change to UAV_1: LAND (9)
+2025-10-18 01:20:25,557 - REACT.SafetyMonitor - INFO - Emergency action EMERGENCY_LAND taken for UAV_1 at 1760775625.553387
+2025-10-18 01:20:43,776 - REACT.App - INFO - [TIMING] User clicked upload mission button for UAV_1 at t=0.000s
+2025-10-18 01:20:43,788 - REACT.App - INFO - Processing mission upload request for UAV_1: C:/Users/chenz/OneDrive/Documents/QGroundControl/Logs/test.waypoints
+2025-10-18 01:20:43,790 - REACT.App - INFO - Initialized mission tracking: waypoint_indices=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
+2025-10-18 01:20:43,792 - REACT.MAVLinkManager - INFO - Loading mission with 34 waypoints to UAV_1
+2025-10-18 01:20:43,799 - REACT.MAVLinkManager - INFO - Clearing existing mission from UAV_1
+2025-10-18 01:20:43,906 - REACT.MAVLinkManager - INFO - Mission cleared successfully for UAV_1
+2025-10-18 01:20:44,410 - REACT.MAVLinkManager - INFO - [TIMING] Mission upload thread started for UAV_1 at t=0.000s, waiting for available upload slot...
+2025-10-18 01:20:44,410 - REACT.MAVLinkManager - INFO - Started mission upload thread for UAV_1
+2025-10-18 01:20:44,411 - REACT.MAVLinkManager - INFO - [TIMING] Mission upload for UAV_1 - upload slot acquired at t=0.001s, starting upload...
+2025-10-18 01:20:44,411 - REACT.MAVLinkManager - INFO - Mission upload thread started for UAV_1 from C:/Users/chenz/OneDrive/Documents/QGroundControl/Logs/test.waypoints (upload continues in background)
+2025-10-18 01:20:44,412 - REACT.MAVLinkManager - INFO - Sending MISSION_COUNT: 34 waypoints to UAV_1
+2025-10-18 01:20:44,413 - REACT.App - INFO - [TIMING] load_mission() returned True at t=0.637s (thread started, not complete!)
+2025-10-18 01:20:44,414 - REACT.App - INFO - Mission upload thread started successfully for UAV_1 (actual upload continues in background)
+2025-10-18 01:20:44,415 - REACT.App - INFO - [TIMING] Progress signal 'Uploading in background' emitted at t=0.637s
+2025-10-18 01:20:48,592 - REACT.SafetyMonitor - WARNING - WARNING - UAV_1: Altitude too low: 3.1m AGL
+2025-10-18 01:20:52,885 - REACT.MAVLinkManager - INFO - Mission upload successful for UAV_1
+2025-10-18 01:20:52,886 - REACT.MAVLinkManager - INFO - [TIMING] Mission successfully uploaded to UAV_1 at t=8.476s (ACTUAL COMPLETION)
+2025-10-18 01:20:52,886 - REACT.MAVLinkManager - INFO - Mission upload for UAV_1 - upload slot released
+2025-10-18 01:20:52,888 - REACT.App - INFO - [TIMING] Upload completed callback received for UAV_1: success=True, message=Mission uploaded successfully
+2025-10-18 01:20:52,889 - REACT.App - INFO - Mission upload completed successfully for UAV_1
+2025-10-18 01:20:55,073 - REACT.CommandInterface - INFO - Setting AUTO mode for UAV UAV_1 before starting mission
+2025-10-18 01:20:55,075 - REACT.CommandInterface - INFO - Requesting mode change for UAV UAV_1 to AUTO
+2025-10-18 01:20:55,075 - REACT.MAVLinkManager - INFO - Sending mode change to UAV_1: AUTO (3)
+2025-10-18 01:20:55,075 - REACT.CommandInterface - INFO - Requesting MISSION_START for UAV UAV_1
+2025-10-18 01:20:55,076 - REACT.MAVLinkManager - INFO - Sending command_long to UAV_1: CMD_300
+2025-10-18 01:20:55,119 - REACT.MAVLinkManager - INFO - UAV_1: Mission timer started (mode: AUTO)
+2025-10-18 01:20:55,592 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_2: CRITICAL battery: 0%
+2025-10-18 01:20:55,595 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_1: CRITICAL battery: 0%
+2025-10-18 01:21:10,267 - REACT.MAVLinkManager - INFO - UAV_1: Waypoint 2 REACHED (2.9% progress: 1/34)
+2025-10-18 01:21:18,894 - REACT.MAVLinkManager - INFO - UAV_1: Waypoint 3 REACHED (5.9% progress: 2/34)
+2025-10-18 01:21:25,647 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_2: CRITICAL battery: 0%
+2025-10-18 01:21:25,648 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_1: CRITICAL battery: 0%
+2025-10-18 01:21:26,327 - REACT.CommandInterface - INFO - Requesting BRAKE mode for UAV UAV_1
+2025-10-18 01:21:26,327 - REACT.MAVLinkManager - INFO - Sending mode change to UAV_1: BRAKE (17)
+2025-10-18 01:21:36,862 - REACT.App - INFO - Resuming mission for UAV_1 from waypoint after 3
+2025-10-18 01:21:36,952 - REACT.App - INFO - Original waypoint indices: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
+2025-10-18 01:21:36,991 - REACT.App - INFO - Reached waypoint indices: [2, 3]
+2025-10-18 01:21:37,008 - REACT.App - INFO - Reading mission file: C:/Users/chenz/OneDrive/Documents/QGroundControl/Logs/test.waypoints
+2025-10-18 01:21:37,009 - REACT.App - INFO - Original mission has waypoints: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
+2025-10-18 01:21:37,011 - REACT.App - INFO - Last completed waypoint 3 is at index 3 in original list
+2025-10-18 01:21:37,019 - REACT.App - INFO - Including HOME waypoint (index 0) - required by ArduPilot
+2025-10-18 01:21:37,020 - REACT.App - INFO - Resume mission will include 32 waypoints (including HOME): [0, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
+2025-10-18 01:21:37,027 - REACT.App - INFO - First mission waypoint (after HOME): 3 (should equal last completed: 3)
+2025-10-18 01:21:37,032 - REACT.App - INFO - Re-indexing waypoints for upload:
+2025-10-18 01:21:37,032 - REACT.App - INFO -   Original WP 0 (waypoint_dict key: 0) -> new index 0
+2025-10-18 01:21:37,036 - REACT.App - INFO -   Original WP 3 (waypoint_dict key: 3) -> new index 1
+2025-10-18 01:21:37,039 - REACT.App - INFO -   Original WP 4 (waypoint_dict key: 4) -> new index 2
+2025-10-18 01:21:37,039 - REACT.App - INFO -   Original WP 5 (waypoint_dict key: 5) -> new index 3
+2025-10-18 01:21:37,039 - REACT.App - INFO -   Original WP 6 (waypoint_dict key: 6) -> new index 4
+2025-10-18 01:21:37,040 - REACT.App - INFO -   Original WP 7 (waypoint_dict key: 7) -> new index 5
+2025-10-18 01:21:37,040 - REACT.App - INFO -   Original WP 8 (waypoint_dict key: 8) -> new index 6
+2025-10-18 01:21:37,040 - REACT.App - INFO -   Original WP 9 (waypoint_dict key: 9) -> new index 7
+2025-10-18 01:21:37,040 - REACT.App - INFO -   Original WP 10 (waypoint_dict key: 10) -> new index 8
+2025-10-18 01:21:37,041 - REACT.App - INFO -   Original WP 11 (waypoint_dict key: 11) -> new index 9
+2025-10-18 01:21:37,041 - REACT.App - INFO -   Original WP 12 (waypoint_dict key: 12) -> new index 10
+2025-10-18 01:21:37,041 - REACT.App - INFO -   Original WP 13 (waypoint_dict key: 13) -> new index 11
+2025-10-18 01:21:37,041 - REACT.App - INFO -   Original WP 14 (waypoint_dict key: 14) -> new index 12
+2025-10-18 01:21:37,042 - REACT.App - INFO -   Original WP 15 (waypoint_dict key: 15) -> new index 13
+2025-10-18 01:21:37,042 - REACT.App - INFO -   Original WP 16 (waypoint_dict key: 16) -> new index 14
+2025-10-18 01:21:37,042 - REACT.App - INFO -   Original WP 17 (waypoint_dict key: 17) -> new index 15
+2025-10-18 01:21:37,042 - REACT.App - INFO -   Original WP 18 (waypoint_dict key: 18) -> new index 16
+2025-10-18 01:21:37,042 - REACT.App - INFO -   Original WP 19 (waypoint_dict key: 19) -> new index 17
+2025-10-18 01:21:37,042 - REACT.App - INFO -   Original WP 20 (waypoint_dict key: 20) -> new index 18
+2025-10-18 01:21:37,043 - REACT.App - INFO -   Original WP 21 (waypoint_dict key: 21) -> new index 19
+2025-10-18 01:21:37,043 - REACT.App - INFO -   Original WP 22 (waypoint_dict key: 22) -> new index 20
+2025-10-18 01:21:37,043 - REACT.App - INFO -   Original WP 23 (waypoint_dict key: 23) -> new index 21
+2025-10-18 01:21:37,043 - REACT.App - INFO -   Original WP 24 (waypoint_dict key: 24) -> new index 22
+2025-10-18 01:21:37,044 - REACT.App - INFO -   Original WP 25 (waypoint_dict key: 25) -> new index 23
+2025-10-18 01:21:37,044 - REACT.App - INFO -   Original WP 26 (waypoint_dict key: 26) -> new index 24
+2025-10-18 01:21:37,044 - REACT.App - INFO -   Original WP 27 (waypoint_dict key: 27) -> new index 25
+2025-10-18 01:21:37,044 - REACT.App - INFO -   Original WP 28 (waypoint_dict key: 28) -> new index 26
+2025-10-18 01:21:37,045 - REACT.App - INFO -   Original WP 29 (waypoint_dict key: 29) -> new index 27
+2025-10-18 01:21:37,045 - REACT.App - INFO -   Original WP 30 (waypoint_dict key: 30) -> new index 28
+2025-10-18 01:21:37,045 - REACT.App - INFO -   Original WP 31 (waypoint_dict key: 31) -> new index 29
+2025-10-18 01:21:37,046 - REACT.App - INFO -   Original WP 32 (waypoint_dict key: 32) -> new index 30
+2025-10-18 01:21:37,046 - REACT.App - INFO -   Original WP 33 (waypoint_dict key: 33) -> new index 31
+2025-10-18 01:21:37,047 - REACT.App - INFO - Created 32 re-indexed waypoints for upload
+2025-10-18 01:21:37,048 - REACT.App - INFO - State updated: uploaded_waypoint_indices=[0, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
+2025-10-18 01:21:37,050 - REACT.App - INFO -   Temp file waypoint 0: 0	1	0	16	0	0	0	0	34.1638443	-118.0748772	292.770000	1...
+2025-10-18 01:21:37,051 - REACT.App - INFO -   Temp file waypoint 1: 1	0	3	16	0.00000000	0.00000000	0.00000000	0.00000000	34.16396710	-118.07545030	2...
+2025-10-18 01:21:37,051 - REACT.App - INFO -   Temp file waypoint 2: 2	0	3	206	4.68000031	0.00000000	1.00000000	0.00000000	0.00000000	0.00000000	0.00...
+2025-10-18 01:21:37,051 - REACT.App - INFO - Created temporary resume mission file: C:\Users\chenz\AppData\Local\Temp\tmpe_4pm0aj.waypoints with 32 waypoints
+2025-10-18 01:21:37,052 - REACT.App - INFO - [TIMING] Resume mission upload started for UAV_1 at t=0.000s
+2025-10-18 01:21:37,071 - REACT.MAVLinkManager - INFO - Loading mission with 32 waypoints to UAV_1
+2025-10-18 01:21:37,072 - REACT.MAVLinkManager - INFO - Clearing existing mission from UAV_1
+2025-10-18 01:21:37,234 - REACT.MAVLinkManager - INFO - Mission cleared successfully for UAV_1
+2025-10-18 01:21:37,735 - REACT.MAVLinkManager - INFO - [TIMING] Mission upload thread started for UAV_1 at t=0.000s, waiting for available upload slot...
+2025-10-18 01:21:37,735 - REACT.MAVLinkManager - INFO - Started mission upload thread for UAV_1
+2025-10-18 01:21:37,736 - REACT.MAVLinkManager - INFO - [TIMING] Mission upload for UAV_1 - upload slot acquired at t=0.001s, starting upload...
+2025-10-18 01:21:37,736 - REACT.MAVLinkManager - INFO - Mission upload thread started for UAV_1 from C:\Users\chenz\AppData\Local\Temp\tmpe_4pm0aj.waypoints (upload continues in background)
+2025-10-18 01:21:37,736 - REACT.App - INFO - [TIMING] Resume mission upload thread started at t=0.685s
+2025-10-18 01:21:37,736 - REACT.MAVLinkManager - INFO - Sending MISSION_COUNT: 32 waypoints to UAV_1
+2025-10-18 01:21:45,244 - REACT.MAVLinkManager - INFO - Mission upload successful for UAV_1
+2025-10-18 01:21:45,246 - REACT.MAVLinkManager - INFO - [TIMING] Mission successfully uploaded to UAV_1 at t=7.511s (ACTUAL COMPLETION)
+2025-10-18 01:21:45,247 - REACT.MAVLinkManager - INFO - Mission upload for UAV_1 - upload slot released
+2025-10-18 01:21:45,254 - REACT.App - INFO - [TIMING] Upload completed callback received for UAV_1: success=True, message=Mission uploaded successfully
+2025-10-18 01:21:45,257 - REACT.App - INFO - Mission upload completed successfully for UAV_1
+2025-10-18 01:21:46,758 - REACT.CommandInterface - INFO - Setting AUTO mode for UAV UAV_1 before starting mission
+2025-10-18 01:21:46,758 - REACT.CommandInterface - INFO - Requesting mode change for UAV UAV_1 to AUTO
+2025-10-18 01:21:46,759 - REACT.MAVLinkManager - INFO - Sending mode change to UAV_1: AUTO (3)
+2025-10-18 01:21:46,759 - REACT.CommandInterface - INFO - Requesting MISSION_START for UAV UAV_1
+2025-10-18 01:21:46,760 - REACT.MAVLinkManager - INFO - Sending command_long to UAV_1: CMD_300
+2025-10-18 01:21:55,656 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_2: CRITICAL battery: 0%
+2025-10-18 01:21:55,656 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_1: CRITICAL battery: 0%
+2025-10-18 01:21:56,417 - REACT.MAVLinkManager - INFO - UAV_1: Waypoint 3 REACHED (5.9% progress: 2/34)
+2025-10-18 01:22:11,213 - REACT.MAVLinkManager - INFO - UAV_1: Waypoint 5 REACHED (8.8% progress: 3/34)
+2025-10-18 01:22:14,893 - REACT.MAVLinkManager - INFO - UAV_1: Waypoint 7 REACHED (11.8% progress: 4/34)
+2025-10-18 01:22:19,872 - REACT.CommandInterface - INFO - Requesting BRAKE mode for UAV UAV_1
+2025-10-18 01:22:19,873 - REACT.MAVLinkManager - INFO - Sending mode change to UAV_1: BRAKE (17)
+2025-10-18 01:22:23,828 - REACT.App - INFO - Resuming mission for UAV_1 from waypoint after 7
+2025-10-18 01:22:23,829 - REACT.App - INFO - Original waypoint indices: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
+2025-10-18 01:22:23,829 - REACT.App - INFO - Reached waypoint indices: [2, 3, 5, 7]
+2025-10-18 01:22:23,830 - REACT.App - INFO - Reading mission file: C:/Users/chenz/OneDrive/Documents/QGroundControl/Logs/test.waypoints
+2025-10-18 01:22:23,839 - REACT.App - INFO - Original mission has waypoints: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
+2025-10-18 01:22:23,842 - REACT.App - INFO - Last completed waypoint 7 is at index 7 in original list
+2025-10-18 01:22:23,842 - REACT.App - INFO - Including HOME waypoint (index 0) - required by ArduPilot
+2025-10-18 01:22:23,843 - REACT.App - INFO - Resume mission will include 28 waypoints (including HOME): [0, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
+2025-10-18 01:22:23,843 - REACT.App - INFO - First mission waypoint (after HOME): 7 (should equal last completed: 7)
+2025-10-18 01:22:23,843 - REACT.App - INFO - Re-indexing waypoints for upload:
+2025-10-18 01:22:23,844 - REACT.App - INFO -   Original WP 0 (waypoint_dict key: 0) -> new index 0
+2025-10-18 01:22:23,844 - REACT.App - INFO -   Original WP 7 (waypoint_dict key: 7) -> new index 1
+2025-10-18 01:22:23,844 - REACT.App - INFO -   Original WP 8 (waypoint_dict key: 8) -> new index 2
+2025-10-18 01:22:23,844 - REACT.App - INFO -   Original WP 9 (waypoint_dict key: 9) -> new index 3
+2025-10-18 01:22:23,845 - REACT.App - INFO -   Original WP 10 (waypoint_dict key: 10) -> new index 4
+2025-10-18 01:22:23,845 - REACT.App - INFO -   Original WP 11 (waypoint_dict key: 11) -> new index 5
+2025-10-18 01:22:23,845 - REACT.App - INFO -   Original WP 12 (waypoint_dict key: 12) -> new index 6
+2025-10-18 01:22:23,845 - REACT.App - INFO -   Original WP 13 (waypoint_dict key: 13) -> new index 7
+2025-10-18 01:22:23,846 - REACT.App - INFO -   Original WP 14 (waypoint_dict key: 14) -> new index 8
+2025-10-18 01:22:23,846 - REACT.App - INFO -   Original WP 15 (waypoint_dict key: 15) -> new index 9
+2025-10-18 01:22:23,847 - REACT.App - INFO -   Original WP 16 (waypoint_dict key: 16) -> new index 10
+2025-10-18 01:22:23,850 - REACT.App - INFO -   Original WP 17 (waypoint_dict key: 17) -> new index 11
+2025-10-18 01:22:23,850 - REACT.App - INFO -   Original WP 18 (waypoint_dict key: 18) -> new index 12
+2025-10-18 01:22:23,853 - REACT.App - INFO -   Original WP 19 (waypoint_dict key: 19) -> new index 13
+2025-10-18 01:22:23,856 - REACT.App - INFO -   Original WP 20 (waypoint_dict key: 20) -> new index 14
+2025-10-18 01:22:23,856 - REACT.App - INFO -   Original WP 21 (waypoint_dict key: 21) -> new index 15
+2025-10-18 01:22:23,857 - REACT.App - INFO -   Original WP 22 (waypoint_dict key: 22) -> new index 16
+2025-10-18 01:22:23,857 - REACT.App - INFO -   Original WP 23 (waypoint_dict key: 23) -> new index 17
+2025-10-18 01:22:23,857 - REACT.App - INFO -   Original WP 24 (waypoint_dict key: 24) -> new index 18
+2025-10-18 01:22:23,857 - REACT.App - INFO -   Original WP 25 (waypoint_dict key: 25) -> new index 19
+2025-10-18 01:22:23,857 - REACT.App - INFO -   Original WP 26 (waypoint_dict key: 26) -> new index 20
+2025-10-18 01:22:23,857 - REACT.App - INFO -   Original WP 27 (waypoint_dict key: 27) -> new index 21
+2025-10-18 01:22:23,858 - REACT.App - INFO -   Original WP 28 (waypoint_dict key: 28) -> new index 22
+2025-10-18 01:22:23,858 - REACT.App - INFO -   Original WP 29 (waypoint_dict key: 29) -> new index 23
+2025-10-18 01:22:23,858 - REACT.App - INFO -   Original WP 30 (waypoint_dict key: 30) -> new index 24
+2025-10-18 01:22:23,858 - REACT.App - INFO -   Original WP 31 (waypoint_dict key: 31) -> new index 25
+2025-10-18 01:22:23,859 - REACT.App - INFO -   Original WP 32 (waypoint_dict key: 32) -> new index 26
+2025-10-18 01:22:23,860 - REACT.App - INFO -   Original WP 33 (waypoint_dict key: 33) -> new index 27
+2025-10-18 01:22:23,860 - REACT.App - INFO - Created 28 re-indexed waypoints for upload
+2025-10-18 01:22:23,860 - REACT.App - INFO - State updated: uploaded_waypoint_indices=[0, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
+2025-10-18 01:22:23,861 - REACT.App - INFO -   Temp file waypoint 0: 0	1	0	16	0	0	0	0	34.1638443	-118.0748772	292.770000	1...
+2025-10-18 01:22:23,862 - REACT.App - INFO -   Temp file waypoint 1: 1	0	3	16	0.00000000	0.00000000	0.00000000	0.00000000	34.16404910	-118.07424750	2...
+2025-10-18 01:22:23,863 - REACT.App - INFO -   Temp file waypoint 2: 2	0	3	206	4.68000031	0.00000000	1.00000000	0.00000000	0.00000000	0.00000000	0.00...
+2025-10-18 01:22:23,864 - REACT.App - INFO - Created temporary resume mission file: C:\Users\chenz\AppData\Local\Temp\tmpdirq64ey.waypoints with 28 waypoints
+2025-10-18 01:22:23,864 - REACT.App - INFO - [TIMING] Resume mission upload started for UAV_1 at t=0.000s
+2025-10-18 01:22:23,890 - REACT.MAVLinkManager - INFO - Loading mission with 28 waypoints to UAV_1
+2025-10-18 01:22:23,891 - REACT.MAVLinkManager - INFO - Clearing existing mission from UAV_1
+2025-10-18 01:22:23,988 - REACT.MAVLinkManager - INFO - Mission cleared successfully for UAV_1
+2025-10-18 01:22:24,491 - REACT.MAVLinkManager - INFO - [TIMING] Mission upload thread started for UAV_1 at t=0.000s, waiting for available upload slot...
+2025-10-18 01:22:24,492 - REACT.MAVLinkManager - INFO - Started mission upload thread for UAV_1
+2025-10-18 01:22:24,493 - REACT.MAVLinkManager - INFO - [TIMING] Mission upload for UAV_1 - upload slot acquired at t=0.002s, starting upload...
+2025-10-18 01:22:24,493 - REACT.MAVLinkManager - INFO - Mission upload thread started for UAV_1 from C:\Users\chenz\AppData\Local\Temp\tmpdirq64ey.waypoints (upload continues in background)
+2025-10-18 01:22:24,493 - REACT.MAVLinkManager - INFO - Sending MISSION_COUNT: 28 waypoints to UAV_1
+2025-10-18 01:22:24,494 - REACT.App - INFO - [TIMING] Resume mission upload thread started at t=0.630s
+2025-10-18 01:22:25,730 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_2: CRITICAL battery: 0%
+2025-10-18 01:22:25,730 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_1: CRITICAL battery: 0%
+2025-10-18 01:22:31,105 - REACT.MAVLinkManager - INFO - Mission upload successful for UAV_1
+2025-10-18 01:22:31,106 - REACT.MAVLinkManager - INFO - [TIMING] Mission successfully uploaded to UAV_1 at t=6.615s (ACTUAL COMPLETION)
+2025-10-18 01:22:31,107 - REACT.MAVLinkManager - INFO - Mission upload for UAV_1 - upload slot released
+2025-10-18 01:22:31,108 - REACT.App - INFO - [TIMING] Upload completed callback received for UAV_1: success=True, message=Mission uploaded successfully
+2025-10-18 01:22:31,110 - REACT.App - INFO - Mission upload completed successfully for UAV_1
+2025-10-18 01:22:32,612 - REACT.CommandInterface - INFO - Setting AUTO mode for UAV UAV_1 before starting mission
+2025-10-18 01:22:32,615 - REACT.CommandInterface - INFO - Requesting mode change for UAV UAV_1 to AUTO
+2025-10-18 01:22:32,616 - REACT.MAVLinkManager - INFO - Sending mode change to UAV_1: AUTO (3)
+2025-10-18 01:22:32,617 - REACT.CommandInterface - INFO - Requesting MISSION_START for UAV UAV_1
+2025-10-18 01:22:32,617 - REACT.MAVLinkManager - INFO - Sending command_long to UAV_1: CMD_300
+2025-10-18 01:22:43,877 - REACT.MAVLinkManager - INFO - UAV_1: Waypoint 7 REACHED (11.8% progress: 4/34)
+2025-10-18 01:22:55,743 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_2: CRITICAL battery: 0%
+2025-10-18 01:22:55,744 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_1: CRITICAL battery: 0%
+2025-10-18 01:22:58,691 - REACT.MAVLinkManager - INFO - UAV_1: Waypoint 9 REACHED (14.7% progress: 5/34)
+2025-10-18 01:23:02,287 - REACT.MAVLinkManager - INFO - UAV_1: Waypoint 11 REACHED (17.6% progress: 6/34)
+2025-10-18 01:23:16,908 - REACT.MAVLinkManager - INFO - UAV_1: Waypoint 13 REACHED (20.6% progress: 7/34)
+2025-10-18 01:23:20,404 - REACT.MAVLinkManager - INFO - UAV_1: Waypoint 15 REACHED (23.5% progress: 8/34)
+2025-10-18 01:23:26,753 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_2: CRITICAL battery: 0%
+2025-10-18 01:23:26,754 - REACT.SafetyMonitor - CRITICAL - EMERGENCY - UAV_1: CRITICAL battery: 0%
+2025-10-18 01:23:35,098 - REACT.MAVLinkManager - INFO - UAV_1: Waypoint 17 REACHED (26.5% progress: 9/34)
+2025-10-18 01:23:38,670 - REACT.MAVLinkManager - INFO - UAV_1: Waypoint 19 REACHED (29.4% progress: 10/34)
