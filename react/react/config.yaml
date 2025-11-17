@@ -86,3 +86,10 @@ safety:
   
   # Alert management
   alert_cooldown: 30       # Seconds between repeated alerts of same type
+
+  # Camera settings
+  camera:
+    hfov: 73.4           # Horizontal field of view (degrees)
+    vfov: 52.0           # Vertical field of view (degrees)
+    image_width: 6000   # Image width in pixels
+    image_height: 4000  # Image height in pixels

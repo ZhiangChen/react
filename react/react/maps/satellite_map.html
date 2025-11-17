@@ -8,6 +8,9 @@
     <!-- Leaflet CSS (local) -->
     <link rel="stylesheet" href="/static/leaflet/leaflet.css" />
     
+    <!-- Leaflet.pm (geoman) CSS for polygon editing -->
+    <link rel="stylesheet" href="https://unpkg.com/@geoman-io/leaflet-geoman-free@latest/dist/leaflet-geoman.css" />
+    
     <style>
         body, html {
             margin: 0;
@@ -188,6 +191,9 @@
     <!-- Leaflet JavaScript (local) -->
     <script src="/static/leaflet/leaflet.js"></script>
     
+    <!-- Leaflet.pm (geoman) JavaScript for polygon editing -->
+    <script src="https://unpkg.com/@geoman-io/leaflet-geoman-free@latest/dist/leaflet-geoman.min.js"></script>
+    
     <script>
         console.log('REACT satellite_map.html JavaScript loaded');
         console.log('Starting REACT satellite map...');
@@ -196,6 +202,40 @@
         let uavMarkers = {};
         let qtChannel = null;
         let qtBridge = null;
+        
+        // Polygon drawing state (declare early for event handlers)
+        let polygonDrawing = false;
+        let currentPolygonId = null;  // Track which polygon is being drawn
+        let polygonPoints = [];
+        let polygonMarkers = [];
+        let polygonLines = [];
+        let drawnPolygons = {};  // Changed from single to map of polygons keyed by ID
+        let tempLine = null;
+        
+        // Camera configuration (from config.yaml)
+        let cameraConfig = {
+            hfov: 73.4,           // Horizontal field of view (degrees)
+            vfov: 52.0,           // Vertical field of view (degrees)
+            image_width: 6000,    // Image width in pixels
+            image_height: 4000    // Image height in pixels
+        };
+        
+        // Function to set camera configuration from QML (called when map loads)
+        function setCameraConfig(config) {
+            cameraConfig = config;
+            console.log('Camera config updated from config.yaml:', cameraConfig);
+            
+            // Update all existing polygon popups with new GSD calculations
+            Object.keys(drawnPolygons).forEach(function(polygonId) {
+                var polygon = drawnPolygons[polygonId];
+                if (polygon) {
+                    updatePolygonPopup(polygon, parseInt(polygonId));
+                }
+            });
+        }
+        
+        // Store altitude per polygon for GSD calculation
+        let polygonAltitudes = {};  // Maps polygon ID to altitude
         
         // Map layer definitions - now using same origin!
         let mapLayers = {};
@@ -431,12 +471,46 @@
                 
                 // Add context menu on right-click
                 map.on('contextmenu', function(e) {
-                    showContextMenu(e.originalEvent.clientX, e.originalEvent.clientY, e.latlng);
+                    // Handle polygon completion on right-click if in drawing mode
+                    if (polygonDrawing && polygonPoints.length >= 3) {
+                        e.originalEvent.preventDefault();
+                        completePolygon();
+                    } else {
+                        showContextMenu(e.originalEvent.clientX, e.originalEvent.clientY, e.latlng);
+                    }
                 });
                 
-                // Hide context menu on left-click
+                // Hide context menu on left-click (unless in polygon drawing mode)
                 map.on('click', function(e) {
-                    hideContextMenu();
+                    if (polygonDrawing) {
+                        console.log('Map clicked in polygon mode, adding point at:', e.latlng.lat, e.latlng.lng);
+                        addPolygonPoint(e.latlng.lat, e.latlng.lng);
+                    } else {
+                        hideContextMenu();
+                    }
+                });
+                
+                // Map mouse move handler for temporary line preview
+                map.on('mousemove', function(e) {
+                    if (polygonDrawing && polygonPoints.length > 0) {
+                        // Remove old temp line
+                        if (tempLine) {
+                            map.removeLayer(tempLine);
+                        }
+                        
+                        // Draw temp line from last point to cursor
+                        const lastPoint = polygonPoints[polygonPoints.length - 1];
+                        tempLine = L.polyline(
+                            [[lastPoint.lat, lastPoint.lon], [e.latlng.lat, e.latlng.lng]],
+                            {
+                                color: '#2196F3',
+                                weight: 2,
+                                opacity: 0.4,
+                                dashArray: '5, 5'
+                            }
+                        );
+                        tempLine.addTo(map);
+                    }
                 });
             } catch (error) {
                 console.error('Map initialization error:', error);
@@ -754,6 +828,36 @@
                             });
                         }
                         
+                        // Connect to polygon drawing signals
+                        if (qtBridge.startPolygonDrawing) {
+                            qtBridge.startPolygonDrawing.connect(function() {
+                                console.log('Starting polygon drawing mode');
+                                startPolygonDrawingMode();
+                            });
+                        }
+                        
+                        if (qtBridge.clearPolygon) {
+                            qtBridge.clearPolygon.connect(function() {
+                                console.log('Clearing all polygons');
+                                clearPolygon();
+                            });
+                        }
+                        
+                        if (qtBridge.clearPolygonById) {
+                            qtBridge.clearPolygonById.connect(function(polygonId) {
+                                console.log('Clearing polygon by ID:', polygonId);
+                                clearPolygonById(polygonId);
+                            });
+                        }
+                        
+                        // Connect to altitude update signal
+                        if (qtBridge.updatePolygonAltitude) {
+                            qtBridge.updatePolygonAltitude.connect(function(polygonId, altitude) {
+                                console.log('Updating polygon', polygonId, 'altitude to', altitude, 'm');
+                                updatePolygonAltitude(polygonId, altitude);
+                            });
+                        }
+                        
                         // Signal that web map is ready
                         if (qtBridge.webMapReady) {
                             qtBridge.webMapReady();
@@ -1007,6 +1111,296 @@
                 });
                 missionPath.addTo(map);
             }
+        }
+
+        // Start polygon drawing mode
+        function startPolygonDrawingMode(polygonId) {
+            console.log('Activating polygon drawing mode for ID:', polygonId);
+            polygonDrawing = true;
+            currentPolygonId = polygonId;
+            polygonPoints = [];
+            clearPolygonMarkers();
+            
+            // Change cursor to crosshair
+            map.getContainer().style.cursor = 'crosshair';
+            
+            // Show instruction
+            L.popup()
+                .setLatLng(map.getCenter())
+                .setContent('<b>Polygon Drawing Mode</b><br/>Click to add points<br/>Right-click or click first point to close')
+                .openOn(map);
+                
+            // Close popup after 3 seconds
+            setTimeout(() => {
+                map.closePopup();
+            }, 3000);
+        }
+
+        // Clear polygon markers and lines
+        function clearPolygonMarkers() {
+            polygonMarkers.forEach(marker => map.removeLayer(marker));
+            polygonMarkers = [];
+            polygonLines.forEach(line => map.removeLayer(line));
+            polygonLines = [];
+            if (tempLine) {
+                map.removeLayer(tempLine);
+                tempLine = null;
+            }
+        }
+
+        // Clear all polygons
+        function clearPolygon() {
+            console.log('Clearing all polygons');
+            polygonDrawing = false;
+            currentPolygonId = null;
+            polygonPoints = [];
+            clearPolygonMarkers();
+            
+            // Remove all drawn polygons
+            Object.keys(drawnPolygons).forEach(id => {
+                if (drawnPolygons[id]) {
+                    map.removeLayer(drawnPolygons[id]);
+                }
+            });
+            drawnPolygons = {};
+            
+            // Reset cursor
+            map.getContainer().style.cursor = '';
+        }
+        
+        // Clear specific polygon by ID
+        function clearPolygonById(polygonId) {
+            console.log('Clearing polygon with ID:', polygonId);
+            
+            if (drawnPolygons[polygonId]) {
+                map.removeLayer(drawnPolygons[polygonId]);
+                delete drawnPolygons[polygonId];
+                console.log('Removed polygon', polygonId, 'from map');
+            } else {
+                console.log('Polygon', polygonId, 'not found on map');
+            }
+        }
+
+        // Add point to polygon
+        function addPolygonPoint(lat, lon) {
+            const point = {lat: lat, lon: lon};
+            
+            // Check if clicking first point to close polygon
+            if (polygonPoints.length >= 3) {
+                const firstPoint = polygonPoints[0];
+                const distance = Math.sqrt(
+                    Math.pow(lat - firstPoint.lat, 2) + 
+                    Math.pow(lon - firstPoint.lon, 2)
+                );
+                
+                // If close to first point (within ~50 meters at this scale), close polygon
+                if (distance < 0.0005) {
+                    completePolygon();
+                    return;
+                }
+            }
+            
+            polygonPoints.push(point);
+            
+            // Add marker for this point
+            const marker = L.circleMarker([lat, lon], {
+                radius: 6,
+                fillColor: '#2196F3',
+                color: '#ffffff',
+                weight: 2,
+                opacity: 1,
+                fillOpacity: 0.8
+            });
+            marker.bindPopup(`Point ${polygonPoints.length}<br/>${lat.toFixed(6)}, ${lon.toFixed(6)}`);
+            marker.addTo(map);
+            polygonMarkers.push(marker);
+            
+            // Draw line from previous point
+            if (polygonPoints.length > 1) {
+                const prevPoint = polygonPoints[polygonPoints.length - 2];
+                const line = L.polyline(
+                    [[prevPoint.lat, prevPoint.lon], [lat, lon]],
+                    {
+                        color: '#2196F3',
+                        weight: 2,
+                        opacity: 0.7,
+                        dashArray: '5, 5'
+                    }
+                );
+                line.addTo(map);
+                polygonLines.push(line);
+            }
+            
+            console.log('Added polygon point:', polygonPoints.length, 'at', lat, lon);
+        }
+
+        // Complete polygon drawing
+        function completePolygon() {
+            if (polygonPoints.length < 3) {
+                console.log('Need at least 3 points to complete polygon');
+                return;
+            }
+            
+            console.log('Completing polygon with', polygonPoints.length, 'points, ID:', currentPolygonId);
+            
+            // Remove temporary markers and lines
+            clearPolygonMarkers();
+            
+            // Draw final polygon with editing enabled
+            const latlngs = polygonPoints.map(p => [p.lat, p.lon]);
+            const polygon = L.polygon(latlngs, {
+                color: '#2196F3',
+                weight: 2,
+                opacity: 0.8,
+                fillColor: '#2196F3',
+                fillOpacity: 0.2,
+                pmIgnore: false  // Enable editing
+            });
+            polygon.addTo(map);
+            
+            // Store the polygon ID with the polygon object for later reference
+            polygon.polygonId = currentPolygonId;
+            
+            // Enable editing on the polygon
+            polygon.pm.enable({
+                allowSelfIntersection: false,
+                preventMarkerRemoval: false,
+                draggable: true,
+                snappable: true,
+                snapDistance: 20
+            });
+            
+            // Add event listeners for polygon editing
+            polygon.on('pm:edit', function(e) {
+                console.log('Polygon edited:', polygon.polygonId);
+                updatePolygonAfterEdit(polygon, polygon.polygonId);
+            });
+            
+            polygon.on('pm:vertexadded', function(e) {
+                console.log('Vertex added to polygon:', polygon.polygonId);
+                updatePolygonAfterEdit(polygon, polygon.polygonId);
+            });
+            
+            polygon.on('pm:vertexremoved', function(e) {
+                console.log('Vertex removed from polygon:', polygon.polygonId);
+                updatePolygonAfterEdit(polygon, polygon.polygonId);
+            });
+            
+            // Store polygon by ID
+            if (currentPolygonId !== null) {
+                drawnPolygons[currentPolygonId] = polygon;
+                // Initialize altitude to default (will be updated from flight planning)
+                polygonAltitudes[currentPolygonId] = 50; // Default altitude
+            }
+            
+            // Set initial popup (will be updated when altitude is set)
+            updatePolygonPopup(polygon, currentPolygonId);
+            
+            // Exit drawing mode
+            polygonDrawing = false;
+            map.getContainer().style.cursor = '';
+            
+            // Send polygon back to QML with ID
+            if (qtBridge && qtBridge.polygonCompleted) {
+                qtBridge.polygonCompleted(polygonPoints);
+            }
+            
+            console.log('Polygon', currentPolygonId, 'completed and sent to QML');
+            
+            // Reset current polygon ID
+            currentPolygonId = null;
+        }
+        
+        // Update polygon information after editing
+        function updatePolygonAfterEdit(polygon, polygonId) {
+            const latlngs = polygon.getLatLngs()[0];
+            
+            // Update popup with area and GSD
+            updatePolygonPopup(polygon, polygonId);
+            
+            // Convert back to the format expected by QML
+            const points = latlngs.map(ll => ({
+                lat: ll.lat,
+                lon: ll.lng
+            }));
+            
+            // Notify QML of the polygon update (if there's a handler)
+            if (qtBridge && qtBridge.polygonUpdated) {
+                qtBridge.polygonUpdated(polygonId, points);
+            }
+            
+            const area = calculatePolygonArea(latlngs.map(ll => [ll.lat, ll.lng]));
+            const areaKm2 = (area / 1000000).toFixed(3);
+            console.log('Polygon', polygonId, 'updated with', points.length, 'points, area:', areaKm2, 'km²');
+        }
+        
+        // Calculate Ground Sampling Distance (GSD) in cm/pixel
+        function calculateGSD(altitude) {
+            // GSD = (2 * altitude * tan(HFOV/2)) / image_width
+            // altitude in meters, HFOV in degrees
+            const hfovRad = cameraConfig.hfov * (Math.PI / 180);
+            const groundWidth = 2 * altitude * Math.tan(hfovRad / 2);
+            const gsd = groundWidth / cameraConfig.image_width;
+            return gsd * 100; // Convert from meters to centimeters
+        }
+        
+        // Update polygon altitude and recalculate GSD
+        function updatePolygonAltitude(polygonId, altitude) {
+            polygonAltitudes[polygonId] = altitude;
+            const polygon = drawnPolygons[polygonId];
+            if (polygon) {
+                updatePolygonPopup(polygon, polygonId);
+            }
+        }
+        
+        // Update polygon popup with area and GSD
+        function updatePolygonPopup(polygon, polygonId) {
+            const latlngs = polygon.getLatLngs()[0];
+            const latlngArray = latlngs.map(ll => [ll.lat, ll.lng]);
+            const area = calculatePolygonArea(latlngArray);
+            const areaKm2 = (area / 1000000).toFixed(3);
+            
+            let popupContent = `<b>Polygon ${polygonId}</b><br/>Area: ${areaKm2} km²<br/>Points: ${latlngs.length}`;
+            
+            // Add GSD if altitude is set
+            if (polygonAltitudes[polygonId]) {
+                const altitude = polygonAltitudes[polygonId];
+                const gsd = calculateGSD(altitude);
+                popupContent += `<br/>Altitude: ${altitude} m<br/>GSD: ${gsd.toFixed(2)} cm/pixel`;
+            }
+            
+            // Check if popup already exists, if not bind it
+            if (!polygon.getPopup()) {
+                polygon.bindPopup(popupContent);
+            } else {
+                polygon.setPopupContent(popupContent);
+            }
+        }
+
+        // Calculate polygon area in square meters (approximate)
+        function calculatePolygonArea(latlngs) {
+            if (latlngs.length < 3) return 0;
+            
+            // Convert to radians
+            const toRad = Math.PI / 180;
+            const R = 6371000; // Earth's radius in meters
+            
+            let area = 0;
+            const n = latlngs.length;
+            
+            for (let i = 0; i < n; i++) {
+                const p1 = latlngs[i];
+                const p2 = latlngs[(i + 1) % n];
+                
+                const lat1 = p1[0] * toRad;
+                const lat2 = p2[0] * toRad;
+                const dLon = (p2[1] - p1[1]) * toRad;
+                
+                area += dLon * (2 + Math.sin(lat1) + Math.sin(lat2));
+            }
+            
+            area = Math.abs(area * R * R / 2);
+            return area;
         }
 
         // Add test UAV markers for demonstration

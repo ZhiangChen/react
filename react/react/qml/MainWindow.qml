@@ -1477,6 +1477,10 @@ ApplicationWindow {
         id: missionPlannerWindowLoader
         source: "MissionPlanner.qml"
         active: false
+        onLoaded: {
+            // Set the mapView reference when the mission planner is loaded
+            item.mapView = mapView
+        }
     }
 
     // Takeoff Altitude Dialog

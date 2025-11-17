@@ -17,10 +17,15 @@ Item {
     // Track last known home positions to avoid redundant updates
     property var lastHomePositions: ({})
     
+    // Polygon drawing mode
+    property bool polygonDrawingMode: false
+    
     // Map interaction signals
     signal uavSelected(string uavId)
     signal mapClicked(real latitude, real longitude)
     signal webMapReady()
+    signal polygonCompleted(var points)
+    signal polygonUpdated(int polygonId, var points)  // Signal when polygon is edited
     
     // WebChannel for Qt <-> JS communication
     WebChannel {
@@ -42,6 +47,11 @@ Item {
         signal gcsHomePositionChanged(real lat, real lon)  // New signal for GCS home position
         signal missionPathChanged(var waypoints)
         signal geofencesChanged(var geofences)
+        signal startPolygonDrawing()  // Signal to start polygon drawing mode
+        signal clearPolygon()  // Signal to clear drawn polygon
+        signal clearPolygonById(int polygonId)  // Signal to clear specific polygon by ID
+        signal polygonCompletedWithId(int polygonId, var points)  // Signal when polygon is completed with ID
+        signal updatePolygonAltitude(int polygonId, real altitude)  // Signal to update polygon altitude for GSD calculation
         
         // Slots to receive data from JavaScript
         function uavSelected(uavId) {
@@ -52,6 +62,17 @@ Item {
         function mapClicked(latitude, longitude) {
             console.log("Map clicked at:", latitude, longitude)
             mapContainer.mapClicked(latitude, longitude)
+        }
+        
+        function polygonCompleted(points) {
+            console.log("Polygon completed from web:", points)
+            mapContainer.polygonCompleted(points)
+            mapContainer.polygonDrawingMode = false
+        }
+        
+        function polygonUpdated(polygonId, points) {
+            console.log("Polygon updated from web:", polygonId, "with", points.length, "points")
+            mapContainer.polygonUpdated(polygonId, points)
         }
         
         function setGCSHome(latitude, longitude) {
@@ -88,6 +109,12 @@ Item {
         onLoadingChanged: function(loadRequest) {
             if (loadRequest.status === WebEngineView.LoadSucceededStatus) {
                 console.log("Same-origin map loaded successfully from:", loadRequest.url)
+                
+                // Send camera configuration to JavaScript for GSD calculations
+                var cameraConfig = backend.get_camera_config()
+                console.log("Sending camera config to map:", JSON.stringify(cameraConfig))
+                webView.runJavaScript("if (typeof setCameraConfig === 'function') { setCameraConfig(" + JSON.stringify(cameraConfig) + "); }")
+                
             } else if (loadRequest.status === WebEngineView.LoadFailedStatus) {
                 console.log("Failed to load same-origin map:", loadRequest.errorString)
             }
@@ -193,11 +220,9 @@ Item {
                 
                 // Update waypoints for current UAV
                 var newWaypoints = backend.getWaypoints(currentUAV)
-                if (newWaypoints && newWaypoints.length > 0) {
-                    if (JSON.stringify(waypoints) !== JSON.stringify(newWaypoints)) {
-                        waypoints = newWaypoints
-                        mapBridge.missionPathChanged(waypoints)
-                    }
+                if (newWaypoints && JSON.stringify(waypoints) !== JSON.stringify(newWaypoints)) {
+                    waypoints = newWaypoints
+                    mapBridge.missionPathChanged(waypoints)
                 }
                 
                 // Update geofences
@@ -240,6 +265,29 @@ Item {
         webView.runJavaScript("map.setView([" + latitude + ", " + longitude + "], " + zoom + ")")
     }
     
+    // Polygon drawing functions
+    function startDrawingPolygon(polygonId) {
+        console.log("MapContainer: Starting polygon drawing mode with ID:", polygonId)
+        polygonDrawingMode = true
+        webView.runJavaScript("startPolygonDrawingMode(" + polygonId + ")")
+    }
+    
+    function clearDrawnPolygon() {
+        console.log("MapContainer: Clearing all polygons")
+        polygonDrawingMode = false
+        mapBridge.clearPolygon()
+    }
+    
+    function clearPolygonById(polygonId) {
+        console.log("MapContainer: Clearing polygon with ID:", polygonId)
+        mapBridge.clearPolygonById(polygonId)
+    }
+    
+    function updatePolygonAltitude(polygonId, altitude) {
+        console.log("MapContainer: Updating altitude for polygon", polygonId, "to", altitude, "meters")
+        mapBridge.updatePolygonAltitude(polygonId, altitude)
+    }
+    
     // Handle component initialization
     Component.onCompleted: {
         console.log("MapContainer initialized")
@@ -247,16 +295,6 @@ Item {
         // Connect to web map ready signal
         webMapReady.connect(function() {
             console.log("Web map ready, starting updates")
-            // Send initial test data
-            mapBridge.uavPositionChanged("UAV_1", 37.7849, -122.4094, 45, "AUTO", false)
-            mapBridge.homePositionChanged(37.7749, -122.4194)
-            
-            var testWaypoints = [
-                { lat: 37.7749, lon: -122.4194, type: "mission" },
-                { lat: 37.7849, lon: -122.4094, type: "mission" },
-                { lat: 37.7949, lon: -122.3994, type: "mission" }
-            ]
-            mapBridge.missionPathChanged(testWaypoints)
             
             // Clear the cache so launch circles will be emitted
             lastHomePositions = {}
@@ -264,7 +302,7 @@ Item {
             // Start the timer now that map is ready
             updateTimer.running = true
             
-            // Immediately update UAV data to show launch circles
+            // Immediately update UAV data to show real data (no test data)
             updateUAVData()
         })
     }

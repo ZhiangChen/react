@@ -748,4 +748,27 @@ class App(QObject):
             # Fall back to cached config
             return self.config.get("device_options", {}).get("max_uavs", 1)
 
+    @Slot(result='QVariant')
+    def get_camera_config(self):
+        """Get camera configuration from config.yaml for GSD calculations."""
+        try:
+            camera_config = self.config.get('safety', {}).get('camera', {})
+            config_dict = {
+                'hfov': float(camera_config.get('hfov', 73.4)),
+                'vfov': float(camera_config.get('vfov', 52.0)),
+                'image_width': int(camera_config.get('image_width', 8000)),
+                'image_height': int(camera_config.get('image_height', 6000))
+            }
+            self.logger.info(f"Camera config loaded: {config_dict}")
+            return config_dict
+        except Exception as e:
+            self.logger.error(f"Error loading camera config: {e}")
+            # Return default values
+            return {
+                'hfov': 73.4,
+                'vfov': 52.0,
+                'image_width': 8000,
+                'image_height': 6000
+            }
+
 
