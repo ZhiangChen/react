@@ -61,9 +61,6 @@ MISSION_PARAMS = {
 polygon_points = []
 polygon_closed = False
 waypoints = []
-takeoff_points = []
-takeoff_artists = []
-collecting_takeoff_positions = False
 
 # Fixed reference point at map origin (can be edited here)
 reference_lat = 34.163808   # Default latitude (from config.yaml)
@@ -2405,68 +2402,11 @@ def calculate_mission_stats(waypoints, speed, forward_overlap, altitude, vfov):
 # SECTION 8: INTERACTIVE UI EVENT HANDLERS
 # Matplotlib event callbacks for polygon drawing and interaction
 # ============================================================================
-def start_takeoff_selection():
-    """Enable takeoff placement mode after polygon is closed."""
-    global takeoff_points, takeoff_artists, collecting_takeoff_positions
-    # Clear any existing markers from previous runs
-    for artist in takeoff_artists:
-        try:
-            artist.remove()
-        except ValueError:
-            # Artist already removed or not present; ignore
-            pass
-    takeoff_artists = []
-    takeoff_points = []
-    collecting_takeoff_positions = True
-    print("\nTakeoff placement mode:")
-    print("  • LEFT-CLICK to add takeoff positions (triangles on the map)")
-    print("  • RIGHT-CLICK when finished to generate the mission\n")
-
-
-def add_takeoff_point(x, y):
-    """Add a takeoff point marker to the canvas."""
-    global takeoff_points, takeoff_artists
-    takeoff_points.append((x, y))
-    idx = len(takeoff_points)
-    marker, = ax.plot(
-        x, y, marker='^', color='darkorange', markersize=10,
-        markeredgecolor='black', markeredgewidth=1.2, linestyle='None'
-    )
-    label = ax.text(
-        x, y + 5, f"T{idx}", color='black', fontsize=10,
-        fontweight='bold', ha='center', va='bottom',
-        bbox=dict(boxstyle='round,pad=0.2', facecolor='white', alpha=0.7)
-    )
-    takeoff_artists.extend([marker, label])
-    plt.draw()
-    print(f"  • Added takeoff point {idx}: ({x:.2f}, {y:.2f})")
-
-
-def finish_takeoff_selection():
-    """Exit takeoff placement mode and continue mission generation."""
-    global collecting_takeoff_positions
-    collecting_takeoff_positions = False
-    if takeoff_points:
-        print(f"\n✓ Recorded {len(takeoff_points)} takeoff point(s)")
-    else:
-        print("\n⚠ No takeoff points recorded (mission will use default start)")
-    print(f"\nUsing reference coordinates: {reference_lat:.6f}, {reference_lon:.6f}")
-    generate_and_display_mission()
-
-
 def on_click(event):
     """Handle mouse click events for polygon drawing."""
     global polygon_points, polygon_patch, line, polygon_closed, waypoints
     
     if event.inaxes != ax:
-        return
-
-    if polygon_closed:
-        if collecting_takeoff_positions:
-            if event.button == 1 and event.xdata is not None and event.ydata is not None:
-                add_takeoff_point(event.xdata, event.ydata)
-            elif event.button == 3:
-                finish_takeoff_selection()
         return
     
     # Regular polygon drawing (left click)
@@ -2523,13 +2463,14 @@ def close_polygon():
     
     plt.draw()
     
-    # Enable takeoff placement instead of immediately generating the mission
-    start_takeoff_selection()
+    # Automatically generate the flight path
+    print(f"\nUsing reference coordinates: {reference_lat:.6f}, {reference_lon:.6f}")
+    generate_and_display_mission()
 
 
 def generate_and_display_mission():
     """Generate flight path and display it."""
-    global waypoints, takeoff_points
+    global waypoints
     
     # Convert polygon points to meters using NumPy for efficiency
     # Use first polygon point as local origin (0, 0)
@@ -2545,15 +2486,6 @@ def generate_and_display_mission():
     print(f"\nPolygon in meters (relative to first point):")
     for i, (x, y) in enumerate(polygon_m):
         print(f"  Point {i+1}: ({x:.2f}, {y:.2f})")
-    
-    if takeoff_points:
-        print(f"\nRecorded takeoff points (relative to polygon origin):")
-        for i, (tx, ty) in enumerate(takeoff_points, start=1):
-            x_m = (tx - origin_x) * scale
-            y_m = (ty - origin_y) * scale
-            print(f"  T{i}: canvas=({tx:.2f}, {ty:.2f})  meters=({x_m:.2f}, {y_m:.2f})")
-    else:
-        print("\nNo takeoff points recorded (using default start).")
     
     # Generate survey grid with polyline decomposition
     waypoints, polylines, corresponding_pairs, following_polylines, heading_polylines, cells, cell_edges_labeled, all_slicing_lines, lawnmower_lines = generate_survey_grid(
@@ -3000,8 +2932,7 @@ def main():
         print("INSTRUCTIONS:")
         print("  1. LEFT-CLICK to add polygon vertices")
         print("  2. Press ENTER or RIGHT-CLICK to close polygon")
-        print("  3. Once polygon is closed, LEFT-CLICK to add UAV takeoff positions")
-        print("  4. RIGHT-CLICK after takeoff placement to generate the mission")
+        print("  3. Flight path will be generated automatically")
         print(f"\nReference Origin: {reference_lat:.6f}, {reference_lon:.6f}")
         print("  (Edit reference_lat/reference_lon in script to change)")
         print("="*60 + "\n")
